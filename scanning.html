@@ -3,17 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scanning</title>
+    <title>Hanny Babby Store</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
+
+        <!-- SweetAlert CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <style>
+
+        .receipt {
+            font-size: 16px;
+            font-family: 'Times New Roman';
+            color: #000; /* Warna hitam pekat */
+            font-weight: 600; /* Menambah ketebalan teks */
+        }
+
+        td.description,
+        th.description {
+            width: 75px;
+            max-width: 75px;
+        }
+
+        td.quantity,
+        th.quantity {
+            width: 40px;
+            max-width: 40px;
+            word-break: break-all;
+        }
+
+        td.price,
+        th.price {
+            width: 40px;
+            max-width: 40px;
+            word-break: break-all;
+        }
+
+        .centered {
+            text-align: center;
+            align-content: center;
+        }
+    
+        /* CSS khusus untuk tampilan cetak */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .receipt, .receipt * {
+                visibility: visible;
+            }
+            .receipt {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 58mm; /* Lebar kertas thermal */
+                
+            }
+        }
+
+
+
+
         #scanner {
             width: 100%;  /* Agar video memenuhi kontainer */
             height: auto; /* Menjaga rasio aspek */
@@ -25,6 +81,46 @@
             font-size: 20px;
             font-weight: bold;
         }
+
+        table {
+        width: 100%; /* Buat tabel mengisi lebar kontainer */
+        border-collapse: collapse; /* Gabungkan border sel menjadi satu */
+        }
+        
+        th, td {
+            border: 1px solid #ddd; /* Tambahkan border untuk sel */
+            padding: 8px; /* Tambahkan padding di dalam sel */
+            text-align: left; /* Rata kiri untuk teks */
+        }
+        
+        th {
+            background-color: #f2f2f2; /* Warna latar belakang untuk header */
+        }
+
+        tr:hover {
+            background-color: #f5f5f5; /* Efek hover pada baris */
+        }
+
+        .receipt {
+            background-color: white;
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+        .center {
+            text-align: center;
+        }
+        .right {
+            text-align: right;
+        }
+        .bold {
+            font-weight: bold;
+        }
+        .line {
+            border-top: 1px dashed #000;
+            margin: 10px 0;
+        }
+    </style>
     </style>
 
     <!-- my js -->
@@ -179,23 +275,54 @@
                         <a id="startScan" class="d-sm-inline-block btn btn-sm btn-primary shadow-sm">
                             <i class="fas fa-qrcode fa-sm text-white-50"></i> Scan now
                         </a>
+                        <button class="btn_pembayaran">Pembayaran</button>
                     </div>
+                    <!-- Content Row -->
+                    
+                    <!-- Tabel untuk menampilkan hasil scan -->
+                    <table id="scanResultTable">
+                        <thead>
+                            <tr>
+                                <th>Nama Produk</th>
+                                <th>Ukuran</th>
+                                <th>Harga</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Baris hasil scan akan ditambahkan di sini -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2" class="text-end"><strong>Total Pembayaran:</strong></td>
+                                <td id="totalPayment">Rp 0</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <div class="receipt d-none">
+                        <div class="center bold">HannyBaby<br>STORE</div>
+                        <div class="center">Jl. Bukit khatulistiwa</div>
+                        <div class="line"></div>
+                        <div>Rech. Nr. 4572 <span class="right">30.07.2007/13:29:17</span></div>
+                        <div>Bar <span class="right">Tisch 7/01</span></div>
+                        
+                        <div class="line"></div>
+                        <div><span id="namaproduk">Baju tidur motif dinasaurus</span> <span  id="ukuran">L</span> <span class="right" id="hargaBarang">52000</span></div>
+                        
+                        
+                        <div class="line"></div>
+                        <div id="barcode"></div>
+                        <div>Telepon : 0822 39342497</div>
+                        <div>E-mail: hannybabystore@gmail.com</div>
+                    </div>
+                    
                     <video id="video" autoplay></video>
                     <!-- Video Element to show Camera Feed -->
                     <div class="d-flex justify-content-center">
                         <div id="qr-reader" style="width: 600px"></div>
                     </div>
-                    <div id="result"></div>
-
-    
-                    <!-- Content Row -->
-                    <div class="row">
-    
-                    
-                    </div>
                 </div>
                 <!-- /.container-fluid -->
-    
             </div>
             <!-- End of Main Content -->
     
@@ -241,7 +368,7 @@
     </div>
     
     <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     
     <!-- Core plugin JavaScript-->
@@ -253,28 +380,331 @@
     <!-- Page level plugins -->
     <script src="vendor/chart.js/Chart.min.js"></script>
     
-    <!-- Page level custom scripts -->
-    <script src="js/demo/chart-area-demo.js"></script>
-    <script src="js/demo/chart-pie-demo.js"></script>
 
     <!-- Library tambahan -->
 
     <!-- Zxing untuk scan barocode -->
     <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
+    <!-- SweetAlert JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
-    <script>
-        function onScanSuccess(decodedText, decodedResult) {
-                console.log(`Code scanned = ${decodedText}`, decodedResult);
-                var result = document.getElementById("result");
-                result.innerHTML = decodedText; // Menampilkan hasil pemindaian ke dalam elemen dengan ID 'result'
+    <script type="module">
+        // Konfigurasi Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-KoYR9MpOTnnWsaP3rjnvbzsFEWsuZ2Y",
+            authDomain: "toko-baju-d06b8.firebaseapp.com",
+            projectId: "toko-baju-d06b8",
+            storageBucket: "toko-baju-d06b8.appspot.com",
+            messagingSenderId: "1075045058309",
+            appId: "1:1075045058309:web:e178b52dbd0374cf17996c",
+            measurementId: "G-1K6SBT6LRJ"
+        };
+
+        // Inisialisasi Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let scannedData = ''; // Menyimpan data yang dipindai
+        let scanTimeout;
+        let productQuantities = {}; // Objek untuk menyimpan jumlah produk
+        let totalHarga = 0; // Inisialisasi totalHarga
+
+        // Event listener untuk menangkap keydown
+        document.addEventListener('keydown', async (event) => {
+                // Cek jika key yang ditekan adalah 'Enter'
+                if (event.key === 'Enter') {
+                    // Proses data yang dipindai saat menekan Enter
+                    const trimmedData = scannedData.trim();
+                    console.log(`Scanned text: ${trimmedData}`);
+
+                    // Memisahkan berdasarkan koma dan validasi data
+                    let scanData = trimmedData.split(',');
+                    if (scanData.length < 3) {
+                        alert("Data yang dipindai tidak lengkap. Pastikan memasukkan nama, ukuran, dan harga produk.");
+                        resetScanner(); // Reset pemindaian
+                        return;
+                    }
+
+                    // Mengambil dan memangkas setiap bagian untuk menghilangkan spasi yang tidak perlu
+                    let namaProduk = scanData[0].trim();
+                    let ukuranProduk = scanData[1].trim();
+                    let hargaProduk = parseFloat(scanData[2]); // Mengonversi harga dan membulatkannya
+
+
+                    // Validasi harga produkBaju tidur motif dinasaurus,L,52000.0
+                    if (isNaN(hargaProduk) || hargaProduk <= 0) {
+                        alert("Harga produk tidak valid.");
+                        resetScanner(); // Reset pemindaian
+                        return;
+                    }
+
+                    // Cek ketersediaan produk di Firestore
+                    const isAvailable = await checkProductAvailability(namaProduk, ukuranProduk);
+                    if (isAvailable) {
+                        // Format harga tanpa menambahkan "Rp" lagi
+                        const formattedPrice = hargaProduk.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+                        // Tambahkan data ke tabel hanya jika belum ada
+                        if (!isRowAlreadyExists(namaProduk, ukuranProduk, hargaProduk)) {
+                            addRowToTable(namaProduk, ukuranProduk, hargaProduk);
+                        }
+                    } else {                    
+                        Swal.fire({
+                            icon: "error",
+                            title: "Gagal",
+                            text: `Produk ${namaProduk} ukuran ${ukuranProduk} tidak tersedia`
+                        });
+                    }
+
+
+                    // Bersihkan data yang dipindai setelah scan selesai
+                    scannedData = '';
+                } else if (event.key !== 'Shift' && event.key.length === 1) {
+                    // Tangkap input karakter kecuali Shift
+                    scannedData += event.key;
+
+                    // Atur timeout untuk menunggu akhir pemindaian
+                    clearTimeout(scanTimeout);
+                    scanTimeout = setTimeout(() => {
+                        scannedData = ''; // Reset jika tidak ada input dalam waktu tertentu
+                    }, 500);
+                }
+            });
+
+
+            // Fungsi untuk mengecek ketersediaan produk di Firestore
+            async function checkProductAvailability(namaProduk, ukuranProduk) {
+                const docRef = doc(db, 'produk', namaProduk);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const ukuranDocRef = doc(db, 'produk', namaProduk, 'ukuran', `ukuran ${ukuranProduk}`);
+                    const ukuranSnap = await getDoc(ukuranDocRef);
+                    if (ukuranSnap.exists()) {
+                        const ukuranData = ukuranSnap.data();
+                        return ukuranData.stok > 0;
+                    }
+
+                    
+                }
+                return false;
             }
 
-            var html5QrcodeScanner = new Html5QrcodeScanner(
-                "qr-reader", { fps: 10, qrbox: 250 }
-            );
-            html5QrcodeScanner.render(onScanSuccess); // Memulai pemindaian
-    </script>
+            // Fungsi lainnya tetap sama...
 
+
+        function isRowAlreadyExists(namaProduk, ukuranProduk, hargaProduk) {
+            const tableBody = document.querySelector('#scanResultTable tbody');
+            const rows = tableBody.querySelectorAll('tr');
+
+            for (const row of rows) {
+                const cells = row.querySelectorAll('td');
+                if (cells[0].textContent === namaProduk &&
+                    cells[1].textContent === ukuranProduk &&
+                    cells[2].textContent === `Rp ${hargaProduk.toFixed(2)}`) {
+                    return true; // Baris sudah ada
+                }
+            }
+            return false; // Baris belum ada
+        }
+
+        function addRowToTable(namaProduk, ukuranProduk, hargaProduk) {
+            const tableBody = document.querySelector('#scanResultTable tbody');
+            const newRow = document.createElement('tr');
+
+            // Format harga menjadi Rp xx.xxx
+            const formattedPrice = `${hargaProduk.toLocaleString('id-ID')}`;
+            newRow.innerHTML = `
+                    <td>${namaProduk}</td>
+                    <td>${ukuranProduk}</td>
+                    <td>${formattedPrice}</td>
+                `;
+
+            // Menyimpan jumlah produk yang dibeli
+                    if (productQuantities[namaProduk]) {
+                        productQuantities[namaProduk] += 1; // Menambah jumlah jika sudah ada
+                    } else {
+                        productQuantities[namaProduk] = 1; // Menyimpan jumlah produk baru
+                    }
+
+            tableBody.appendChild(newRow);
+            totalHarga += hargaProduk; // Update totalHarga
+            updateTotalPayment(hargaProduk);
+        }
+
+        function updateTotalPayment(harga) {
+                const totalPaymentElement = document.getElementById('totalPayment');
+                const currentTotal = parseFloat(totalPaymentElement.textContent.replace('Rp ', '').replace(/\./g, '').replace(',', '.'));
+                const newTotal = currentTotal + harga;
+                totalPaymentElement.textContent = `Rp ${newTotal.toLocaleString('id-ID') }`; // Hapus formatting di sini
+            }
+
+
+        // Fungsi untuk mengatur ulang pemindaian
+        function resetScanner() {
+            scannedData = ''; // Mengosongkan data yang dipindai
+            alert("Pemindaian direset.");
+        }
+
+        // Event listener untuk tombol pembayaran
+        // Event listener untuk tombol pembayaran
+            document.querySelector('.btn_pembayaran').addEventListener('click', async () => {
+                if (totalHarga > 0) {
+                    const scanResultTableBody = document.querySelector('#scanResultTable tbody');
+                    const rows = scanResultTableBody.querySelectorAll('tr');
+
+                    let productList = '';
+                    const productsToUpdate = {};
+
+                    // Iterasi pertama untuk mengisi productList
+                    rows.forEach(row => {
+                        const cells = row.querySelectorAll('td');
+                        const namaProduk = cells[0].innerText;
+                        const ukuranProduk = cells[1].innerText;
+                        const hargaProduk = cells[2].innerText;
+
+                        // Tambahkan produk ke productList dengan format tertentu
+                        productList += `${namaProduk}|${ukuranProduk}|${hargaProduk}<br/>`;
+
+                        const jumlah = productQuantities[namaProduk] || 0;
+                        const key = `${namaProduk}|${ukuranProduk}`;
+                        if (!productsToUpdate[key]) {
+                            productsToUpdate[key] = { namaProduk, ukuranProduk, jumlah };
+                        }
+                    });
+
+                    // Menampilkan konfirmasi pembayaran
+                    Swal.fire({
+                        title: 'Konfirmasi Pembayaran',
+                        html: `
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Nama Produk</th>
+                            <th>Ukuran</th>
+                            <th>Harga</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${productList.split('<br/>').map(item => {
+                            const [namaProduk, ukuranProduk, hargaProduk] = item.split('|');
+                            return `<tr><td>${namaProduk}</td><td>${ukuranProduk}</td><td>${hargaProduk}</td></tr>`;
+                        }).join('')}
+                    </tbody>
+                </table>
+                <div>Total Pembayaran: <strong>Rp ${totalHarga.toLocaleString('id-ID')}</strong></div>
+            `,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Bayar',
+                        cancelButtonText: 'Batal'
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            try {
+                                for (const { namaProduk, ukuranProduk, jumlah } of Object.values(productsToUpdate)) {
+                                    const ukuranDocRef = doc(db, 'produk', namaProduk, 'ukuran', `ukuran ${ukuranProduk}`);
+                                    const ukuranSnap = await getDoc(ukuranDocRef);
+
+                                    if (ukuranSnap.exists()) {
+                                        const ukuranData = ukuranSnap.data();
+                                        const stok = ukuranData.stok;
+
+                                        if (stok >= jumlah) {
+                                            await updateDoc(ukuranDocRef, { stok: stok - jumlah });
+                                        } else {
+                                            alert(`Stok tidak cukup untuk produk: ${namaProduk}`);
+                                            return;
+                                        }
+                                    }
+                                }
+
+                                // Panggil showReceipt setelah konfirmasi pembayaran berhasil
+                                showReceipt(productList, totalHarga);
+
+                                Swal.fire('Pembayaran berhasil!', '', 'success');
+                                totalHarga = 0;
+                                productQuantities = {};
+                                scanResultTableBody.innerHTML = '';
+                                document.getElementById('totalPayment').innerHTML = 'Rp 0.00';
+
+                            } catch (error) {
+                                console.error("Error during payment:", error);
+                                Swal.fire('Pembayaran gagal!', 'Terjadi kesalahan saat memproses pembayaran.', 'error');
+                            }
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Mohon Maaf...",
+                        text: "Silakan tambahkan produk sebelum melanjutkan ke pembayaran."
+                    });
+                }
+            });
+
+            function showReceipt(productList, totalHarga) {
+                    const receiptElement = document.querySelector('.receipt');
+
+                    // Bersihkan elemen struk dan buat elemen tabel untuk tampilan struk
+                    receiptElement.innerHTML = `
+        <div class="centered bold">HannyBaby<br>STORE</div>
+        <div class="centered">Jl. Bukit Khatulistiwa</div>
+        <div class="line"></div>
+        <table>
+            <thead>
+                <tr>
+                    <th class="description">Description</th>
+                    <th class="price">Harga</th>
+                </tr>
+            </thead>
+            <tbody id="product-rows">
+            </tbody>
+        </table>
+        <div class="line"></div>
+    `;
+
+                    // Ambil elemen tbody tempat produk akan ditambahkan
+                    const productRows = document.getElementById('product-rows');
+
+                    // Pisahkan setiap produk dari productList
+                    const products = productList.split('<br/>');
+                    products.forEach(product => {
+                        const [namaProduk, ukuranProduk, hargaProduk] = product.split('|').map(item => item.trim());
+
+                        if (namaProduk && ukuranProduk && hargaProduk) {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                <td class="description">${namaProduk} ${ukuranProduk}</td>
+                <td class="harga">${hargaProduk.toLocaleString('id-ID')}</td>
+            `;
+                            productRows.appendChild(row);
+                        }
+                    });
+
+                    // Tambahkan total harga ke tabel
+                    const totalRow = document.createElement('tr');
+                    totalRow.innerHTML = `
+        <td class="description"><strong>Total</strong></td>
+        <td class="price"><strong>Rp ${totalHarga.toLocaleString('id-ID')}</strong></td>
+    `;
+                    productRows.appendChild(totalRow);
+
+                    // Tambahkan informasi kontak di bawah tabel
+                    receiptElement.innerHTML += `
+        <div class="line"></div>
+        <div class="centered">Telepon: 0822 39342497</div>
+        <div class="centered">E-mail: hannybabystore@gmail.com</div>
+    `;
+
+                    // Tampilkan elemen struk dan cetak secara otomatis
+                    receiptElement.classList.remove('d-none');
+                    setTimeout(() => {
+                        window.print();
+                    }, 500);
+                }
+
+    </script>
 </body>
 </html>
