@@ -4,17 +4,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scanning</title>
+    <title>Hanny Babby Store</title>
 
     <!-- Custom fonts for this template-->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"
+        type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="css/myCSS.css" rel="stylesheet">
     <style>
+
+        .loading-spinner {
+            border: 8px solid #f3f3f3; /* Light grey */
+            border-top: 8px solid #d69a39; /* Blue */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000; /* Pastikan spinner terlihat di atas elemen lain */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         #scanner {
             width: 100%;
             /* Agar video memenuhi kontainer */
@@ -27,6 +49,94 @@
             margin-top: 20px;
             font-size: 20px;
             font-weight: bold;
+        }
+
+        .form-container {
+            
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        .form-container input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .ukuranbaju {
+            width: 45%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .stokbaju {
+            width: 45%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            outline: none;
+            border-bottom: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        .form-container input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        .form-container input[type="file"] {
+            display: none;
+        }
+
+        .form-container label {
+            display: block;
+            width: 60%;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 16px;
+            color: #d69a39;
+        }
+
+        .form-container button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #d69a39;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .form-container #addSizeStock {
+            width: 60%;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #855c19;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 12px;
+            cursor: pointer;
         }
     </style>
 
@@ -175,12 +285,14 @@
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
                     <!-- Page Heading -->
-                    <div class="flex align-items-center justify-content-between mb-4">
+                    <div class="flex align-items-center justify-content-between mb-2">
                         <h1 class="h3 mb-0 text-gray-800">Daftar Produk</h1>
-                        <a id="startScan" class="d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-                            <i class="fas fa-box fa-sm text-white-50"></i> Produk
-                        </a>
+                        
                     </div>
+                    <!-- Button to open the modal -->
+                    <button class="btn btn-success mb-2" type="button" data-toggle="modal" data-target="#addProduct">
+                        <i class="fas fa-plus"></i> Add Product
+                    </button>
                     
                     <!-- Content Row -->
                     <div class="row">
@@ -210,7 +322,7 @@
     <!-- End of Page Wrapper -->
 
     <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
+    <a class="scroll-to-top rounded" href="#content-wrapper">
         <i class="fas fa-angle-up"></i>
     </a>
 
@@ -234,6 +346,50 @@
         </div>
     </div>
 
+    <!-- Modal Tambah Data Baju -->
+    <div class="modal fade" id="addProduct" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button class="close mb-4" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+
+                    <div class="form-container">
+                        <input type="text" placeholder="Nama produk">
+                        <input type="text" id="hargaDibeli" placeholder="Harga Dibeli">
+                        <input type="text" id="hargaJual" placeholder="Harga Jual">
+                    
+                        <div id="sizeStockContainer">
+                            <div class="size-stock-input d-flex">
+                                <input type="text" name="ukuran[]" class="ukuranbaju" id="ukuranbaju" placeholder="Ukuran">
+                                <input type="number" name="stok[]" class="stokbaju" id="stokbaju" placeholder="Stok">
+                            </div>
+                        </div>
+                    
+                        <button type="button" id="addSizeStock" class="btn btn-secondary mt-2">Tambah Ukuran & Stok</button>
+                    
+                        
+                        <div class="form-container">
+                            <input type="file" id="file" style="display: none;">
+                            <label for="file" id="fileLabel" class="btn">Pilih Gambar</label>
+                            <span id="fileName">Belum ada file yang dipilih</span>
+                        </div>
+
+                        <div id="spinner" style="display: none;">
+                            <div class="loading-spinner"></div>
+                        </div>
+
+                        
+                        <button id="addProductButton">TAMBAH DATA</button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
     <!-- Data Modal -->
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -241,16 +397,18 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <div class="row col-12 col-lg-12">
-                        <button type="button" class="fas fa-times" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close fa-solid fa-xmark fa-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         <div class="d-flex justify-content-center container-imgProduk w-100">
                             <img src="img/undraw_posting_photo.svg" alt="gambar baju" width="50%" id="imgProduk">
                         </div>
                         <div class="deskripsiProduk">
-                            <h2 id="namaProduk" class="mt-5">Nama produk</h2>
+                            <div class="ct-produkName">
+                                <h2 id="namaProduk" class="mt-5">Nama produk</h2>
+                            </div>
+                            <h6 id="hargaJual">harga jual</h6>
                             <h6 id="stok">stok</h6>
                             <h6 id="ukuran">ukuran</h6>
                             <h6 id="hargadibeli">harga beli</h6>
-                            <h6 id="hargaJual">harga jual</h6>
                         </div>
                     </div>
                 </div>
@@ -274,10 +432,6 @@
     <!-- Page level plugins -->
     <script src="vendor/chart.js/Chart.min.js"></script>
 
-    <!-- Page level custom scripts -->
-    <script src="js/demo/chart-area-demo.js"></script>
-    <script src="js/demo/chart-pie-demo.js"></script>
-
     <!-- Library tambahan -->
 
     <!-- Firebase App (wajib) -->
@@ -287,6 +441,12 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <!-- Firebase Storage -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-qrcode/1.0/jquery.qrcode.min.js"></script>
+
+
 
     
     <script>
@@ -399,11 +559,226 @@
 
         // Panggil fungsi getData untuk menampilkan produk saat halaman dimuat
         window.onload = getData;
+
+
+
+        // Fungsi untuk memformat angka ke format mata uang Indonesia
+        function formatCurrency(input) {
+            let value = input.value.replace(/[^,\d]/g, '').toString();
+            if (value) {
+                input.value = parseInt(value, 10).toLocaleString('id-ID');
+            }
+        }
+        // Event listener untuk input harga
+        document.getElementById('hargaDibeli').addEventListener('input', function () {
+            formatCurrency(this);
+        });
+        document.getElementById('hargaJual').addEventListener('input', function () {
+            formatCurrency(this);
+        });
+
+
+        let counter = 1; // Counter untuk memberikan ID unik
+
+        document.getElementById('addSizeStock').addEventListener('click', function () {
+            // Container untuk menambahkan ukuran dan stok
+            const container = document.getElementById('sizeStockContainer');
+
+            // Elemen baru untuk ukuran dan stok dengan ID unik
+            const newSizeStock = document.createElement('div');
+            newSizeStock.classList.add('size-stock-input', 'mt-2');
+            newSizeStock.innerHTML = `
+        <div class="size-stock-input d-flex">
+            <input type="text" name="ukuran[]" class="ukuranbaju" placeholder="Ukuran">
+            <input type="number" name="stok[]" class="stokbaju" placeholder="Stok">
+            
+        </div>
+        <button type="button" class="removeSizeStock">Hapus</button> <!-- Tambahkan tombol hapus -->
+    `;
+
+            // Tambahkan elemen baru ke container
+            container.appendChild(newSizeStock);
+
+            // Tambahkan event listener untuk tombol hapus
+            newSizeStock.querySelector('.removeSizeStock').addEventListener('click', function () {
+                container.removeChild(newSizeStock);
+            });
+            // Increment counter setelah menambahkan ukuran dan stok
+            counter++;
+        });
+
+         document.getElementById('file').addEventListener('change', function () {
+                const fileInput = document.getElementById('file');
+                const fileNameDisplay = document.getElementById('fileName');
+
+                // Ambil nama file pertama dari input (jika ada)
+                if (fileInput.files.length > 0) {
+                    fileNameDisplay.textContent = fileInput.files[0].name;
+                } else {
+                    fileNameDisplay.textContent = 'Belum ada file yang dipilih';
+                }
+            });
+
+        document.getElementById('addProductButton').addEventListener('click', async function () {
+                const spinner = document.getElementById('spinner');
+                spinner.style.display = 'block'; // Tampilkan spinner
+
+                try {
+                    // Ambil elemen input
+                    const namaProduk = document.querySelector("input[placeholder='Nama produk']").value;
+                    const hargaDibeli = document.getElementById("hargaDibeli").value.replace(/\D/g, '');
+                    const hargaJual = document.getElementById("hargaJual").value.replace(/\D/g, '');
+                    const ukuranElems = document.querySelectorAll("input[name='ukuran[]']");
+                    const stokElems = document.querySelectorAll("input[name='stok[]']");
+                    const fileInput = document.getElementById('file');
+
+                    // Validasi input file
+                    if (!fileInput.files.length) {
+                        alert("Pilih gambar terlebih dahulu.");
+                        spinner.style.display = 'none'; // Sembunyikan spinner
+                        return;
+                    }
+
+                    // Array untuk ukuran dan stok
+                    const ukuranStokArray = [];
+                    ukuranElems.forEach((ukuranElem, index) => {
+                        ukuranStokArray.push({
+                            ukuran: ukuranElem.value,
+                            stok: stokElems[index].value
+                        });
+                    });
+
+                    // Gambar QR Code untuk setiap ukuran dan simpan sebagai file terpisah
+                    const qrCodeCanvasArray = [];
+                    const qrCodeSize = 120;
+
+                    for (const item of ukuranStokArray) {
+                        const qrData = `${namaProduk},${item.ukuran},${hargaJual}`;
+                        const qrCodeCanvas = document.createElement('canvas');
+                        qrCodeCanvas.width = qrCodeSize;
+                        qrCodeCanvas.height = qrCodeSize;
+
+                        const ctx = qrCodeCanvas.getContext('2d');
+                        await new Promise((resolve) => {
+                            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=${qrCodeSize}x${qrCodeSize}`;
+                            const img = new Image();
+                            img.crossOrigin = "Anonymous";
+                            img.onload = () => {
+                                ctx.drawImage(img, 0, 0);
+                                resolve();
+                            };
+                            img.src = qrCodeUrl;
+                        });
+
+                        qrCodeCanvasArray.push({ canvas: qrCodeCanvas, ukuran: item.ukuran });
+                    }
+
+                    for (const item of qrCodeCanvasArray) {
+                        const canvas = item.canvas;
+                        const ukuran = item.ukuran;
+
+                        const finalCanvas = document.createElement('canvas');
+                        const finalWidth = 330;
+                        const finalHeight = 150;
+                        finalCanvas.width = finalWidth;
+                        finalCanvas.height = finalHeight;
+                        const finalCtx = finalCanvas.getContext('2d');
+
+                        finalCtx.fillStyle = "#fff";
+                        finalCtx.fillRect(0, 0, finalWidth, finalHeight);
+
+                        finalCtx.drawImage(canvas, 10, 15);
+                        
+                        // Fungsi untuk menggambar teks dengan pemecahan baris
+                        function drawMultilineText(ctx, text, x, y, maxWidth, lineHeight) {
+                            const words = text.split(' ');
+                            let line = '';
+
+                            for (let n = 0; n < words.length; n++) {
+                                const testLine = line + words[n] + ' ';
+                                const metrics = ctx.measureText(testLine);
+                                const testWidth = metrics.width;
+
+                                if (testWidth > maxWidth && n > 0) {
+                                    ctx.fillText(line, x, y);
+                                    line = words[n] + ' ';
+                                    y += lineHeight; // Geser ke bawah untuk baris berikutnya
+                                } else {
+                                    line = testLine;
+                                }
+                            }
+                            ctx.fillText(line, x, y); // Gambar baris terakhir
+                        }
+
+                        // Menggambar informasi produk di sebelah kanan
+                        finalCtx.fillStyle = "#000"; // Warna teks
+                        const textOffsetX = 150;
+                        const maxWidth = finalWidth - textOffsetX - 20; // Batasi lebar teks
+                        const lineHeight = 30; // Tinggi baris
+
+                        // Set font untuk nama produk dan gambar dengan memecah baris
+                        finalCtx.font = "20px Arial"; // Ukuran font untuk nama produk
+                        drawMultilineText(finalCtx, namaProduk, textOffsetX, 30, maxWidth, lineHeight);
+
+                        // Kembalikan ukuran font untuk ukuran dan harga jual
+                        finalCtx.font = "25px Arial"; // Ukuran font untuk ukuran dan harga
+                        finalCtx.fillText(`${ukuranElems[0].value}`, 280, 130); // Menggambar ukuran
+                        finalCtx.fillText(`Rp ${hargaJual}`, textOffsetX, 130); // Menggambar harga jual
+
+                        const imageDataUrl = finalCanvas.toDataURL("image/jpeg");
+
+                        const link = document.createElement('a');
+                        link.href = imageDataUrl;
+                        link.download = `${namaProduk}_${ukuran}.jpg`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+
+                    // Upload gambar ke Firebase Storage
+                    const file = fileInput.files[0];
+                    let imageName = namaProduk.toLowerCase();
+
+                    const storageRef = storage.ref(`gambar_baju/${imageName}.jpg`);
+                    await storageRef.put(file);
+                    const imageUrl = await storageRef.getDownloadURL();
+
+                    // Simpan data ke Firestore
+                    const produkRef = db.collection('produk').doc(namaProduk);
+                    await produkRef.set({
+                        "nama produk": namaProduk,
+                        "harga dibeli": parseInt(hargaDibeli),
+                        imageUrl: imageUrl
+                    });
+
+                    const ukuranStokRef = produkRef.collection('ukuran');
+                    for (const item of ukuranStokArray) {
+                        const ukuranDocName = 'ukuran ' + item.ukuran;
+                        await ukuranStokRef.doc(ukuranDocName).set({
+                            ukuran: item.ukuran,
+                            stok: parseInt(item.stok),
+                            "harga jual": parseInt(hargaJual)
+                        });
+                    }
+
+                    alert("Data produk berhasil ditambahkan!");
+                    // Clear form inputs setelah submit
+                    document.querySelector("input[placeholder='Nama produk']").value = '';
+                    document.getElementById("hargaDibeli").value = '';
+                    document.getElementById("hargaJual").value = '';
+                    fileInput.value = '';
+                    document.getElementById('fileName').textContent = 'Belum ada file yang dipilih';
+                    document.getElementById("sizeStockContainer").innerHTML = ''; // Bersihkan input ukuran & stok
+
+                } catch (error) {
+                    console.error("Error menambahkan data produk: ", error);
+                    alert("Gagal menambahkan data produk.");
+                } finally {
+                    spinner.style.display = 'none'; // Sembunyikan spinner di akhir
+                }
+            });
+
     </script>
-
-
-
-
     
 </body>
 
