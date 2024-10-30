@@ -6,7 +6,8 @@
     <title>Hanny Babby Store</title>
 
     <!-- Custom fonts for this template-->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"
+        type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
@@ -16,111 +17,82 @@
     
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/myCss.css">
+
     <style>
+        /* Gaya umum untuk struk */
+    .struk-container {
+        width: 100%;
+        max-width: 300px; /* Sesuaikan lebar struk */
+        margin: auto;
+        padding: 10px;
+        font-family: Arial, sans-serif;
+        font-size: 12px; /* Sesuaikan ukuran font */
+        color: #000;
+    }
 
-        .receipt {
-            font-size: 16px;
-            font-family: 'Times New Roman';
-            color: #000; /* Warna hitam pekat */
-            font-weight: 600; /* Menambah ketebalan teks */
+    /* Gaya untuk elemen yang akan dicetak */
+    @media print {
+        body {
+            margin: 0;
+            padding: 0;
+            background: #fff; /* Pastikan latar belakang putih saat dicetak */
         }
 
-        td.description,
-        th.description {
-            width: 75px;
-            max-width: 75px;
-        }
-
-        td.quantity,
-        th.quantity {
-            width: 40px;
-            max-width: 40px;
-            word-break: break-all;
-        }
-
-        td.price,
-        th.price {
-            width: 40px;
-            max-width: 40px;
-            word-break: break-all;
+        #strukContainer {
+            display: block; /* Pastikan struk ditampilkan */
         }
 
         .centered {
-            text-align: center;
-            align-content: center;
-        }
-    
-        /* CSS khusus untuk tampilan cetak */
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            .receipt, .receipt * {
-                visibility: visible;
-            }
-            .receipt {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 58mm; /* Lebar kertas thermal */
-                
-            }
+            text-align: center; /* Pusatkan teks */
         }
 
-
-
-
-        #scanner {
-            width: 100%;  /* Agar video memenuhi kontainer */
-            height: auto; /* Menjaga rasio aspek */
-        }
-
-        #result {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 20px;
-            font-weight: bold;
+        .line {
+            border-top: 1px solid #000; /* Garis horizontal */
+            margin: 10px 0; /* Jarak atas dan bawah */
         }
 
         table {
-        width: 100%; /* Buat tabel mengisi lebar kontainer */
-        border-collapse: collapse; /* Gabungkan border sel menjadi satu */
+            width: 100%; /* Lebar tabel penuh */
+            border-collapse: collapse; /* Gabungkan batas tabel */
         }
-        
+
         th, td {
-            border: 1px solid #ddd; /* Tambahkan border untuk sel */
-            padding: 8px; /* Tambahkan padding di dalam sel */
-            text-align: left; /* Rata kiri untuk teks */
+            text-align: left; /* Rata kiri untuk teks dalam tabel */
+            padding: 5px; /* Jarak dalam sel */
         }
-        
+
         th {
-            background-color: #f2f2f2; /* Warna latar belakang untuk header */
+            background-color: #f0f0f0; /* Warna latar belakang untuk header tabel */
         }
 
-        tr:hover {
-            background-color: #f5f5f5; /* Efek hover pada baris */
+        tfoot td {
+            font-weight: bold; /* Cetak tebal untuk total harga */
         }
 
-        .receipt {
-            background-color: white;
-            width: 300px;
-            padding: 20px;
-            border: 1px solid #ddd;
+        .text-center {
+            text-align: center; /* Pusatkan teks untuk bagian terima kasih */
+            margin-top: 10px; /* Jarak atas */
         }
-        .center {
-            text-align: center;
+
+        /* Sembunyikan elemen lain saat mencetak */
+        * {
+            visibility: hidden; /* Sembunyikan semua elemen secara default */
         }
-        .right {
-            text-align: right;
+
+        #strukContainer,
+        #strukContainer * {
+            visibility: visible; /* Tampilkan struk dan semua elemennya */
         }
-        .bold {
-            font-weight: bold;
+
+        /* Pastikan struk berada di posisi yang benar saat dicetak */
+        #strukContainer {
+            position: absolute;
+            left: 0;
+            top: 0;
         }
-        .line {
-            border-top: 1px dashed #000;
-            margin: 10px 0;
-        }
-    </style>
+    }
+
     </style>
 
     <!-- my js -->
@@ -272,10 +244,10 @@
                     <!-- Page Heading -->
                     <div class="flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Scan Barang</h1>
-                        <a id="startScan" class="d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-                            <i class="fas fa-qrcode fa-sm text-white-50"></i> Scan now
+                        <a id="startScan" class="d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#ModalInputmanual">
+                            <i class="fas fa-qrcode fa-sm text-white-50"></i> Input manual
                         </a>
-                        <button class="btn_pembayaran">Pembayaran</button>
+                        
                     </div>
                     <!-- Content Row -->
                     
@@ -296,8 +268,16 @@
                                 <td colspan="2" class="text-end"><strong>Total Pembayaran:</strong></td>
                                 <td id="totalPayment">Rp 0</td>
                             </tr>
+                            <tr>
+                                <td colspan="3" class="text-end">
+                                    <button class="btn_pembayaran btn btn-success">Pembayaran</button>
+                                </td>
+                            </tr>
                         </tfoot>
+                        
                     </table>
+
+                    
 
                     <div class="receipt d-none">
                         <div class="center bold">HannyBaby<br>STORE</div>
@@ -362,6 +342,58 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
                     <a class="btn btn-primary" href="login.html">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Manual Modal-->
+    <div class="modal fade" id="ModalInputmanual" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="modal-title" id="exampleModalLabel">Perhatian! ini hanya digunakan pada saat produk belum terdaftar </p>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-container">
+                        <input type="text" class="product-group2" id="namaBaju" name="nama_produk[]" placeholder="Nama Baju">
+                        <input type="text" class="product-group2" id="harga" name="harga[]" placeholder="Harga">
+                
+                        <div id="sizeStockContainer">
+                            <div class="size-stock-input d-flex">
+                                <input type="text" name="ukuran[]" class="ukuranbaju product-group2" placeholder="Ukuran">
+                                <input type="number" name="jumlah[]" class="jumlahbaju product-group2" placeholder="Jumlah">
+                            </div>
+                        </div>
+                
+                        <div class="d-flex">
+                            <button type="button" id="addProduk" class="btn btn-secondary mt-2 mr-2">Tambah Produk</button>
+                            <button type="button" id="deleteAddProduk" class="btn btn-secondary mt-2">Hapus</button>
+                        </div>
+                
+                        <div class="form-container mt-3">
+                            <input type="file" id="file" style="display: none;">
+                            <label for="file" id="fileLabel" class="btn">Foto Baju</label>
+                            <span id="fileName">Belum ada file yang dipilih</span>
+                        </div>
+                
+                        <div id="strukContainer" style="display: none;">
+                            <div id="strukContent"></div>
+                        </div>
+                
+                        <div id="spinner" style="display: none;">
+                            <div class="loading-spinner"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-warning" type="button" id="resetInput">Reset</button>
+                    <button id="printStruk" class="btn btn-primary">Cetak Struk</button>
                 </div>
             </div>
         </div>
@@ -705,6 +737,206 @@
                     }, 500);
                 }
 
+
+        // Fungsi untuk menambahkan input produk baru
+            document.getElementById("addProduk").addEventListener("click", function () {
+                const newProductGroup = document.createElement("div");
+                newProductGroup.classList.add("product-group", "mt-3");
+
+                const namePriceWrapper = document.createElement("div");
+                namePriceWrapper.classList.add("d-flex", "gap-2", "mb-2");
+
+                const newNamaInput = document.createElement("input");
+                newNamaInput.type = "text";
+                newNamaInput.name = "nama_produk[]";
+                newNamaInput.classList.add("form-control", "product-group2");
+                newNamaInput.placeholder = "Nama Baju";
+
+                const newHargaInput = document.createElement("input");
+                newHargaInput.type = "text"; // Ubah menjadi 'text' agar kita bisa memformat
+                newHargaInput.name = "harga[]";
+                newHargaInput.classList.add("form-control", "product-group2");
+                newHargaInput.placeholder = "Harga";
+
+                // Tambahkan event listener untuk memformat harga
+                newHargaInput.addEventListener("input", function () {
+                    // Simpan posisi kursor saat ini
+                    const cursorPosition = this.selectionStart;
+
+                    // Memformat nilai
+                    const formattedValue = formatRupiah(this.value);
+
+                    // Set value terformat
+                    this.value = formattedValue;
+
+                    // Mengembalikan posisi kursor setelah memformat
+                    this.setSelectionRange(cursorPosition, cursorPosition);
+                });
+
+                namePriceWrapper.appendChild(newNamaInput);
+                namePriceWrapper.appendChild(newHargaInput);
+
+                const sizeQuantityWrapper = document.createElement("div");
+                sizeQuantityWrapper.classList.add("d-flex", "gap-2");
+
+                const newUkuranInput = document.createElement("input");
+                newUkuranInput.type = "text";
+                newUkuranInput.name = "ukuran[]";
+                newUkuranInput.classList.add("ukuranbaju", "form-control", "product-group2");
+                newUkuranInput.placeholder = "Ukuran";
+
+                const newJumlahInput = document.createElement("input");
+                newJumlahInput.type = "number";
+                newJumlahInput.name = "jumlah[]";
+                newJumlahInput.classList.add("jumlahbaju", "form-control", "product-group2");
+                newJumlahInput.placeholder = "Jumlah";
+
+                sizeQuantityWrapper.appendChild(newUkuranInput);
+                sizeQuantityWrapper.appendChild(newJumlahInput);
+
+                newProductGroup.appendChild(namePriceWrapper);
+                newProductGroup.appendChild(sizeQuantityWrapper);
+                document.getElementById("sizeStockContainer").appendChild(newProductGroup);
+            });
+
+            // Fungsi format harga menjadi mata uang Indonesia
+            function formatRupiah(angka) {
+                // Menghapus karakter non-digit
+                const num = angka.replace(/[^0-9]/g, '');
+
+                // Memformat menjadi ribuan dengan titik
+                if (num === "") return ""; // Jika tidak ada angka, kembalikan string kosong
+
+                const formatted = num.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+                console.log(formatted); // Debugging: lihat hasil format
+                return formatted;
+            }
+
+            // Fungsi untuk memformat angka ke format mata uang Indonesia
+            function formatCurrency(input) {
+                let value = input.value.replace(/[^,\d]/g, '').toString();
+                if (value) {
+                    input.value = parseInt(value, 10).toLocaleString('id-ID');
+                }
+            }
+            document.getElementById('harga').addEventListener('input', function () {
+                formatCurrency(this);
+            });
+
+
+
+            // Fungsi untuk menghapus produk terakhir yang ditambahkan
+            document.getElementById("deleteAddProduk").addEventListener("click", function () {
+                const container = document.getElementById("sizeStockContainer");
+                const productGroups = container.getElementsByClassName("product-group");
+
+                if (productGroups.length > 0) {
+                    // Hapus produk terakhir
+                    container.removeChild(productGroups[productGroups.length - 1]);
+                } else {
+                    alert("Tidak ada produk untuk dihapus.");
+                }
+            });
+
+            // Fungsi untuk mereset semua input
+            document.getElementById("resetInput").addEventListener("click", function () {
+                const inputs = document.querySelectorAll(".product-group2"); // Ambil semua input dengan kelas product-group
+                inputs.forEach(input => {
+                    input.value = ""; // Kosongkan nilai input
+                });
+            });
+
+
+
+
+        document.getElementById("printStruk").addEventListener("click", function () {
+                const strukContent = document.getElementById("strukContent");
+                strukContent.innerHTML = ""; // Hapus konten sebelumnya
+
+                // Cek apakah semua input sudah diisi
+                const namaProdukInputs = document.getElementsByName("nama_produk[]");
+                const hargaInputs = document.getElementsByName("harga[]");
+                const ukuranInputs = document.getElementsByName("ukuran[]");
+                const jumlahInputs = document.getElementsByName("jumlah[]");
+
+                for (let i = 0; i < namaProdukInputs.length; i++) {
+                    const namaProduk = namaProdukInputs[i].value;
+                    const harga = hargaInputs[i].value;
+                    const ukuran = ukuranInputs[i].value;
+                    const jumlah = jumlahInputs[i].value;
+
+                    // Periksa apakah ada input yang kosong
+                    if (!namaProduk || !harga || !ukuran || !jumlah) {
+                        alert("Silakan isi semua data produk terlebih dahulu sebelum mencetak struk.");
+                        return; // Hentikan eksekusi jika ada input yang kosong
+                    }
+                }
+
+                // Bagian informasi toko
+                let strukHTML = `
+        <div class="centered bold">HannyBaby<br>STORE</div>
+        <div class="centered">Jl. Bukit Khatulistiwa</div>
+        <div class="line"></div>
+        <table>
+            <thead>
+                <tr>
+                    <th class="jumlah">Jumlah</th>
+                    <th class="nama_baju">Nama Baju</th>
+                    <th class="harga">Harga</th>
+                </tr>
+            </thead>
+            <tbody id="product-rows">
+    `;
+
+                let totalHarga = 0;
+
+                for (let i = 0; i < namaProdukInputs.length; i++) {
+                    const namaProduk = namaProdukInputs[i].value;
+                    const harga = parseFloat(hargaInputs[i].value) || 0;
+                    const jumlah = parseInt(jumlahInputs[i].value) || 0;
+                    const ukuran = ukuranInputs[i].value;
+
+                    const subtotal = harga * jumlah;
+                    totalHarga += subtotal;
+
+                    // Tambahkan baris produk ke strukHTML
+                    strukHTML += `
+            <tr>
+                <td>${jumlah}</td>
+                <td>${namaProduk} (${ukuran})</td>
+                <td>Rp ${subtotal.toLocaleString()}</td>
+            </tr>
+        `;
+                }
+
+                // Selesaikan struktur tabel dan tambahkan total harga
+                strukHTML += `
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2">Total Harga</td>
+                <td id="totalHarga">Rp ${totalHarga.toLocaleString()}</td>
+            </tr>
+        </tfoot>
+    </table>
+    <div class="line"></div>
+    <p class="text-center">Terima Kasih sudah membeli produk kami.</p>
+    `;
+
+                strukContent.innerHTML = strukHTML;
+                document.getElementById("strukContainer").style.display = "block";
+
+                // Tunggu sejenak agar struk tampil sebelum mencetak
+                setTimeout(() => {
+                    window.print();
+                }, 100); // Delay 100 ms untuk memastikan elemen sudah ditampilkan
+            });
+
+
+
     </script>
+
+
 </body>
 </html>
