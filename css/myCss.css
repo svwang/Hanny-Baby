@@ -258,11 +258,105 @@ tr:hover {
     text-align: right;
 }
 
+.left {
+    text-align: left;
+}
+
 .bold {
     font-weight: bold;
 }
 
 .line {
-    border-top: 1px dashed #000;
+    border-top: 2px dashed #686868;
     margin: 10px 0;
+}
+
+.input-styles {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    color: #FFF;
+    border-radius: 3px;
+    border-bottom: 1px solid #ccc;
+    background-color: #395ed6;
+    font-size: 16px;
+    outline: none;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    -o-border-radius: 3px;
+}
+
+.input-styles::placeholder {
+    color: white;
+}
+
+.input-styles:focus {
+    background-color: #fff;
+    outline: 1px solid var(--primary);
+    color: #000;
+}
+
+.swal-cancel-button {
+    order: 1;
+    margin-right: 20px;
+}
+
+.swal-confirm-button {
+    order: 3;
+    margin-left: auto;
+    background-color: #395ed6;
+}
+
+.thead-bottom-line {
+    border-bottom: 2px solid black;
+    /* Ganti dengan warna dan ketebalan sesuai kebutuhan */
+}
+
+.thead-bottom-line th {
+    padding: 10px;
+    /* Tambahkan padding jika diperlukan */
+}
+
+.tfoot-bottom-line {
+    border-top: 2px solid black;
+    /* Ganti dengan warna dan ketebalan sesuai kebutuhan */
+}
+
+.tbody-styles td {
+    padding: 10px;
+}
+
+
+#loadingOverlay {
+    position: fixed;
+    /* Membuat overlay tetap di posisi tetap */
+    top: 0;
+    /* Mengatur posisi atas ke 0 */
+    left: 0;
+    /* Mengatur posisi kiri ke 0 */
+    width: 100%;
+    /* Lebar 100% dari viewport */
+    height: 100%;
+    /* Tinggi 100% dari viewport */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Latar belakang gelap dengan transparansi */
+    display: flex;
+    /* Menggunakan flexbox untuk sentralisasi */
+    justify-content: center;
+    /* Menyelaraskan konten secara horizontal */
+    align-items: center;
+    /* Menyelaraskan konten secara vertikal */
+    z-index: 9999;
+    /* Mengatur z-index agar berada di atas konten lain */
+}
+
+.spinner-border {
+    color: orange;
+    /* Mengatur warna spinner menjadi oranye */
+    width: 3rem;
+    /* Mengatur lebar spinner */
+    height: 3rem;
+    /* Mengatur tinggi spinner */
 }
