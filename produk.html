@@ -12,11 +12,58 @@
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
+        
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <link href="css/myCSS.css" rel="stylesheet">
     <style>
+        /* Container styling */
+#ukuranContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Mengatur jarak antar card */
+    gap: 1;
+}
+
+.ukuran-card {
+        width: calc(340px - 0.5rem); /* Membuat card menjadi dua kolom */
+        max-width: none; /* Menyeting max-width agar sesuai dengan lebar */
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin: 5px;
+        transition: transform 0.2s ease;
+    }
+
+.ukuran-card:hover {
+    transform: translateY(-5px);
+}
+
+.ukuran-card-header {
+    background-color: #4e73df;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+}
+
+.ukuran-card-header h6 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.ukuran-card-body {
+    padding: 10px;
+}
+
+.ukuran-card-body p {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+}
+
 
         .loading-spinner {
             border: 8px solid #f3f3f3; /* Light grey */
@@ -138,6 +185,8 @@
             font-size: 12px;
             cursor: pointer;
         }
+
+
     </style>
 
     <!-- my js -->
@@ -207,7 +256,7 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="rekap.html">
+                <a class="nav-link" href="Rekap.html">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Rekap</span></a>
             </li>
@@ -299,6 +348,29 @@
                     <button class="btn btn-success mb-2" type="button" data-toggle="modal" data-target="#addProduct">
                         <i class="fas fa-plus"></i> Add Product
                     </button>
+<!--                     
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Tutorials
+                                <span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                <li><a tabindex="-1" href="#">HTML</a></li>
+                                <li><a tabindex="-1" href="#">CSS</a></li>
+                                <li class="dropdown-submenu">
+                                    <a class="test" tabindex="-1" href="#">New dropdown <span class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a tabindex="-1" href="#">2nd level dropdown</a></li>
+                                        <li><a tabindex="-1" href="#">2nd level dropdown</a></li>
+                                        <li class="dropdown-submenu">
+                                            <a class="test" href="#">Another dropdown <span class="caret"></span></a>
+                                            <ul class="dropdown-menu">
+                                                <li><a href="#">3rd level dropdown</a></li>
+                                                <li><a href="#">3rd level dropdown</a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div> -->
                     
                     <!-- Content Row -->
                     <div class="row">
@@ -406,15 +478,21 @@
                         <button type="button" class="btn-close fa-solid fa-xmark fa-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         <div class="d-flex justify-content-center container-imgProduk w-100">
                             <img src="img/undraw_posting_photo.svg" alt="gambar baju" width="50%" id="imgProduk">
+                            
                         </div>
                         <div class="deskripsiProduk">
                             <div class="ct-produkName">
-                                <h2 id="namaProduk" class="mt-5">Nama produk</h2>
+                                <h2 id="namaProduk" class="mt-5"></h2>
                             </div>
-                            <h6 id="hargaJual">harga jual</h6>
-                            <h6 id="stok">stok</h6>
-                            <h6 id="ukuran">ukuran</h6>
-                            <h6 id="hargadibeli">harga beli</h6>
+                            <!-- Daftar ukuran akan ditambahkan di sini -->
+                            <h6 id="hargaJual"></h6>
+                            <h6 id="stok"></h6>
+                            <h6 id="ukuran"></h6>
+                        
+                        
+                            <div id="ukuranContainer">
+                        
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -434,9 +512,6 @@
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
-
-    <!-- Page level plugins -->
-    <script src="vendor/chart.js/Chart.min.js"></script>
 
     <!-- Library tambahan -->
 
@@ -459,6 +534,15 @@
 
 
 
+    <script>
+        $(document).ready(function () {
+            $('.dropdown-submenu a.test').on("click", function (e) {
+                $(this).next('ul').toggle();
+                e.stopPropagation();
+                e.preventDefault();
+            });
+        });
+    </script>
     
     <script>
         
@@ -517,46 +601,100 @@
                 }
             }
 
+    $('#staticBackdrop').on('show.bs.modal', function (event) {
+            console.log("Modal akan ditampilkan"); // Log untuk melihat apakah event berjalan
+            const button = $(event.relatedTarget); // Tombol yang membuka modal
+            const productId = button.data('id'); // Ambil id produk dari data attribute tombol
+            const namaProduk = button.data('nama-produk'); // Ambil nama produk
+            const hargaDibeli = button.data('harga-beli'); // Ambil harga beli
+            const gambarUrl = button.data('image-url'); // Ambil URL gambar
+
+            // Set nama produk, harga beli, dan gambar di modal
+            const namaProdukElement = document.getElementById("namaProduk");
+            const hargadibeliElement = document.getElementById("hargadibeli");
+            const imgProdukElement = document.getElementById("imgProduk");
+
+            console.log(namaProdukElement,  imgProdukElement); // Log untuk melihat elemen
+
+            if (namaProdukElement && imgProdukElement) {
+                // Update elemen dengan data yang diterima
+                namaProdukElement.innerText = namaProduk;
+                imgProdukElement.src = gambarUrl;
+
+                // Panggil fungsi untuk mendapatkan data ukuran produk
+                getProductSizeData(productId, hargaDibeli);
+            } else {
+                console.error("Element modal tidak ditemukan.");
+            }
+        });
+
+
         // Fungsi untuk mendapatkan data ukuran produk
-        async function getProductSizeData(productId) {
+        async function getProductSizeData(productId, hargaDibeli) {
             const ukuranRef = db.collection("produk").doc(productId).collection("ukuran");
 
             try {
                 const querySnapshot = await ukuranRef.get();
+                const ukuranContainer = document.getElementById("ukuranContainer"); // Kontainer untuk data ukuran
+                ukuranContainer.innerHTML = ''; // Bersihkan konten ukuran sebelumnya
+
                 querySnapshot.forEach((doc) => {
                     const ukuranData = doc.data();
                     const stok = ukuranData.stok;
                     const hargaJual = ukuranData['harga jual'];
                     const ukuran = ukuranData.ukuran;
 
-                    // Update elemen modal dengan data ukuran
-                    document.getElementById("stok").innerText = `Stok: ${stok}`;
-                    document.getElementById("hargaJual").innerText = `Harga Jual: Rp ${hargaJual}`;
-                    document.getElementById("ukuran").innerText = `Ukuran: ${ukuran}`;
+                    // Buat elemen HTML untuk setiap ukuran
+                    const ukuranElement = `
+            <div class="ukuran-card">
+                <div class="ukuran-card-header">
+                    <h6>Ukuran: ${ukuran}</h6>
+                </div>
+                <div class="ukuran-card-body">
+                    <p><strong>Stok:</strong> ${stok} 
+                        <button class="btn btn-warning btn-sm" onclick="editStok('${productId}', '${ukuran}', ${stok}, '${hargaDibeli}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </p>
+                    <p><strong>Harga Beli:</strong> Rp ${hargaDibeli.toLocaleString()}</p>
+                    <p><strong>Harga Jual:</strong> Rp ${hargaJual.toLocaleString()}</p>
+                </div>
+            </div>`;
+
+                    // Masukkan elemen ukuran ke dalam container ukuran
+                    ukuranContainer.innerHTML += ukuranElement;
                 });
             } catch (error) {
                 console.error("Error mengambil data ukuran: ", error);
             }
         }
 
-        $('#staticBackdrop').on('show.bs.modal', function (event) {
-                const button = $(event.relatedTarget); // Tombol yang membuka modal
-                const productId = button.data('id'); // Ambil id produk dari data attribute tombol
-                const namaProduk = button.data('nama-produk'); // Ambil nama produk
-                const hargaDibeli = button.data('harga-beli'); //
-                const gambarUrl = button.data('image-url'); // Ambil URL gambar
 
-                // Set nama produk dan gambar di modal
-                document.getElementById("namaProduk").innerText = namaProduk;
-                document.getElementById("hargadibeli").innerText = hargaDibeli;
-                document.getElementById("imgProduk").src = gambarUrl;
+    // Panggil fungsi getData untuk menampilkan produk saat halaman dimuat
+    window.onload = getData;
 
-                // Panggil fungsi untuk mendapatkan data ukuran produk
-                getProductSizeData(productId);
-            });
+    function editStok(productId, ukuran, currentStok, hargaDibeli) {
+            const newStok = prompt("Masukkan jumlah stok baru:", currentStok);
+            if (newStok !== null) {
+                // Membuat nama dokumen sesuai format "ukuran + ukuran"
+                const ukuranDocId = `ukuran ${ukuran}`; // Sesuaikan dengan format yang diinginkan
+                const ukuranRef = db.collection("produk").doc(productId).collection("ukuran").doc(ukuranDocId); // Menggunakan ukuranDocId yang baru
 
-        // Panggil fungsi getData untuk menampilkan produk saat halaman dimuat
-        window.onload = getData;
+                ukuranRef.update({
+                    stok: parseInt(newStok) // Perbarui stok dengan nilai baru
+                })
+                    .then(() => {
+                        alert("Stok berhasil diperbarui!");
+                        getProductSizeData(productId,hargaDibeli); // Panggil kembali untuk memperbarui tampilan
+                    })
+                    .catch((error) => {
+                        console.error("Error memperbarui stok: ", error);
+                        alert("Gagal memperbarui stok.");
+                    });
+            }
+        }
+
+
 
 
 
@@ -776,13 +914,7 @@
                 }
             });
 
-
     </script>
-
-
-
-
-    
 </body>
 
 </html>
