@@ -145,6 +145,38 @@
             font-size: 12px;
             cursor: pointer;
         }
+        /* Style untuk tabel */
+table {
+    width: 100%;
+    border-collapse: collapse; /* Menghilangkan celah antara sel */
+    margin: 20px 0; /* Margin atas dan bawah */
+}
+
+/* Style untuk sel tabel */
+th, td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ddd; /* Tambahkan border pada sel */
+}
+
+/* Style untuk kepala tabel */
+th {
+    background-color: #f2f2f2; /* Warna latar belakang kepala tabel */
+}
+
+/* Responsif: Buat tabel scrollable pada perangkat kecil */
+@media screen and (max-width: 600px) {
+    table {
+        display: block;
+        overflow-x: auto; /* Mengaktifkan scroll horizontal */
+        white-space: nowrap; /* Mencegah pemecahan kata */
+    }
+    
+    th, td {
+        white-space: nowrap; /* Mencegah pemecahan kata di dalam sel */
+    }
+}
+
     </style>
 
     <!-- my js -->
@@ -469,7 +501,7 @@
 
                 // Buat tabel berdasarkan data yang sudah difilter
                 let tabelHTML = `
-                    <table border="1" cellpadding="8" cellspacing="0">
+                    <table border="1" cellpadding="8" cellspacing="0" class="responsive-table">
                         <thead>
                             <tr>
                                 <th>Hari</th>
