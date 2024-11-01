@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Login</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"
+        type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <style>
+        #loadingOverlay {
+    position: fixed;
+    /* Membuat overlay tetap di posisi tetap */
+    top: 0;
+    /* Mengatur posisi atas ke 0 */
+    left: 0;
+    /* Mengatur posisi kiri ke 0 */
+    width: 100%;
+    /* Lebar 100% dari viewport */
+    height: 100%;
+    /* Tinggi 100% dari viewport */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Latar belakang gelap dengan transparansi */
+    display: flex;
+    /* Menggunakan flexbox untuk sentralisasi */
+    justify-content: center;
+    /* Menyelaraskan konten secara horizontal */
+    align-items: center;
+    /* Menyelaraskan konten secara vertikal */
+    z-index: 9999;
+    /* Mengatur z-index agar berada di atas konten lain */
+}
+
+.spinner-border {
+    color: orange;
+    /* Mengatur warna spinner menjadi oranye */
+    width: 3rem;
+    /* Mengatur lebar spinner */
+    height: 3rem;
+    /* Mengatur tinggi spinner */
+}
+    </style>
+
+</head>
+
+<body class="bg-gradient-primary">
+    <div id="loadingOverlay" style="display:none;">
+        <div class="spinner-border" id="loadingSpinner" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- Outer Row -->
+        <div class="row justify-content-center">
+    
+            <!-- <form class="user" id="data-form">
+                <div class="form-group">
+                    <input type="email" class="form-control form-control-user" id="email_signup" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control form-control-user" id="password_signup" placeholder="Password"
+                        required>
+                </div>
+                <input type="submit" value="Tambah Data" id="signup-button" class="btn btn-primary btn-user btn-block" />
+            </form> -->
+
+
+
+            <div class="col-xl-10 col-lg-6 col-md-9">
+
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <!-- Nested Row within Card Body -->
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="p-5">
+                                    <div class="text-center">
+                                        <h1 class="h4 text-gray-900 mb-4">Login dulu!</h1>
+                                        <p>Login bertujuan agar data sistem kita aman.</p>
+                                    </div>
+                                    <form class="user" class="sign-in-form">
+                                        <div class="form-group">
+                                            <input type="email" class="form-control form-control-user" id="email" aria-describedby="emailHelp"
+                                                placeholder="Enter Email Address..." required>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="password" class="form-control form-control-user" id="password" placeholder="Password"
+                                                required>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox small">
+                                                <input type="checkbox" class="custom-control-input" id="rememberMe">
+                                                <label class="custom-control-label" for="rememberMe">Remember Me</label>
+                                            </div>
+                                        </div>
+                                        
+                                        <input type="submit" value="Login" id="signin-button" class="btn btn-primary btn-user btn-block" />
+                                        <hr>                                       
+                                    </form>                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+
+    <!-- FIREBASE WAJIB -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    
+    <!-- FIREBASE PILIHAN -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-auth.js";
+        import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-KoYR9MpOTnnWsaP3rjnvbzsFEWsuZ2Y",
+            authDomain: "toko-baju-d06b8.firebaseapp.com",
+            projectId: "toko-baju-d06b8",
+            storageBucket: "toko-baju-d06b8.appspot.com",
+            messagingSenderId: "1075045058309",
+            appId: "1:1075045058309:web:e178b52dbd0374cf17996c",
+            measurementId: "G-1K6SBT6LRJ"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app); // Initialize Database
+
+        // Load email and password from localStorage
+            window.onload = function () {
+                if (localStorage.getItem("email")) {
+                    document.getElementById("email").value = localStorage.getItem("email");
+                }
+                if (localStorage.getItem("password")) {
+                    document.getElementById("password").value = localStorage.getItem("password");
+                }
+            };
+
+       // Handle data addition
+//        document.getElementById("data-form").addEventListener("submit", (e) => {
+//            e.preventDefault();
+//
+//            const emailSignup = document.getElementById("email_signup").value;
+//            const passwordSignup = document.getElementById("password_signup").value;
+//
+//             
+//            createUserWithEmailAndPassword(auth, emailSignup, passwordSignup)
+//                .then((userCredential) => {
+//                    const user = userCredential.user;
+//
+//                     
+//                    set(ref(database, "users/" + user.uid), {
+//                        email: emailSignup
+//                    })
+//                        .then(() => {
+//                            alert("Data telah berhasil ditambahkan!");
+//                             
+//                            document.getElementById("data-form").reset();
+//                        })
+//                        .catch((error) => {
+//                            alert("Gagal menyimpan data: " + error.message);
+//                        });
+//                })
+//                .catch((error) => {
+//                    alert("Gagal menambahkan pengguna: " + error.message);
+//                });
+//        });
+
+
+
+        // Handle login button click
+        document.getElementById("signin-button").addEventListener("click", (e) => {
+                e.preventDefault(); // Prevent default form submission
+
+                const emailSignin = document.getElementById("email").value;
+                const passwordSignin = document.getElementById("password").value;
+                const rememberMe = document.getElementById("rememberMe").checked;
+
+                // Tampilkan overlay dan spinner
+                const loadingOverlay = document.getElementById("loadingOverlay");
+                loadingOverlay.style.display = "flex"; // Tampilkan overlay
+
+                signInWithEmailAndPassword(auth, emailSignin, passwordSignin)
+                    .then((userCredential) => {
+                        // Signed in
+                        const user = userCredential.user;
+
+                        // Update last login date in the database
+                        const lgDate = new Date();
+                        update(ref(database, "users/" + user.uid), {
+                            last_login: lgDate.toString() // Convert date to string for storage
+                        })
+                            .then(() => {
+                                // Save email and password to localStorage if "Remember Me" is checked
+                                if (rememberMe) {
+                                    localStorage.setItem("email", emailSignin);
+                                    localStorage.setItem("password", passwordSignin);
+                                } else {
+                                    localStorage.removeItem("email");
+                                    localStorage.removeItem("password");
+                                }
+                                // Sembunyikan overlay dan spinner
+                                loadingOverlay.style.display = "none";
+                                location.href = "http://127.0.0.1:5500/index.html";
+                            })
+                            .catch((error) => {
+                                // Sembunyikan overlay jika terjadi error
+                                loadingOverlay.style.display = "none";
+                                alert("Error saving data: " + error);
+                            });
+                    })
+                    .catch((error) => {
+                        const errorMessage = error.message;
+                        // Sembunyikan overlay jika login gagal
+                        loadingOverlay.style.display = "none";
+                        alert("Login failed: " + errorMessage);
+                    });
+            });
+
+
+    </script>
+
+</body>
+
+</html>
