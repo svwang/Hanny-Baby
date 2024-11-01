@@ -214,7 +214,7 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="Rekap.html">
+                <a class="nav-link" href="rekap.html">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Rekap</span></a>
             </li>
@@ -299,17 +299,13 @@
                 <div class="container-fluid">
                     <!-- Page Heading -->
                     <div class="flex align-items-center justify-content-between mb-2">
-                        <h1 class="h3 mb-0 text-gray-800">Menu Rekap</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Daftar Produk</h1>
 
                     </div>
                     <!-- Button to open the modal -->
-                    <button class="btn btn-success m-2" type="button" data-toggle="modal" data-target="#rekapModal">
-                        <i class="fas fa-plus"></i> Rekap
+                    <button class="btn btn-success mb-2" type="button" data-toggle="modal" data-target="#addProduct">
+                        <i class="fas fa-plus"></i> Add Product
                     </button>
-
-                    <button id="btnDownloadExcel" class="btn btn-primary m-2" onclick="downloadExcel()">Download Excel</button>
-                    <button id="btnDownloadPDF" class="btn btn-danger m-2" onclick="downloadPDF()">Download PDF</button>
-
 
                     <!-- Content Row -->
                     <div class="row">
@@ -363,26 +359,74 @@
         </div>
     </div>
 
-    <!-- Modal untuk memilih rentang tanggal -->
-    <div class="modal fade" id="rekapModal" tabindex="-1" role="dialog" aria-labelledby="rekapModalLabel"
+    <!-- Modal Tambah Data Baju -->
+    <div class="modal fade" id="addProduct" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="rekapModalLabel">Pilih Rentang Tanggal</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
                 <div class="modal-body">
-                    <label for="startDate">Tanggal Mulai:</label>
-                    <input type="date" id="startDate" class="form-control mb-3">
-                    <label for="endDate">Tanggal Akhir:</label>
-                    <input type="date" id="endDate" class="form-control">
+                    <button class="close mb-4" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+
+                    <div class="form-container">
+                        <input type="text" placeholder="Nama produk">
+                        <input type="text" id="hargaDibeli" placeholder="Harga Dibeli">
+                        <input type="text" id="hargaJual" placeholder="Harga Jual">
+
+                        <div id="sizeStockContainer">
+                            <div class="size-stock-input d-flex">
+                                <input type="text" name="ukuran[]" class="ukuranbaju" id="ukuranbaju"
+                                    placeholder="Ukuran">
+                                <input type="number" name="stok[]" class="stokbaju" id="stokbaju" placeholder="Stok">
+                            </div>
+                        </div>
+
+                        <button type="button" id="addSizeStock" class="btn btn-secondary mt-2">Tambah Ukuran &
+                            Stok</button>
+
+
+                        <div class="form-container">
+                            <input type="file" id="file" style="display: none;">
+                            <label for="file" id="fileLabel" class="btn">Pilih Gambar</label>
+                            <span id="fileName">Belum ada file yang dipilih</span>
+                        </div>
+
+                        <div id="spinner" style="display: none;">
+                            <div class="loading-spinner"></div>
+                        </div>
+
+
+                        <button id="addProductButton">TAMBAH DATA</button>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary" onclick="filterTransaksiByDate()">Tampilkan Rekap</button>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="row col-12 col-lg-12">
+                        <button type="button" class="btn-close fa-solid fa-xmark fa-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                        <div class="d-flex justify-content-center container-imgProduk w-100">
+                            <img src="img/undraw_posting_photo.svg" alt="gambar baju" width="50%" id="imgProduk">
+                        </div>
+                        <div class="deskripsiProduk">
+                            <div class="ct-produkName">
+                                <h2 id="namaProduk" class="mt-5">Nama produk</h2>
+                            </div>
+                            <h6 id="hargaJual">harga jual</h6>
+                            <h6 id="stok">stok</h6>
+                            <h6 id="ukuran">ukuran</h6>
+                            <h6 id="hargadibeli">harga beli</h6>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -423,142 +467,350 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-qrcode/1.0/jquery.qrcode.min.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
-
-
-
 
 
 
     <script>
+
         // Inisialisasi Firestore
-        const db = firebase.firestore();
+            const db = firebase.firestore();
 
-        // Fungsi untuk mendapatkan data transaksi berdasarkan rentang tanggal
-        async function filterTransaksiByDate() {
-            const startDate = new Date(document.getElementById('startDate').value);
-            const endDate = new Date(document.getElementById('endDate').value);
-            endDate.setHours(23, 59, 59); // Set jam akhir di akhir hari untuk inklusi
+           // Fungsi untuk mendapatkan data transaksi
+            async function getDataTransaksi() {
+                const transaksiContainer = document.querySelector('.row'); // Target div.row untuk menampilkan transaksi
+                transaksiContainer.innerHTML = ''; // Bersihkan konten sebelumnya
 
-            const transaksiContainer = document.querySelector('.row');
-            transaksiContainer.innerHTML = ''; // Bersihkan konten sebelumnya
+                try {
+                    const querySnapshot = await db.collection("transaksi").get();
 
-            const transaksiMingguan = {
-                Senin: [], Selasa: [], Rabu: [], Kamis: [], Jumat: [], Sabtu: [], Minggu: []
-            };
+                    querySnapshot.forEach((doc) => {
+                        const transaksiData = doc.data(); // Dapatkan data transaksi
+                        const produkArray = transaksiData.produk; // Ambil array produk
 
-            try {
-                const querySnapshot = await db.collection("transaksi")
-                    .where("tanggalTransaksi", ">=", startDate)
-                    .where("tanggalTransaksi", "<=", endDate)
-                    .get();
+                        // Ambil tanggalTransaksi dan pastikan itu adalah tipe Firestore Timestamp
+                        let tanggalTransaksi;
+                        if (transaksiData.tanggalTransaksi && transaksiData.tanggalTransaksi.toDate) {
+                            // Jika tanggalTransaksi adalah Firestore Timestamp, konversi ke Date
+                            tanggalTransaksi = transaksiData.tanggalTransaksi.toDate();
+                        } else {
+                            // Jika sudah berupa Date, langsung gunakan
+                            tanggalTransaksi = new Date(transaksiData.tanggalTransaksi);
+                        }
 
-                querySnapshot.forEach((doc) => {
-                    const transaksiData = doc.data();
-                    const produkArray = transaksiData.produk;
-                    const tanggalTransaksi = transaksiData.tanggalTransaksi.toDate();
-                    const options = { weekday: 'long' };
-                    const hariTransaksi = tanggalTransaksi.toLocaleDateString('id-ID', options);
-
-                    if (transaksiMingguan[hariTransaksi]) {
-                        transaksiMingguan[hariTransaksi].push({ tanggalTransaksi, produkArray });
-                    }
-                });
-
-                // Buat tabel berdasarkan data yang sudah difilter
-                let tabelHTML = `
-                    <table border="1" cellpadding="8" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>Hari</th>
-                                <th>Tanggal</th>
-                                <th>Keterangan Produk</th>
-                                <th>Harga Produk</th>
-                                <th>Jumlah</th>
-                                <th>Subtotal (Harga x Jumlah)</th>
-                            </tr>
-                        </thead>
-                        <tbody>`;
-
-                let totalPendapatanMingguan = 0;
-
-                Object.keys(transaksiMingguan).forEach((hari) => {
-                    let subtotalHarian = 0;
-
-                    transaksiMingguan[hari].forEach((transaksi) => {
-                        const tanggalFormatted = transaksi.tanggalTransaksi.toLocaleDateString('id-ID', {
+                        // Format tanggalTransaksi ke dalam bentuk yang mudah dibaca
+                        const tanggalFormatted = tanggalTransaksi.toLocaleDateString('id-ID', {
                             year: 'numeric', month: 'long', day: 'numeric'
                         });
 
-                        transaksi.produkArray.forEach((produk) => {
-                            const subtotal = produk["harga jual"] * produk.quantity;
-                            subtotalHarian += subtotal;
-
-                            tabelHTML += `
-                                <tr>
-                                    <td>${hari}</td>
-                                    <td>${tanggalFormatted}</td>
-                                    <td>${produk["nama produk"]}</td>
-                                    <td>Rp${produk["harga jual"].toLocaleString()}</td>
-                                    <td>${produk.quantity}</td>
-                                    <td>Rp${subtotal.toLocaleString()}</td>
-                                </tr>`;
+                        // Buat elemen HTML untuk menampilkan data produk
+                        let produkList = '';
+                        produkArray.forEach((produk) => {
+                            produkList += `
+                    <li>
+                        <strong>Nama Produk:</strong> ${produk["nama produk"]}<br>
+                        <strong>Harga Jual:</strong> Rp${produk["harga jual"].toLocaleString()}<br>
+                        <strong>Quantity:</strong> ${produk.quantity}<br>
+                        <strong>Ukuran:</strong> ${produk.ukuran}
+                    </li><br>`;
                         });
+
+                        // Buat elemen HTML untuk menampilkan data transaksi
+                        const transaksiElement = `
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Tanggal Transaksi</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">${tanggalFormatted}</div>
+                                    <div class="mt-3">
+                                        <h6>Produk:</h6>
+                                        <ul>${produkList}</ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+                        // Masukkan elemen transaksi ke dalam container
+                        transaksiContainer.innerHTML += transaksiElement;
                     });
+                } catch (error) {
+                    console.error("Error mengambil data transaksi: ", error);
+                }
+            }
 
-                    tabelHTML += `
-                        <tr>
-                            <td colspan="5" align="right"><strong>Subtotal ${hari}</strong></td>
-                            <td><strong>Rp${subtotalHarian.toLocaleString()}</strong></td>
-                        </tr>`;
+            // Panggil fungsi getDataTransaksi untuk menampilkan transaksi saat halaman dimuat
+            window.onload = getDataTransaksi;
 
-                    totalPendapatanMingguan += subtotalHarian;
+
+
+
+        // Fungsi untuk mendapatkan data ukuran produk
+        async function getProductSizeData(productId) {
+            const ukuranRef = db.collection("produk").doc(productId).collection("ukuran");
+
+            try {
+                const querySnapshot = await ukuranRef.get();
+                querySnapshot.forEach((doc) => {
+                    const ukuranData = doc.data();
+                    const stok = ukuranData.stok;
+                    const hargaJual = ukuranData['harga jual'];
+                    const ukuran = ukuranData.ukuran;
+
+                    // Update elemen modal dengan data ukuran
+                    document.getElementById("stok").innerText = `Stok: ${stok}`;
+                    document.getElementById("hargaJual").innerText = `Harga Jual: Rp ${hargaJual}`;
+                    document.getElementById("ukuran").innerText = `Ukuran: ${ukuran}`;
                 });
-
-                tabelHTML += `
-                    <tr>
-                        <td colspan="5" align="right"><strong>Total Pendapatan</strong></td>
-                        <td><strong>Rp${totalPendapatanMingguan.toLocaleString()}</strong></td>
-                    </tr>
-                    </tbody>
-                    </table>`;
-
-                transaksiContainer.innerHTML = tabelHTML;
-
             } catch (error) {
-                console.error("Error mengambil data transaksi: ", error);
+                console.error("Error mengambil data ukuran: ", error);
             }
         }
 
-        function downloadExcel() {
-                const table = document.querySelector('table');
-                const wb = XLSX.utils.table_to_book(table, { sheet: "Rekap Transaksi" });
-                XLSX.writeFile(wb, `Rekap_Transaksi_${new Date().toLocaleDateString()}.xlsx`);
+        $('#staticBackdrop').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget); // Tombol yang membuka modal
+            const productId = button.data('id'); // Ambil id produk dari data attribute tombol
+            const namaProduk = button.data('nama-produk'); // Ambil nama produk
+            const hargaDibeli = button.data('harga-beli'); //
+            const gambarUrl = button.data('image-url'); // Ambil URL gambar
+
+            // Set nama produk dan gambar di modal
+            document.getElementById("namaProduk").innerText = namaProduk;
+            document.getElementById("hargadibeli").innerText = hargaDibeli;
+            document.getElementById("imgProduk").src = gambarUrl;
+
+            // Panggil fungsi untuk mendapatkan data ukuran produk
+            getProductSizeData(productId);
+        });
+
+       
+
+
+
+        // Fungsi untuk memformat angka ke format mata uang Indonesia
+        function formatCurrency(input) {
+            let value = input.value.replace(/[^,\d]/g, '').toString();
+            if (value) {
+                input.value = parseInt(value, 10).toLocaleString('id-ID');
             }
+        }
+        // Event listener untuk input harga
+        document.getElementById('hargaDibeli').addEventListener('input', function () {
+            formatCurrency(this);
+        });
+        document.getElementById('hargaJual').addEventListener('input', function () {
+            formatCurrency(this);
+        });
 
-            function downloadPDF() {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
 
-                doc.text("Rekap Transaksi", 10, 10); // Judul PDF
+        let counter = 1; // Counter untuk memberikan ID unik
 
-                const table = document.querySelector('table');
-                const rows = Array.from(table.querySelectorAll("tr")).map(tr => {
-                    return Array.from(tr.querySelectorAll("th, td")).map(td => td.innerText);
+        document.getElementById('addSizeStock').addEventListener('click', function () {
+            // Container untuk menambahkan ukuran dan stok
+            const container = document.getElementById('sizeStockContainer');
+
+            // Elemen baru untuk ukuran dan stok dengan ID unik
+            const newSizeStock = document.createElement('div');
+            newSizeStock.classList.add('size-stock-input', 'mt-2');
+            newSizeStock.innerHTML = `
+        <div class="size-stock-input d-flex">
+            <input type="text" name="ukuran[]" class="ukuranbaju" placeholder="Ukuran">
+            <input type="number" name="stok[]" class="stokbaju" placeholder="Stok">
+            
+        </div>
+        <button type="button" class="removeSizeStock">Hapus</button> <!-- Tambahkan tombol hapus -->
+    `;
+
+            // Tambahkan elemen baru ke container
+            container.appendChild(newSizeStock);
+
+            // Tambahkan event listener untuk tombol hapus
+            newSizeStock.querySelector('.removeSizeStock').addEventListener('click', function () {
+                container.removeChild(newSizeStock);
+            });
+            // Increment counter setelah menambahkan ukuran dan stok
+            counter++;
+        });
+
+        document.getElementById('file').addEventListener('change', function () {
+            const fileInput = document.getElementById('file');
+            const fileNameDisplay = document.getElementById('fileName');
+
+            // Ambil nama file pertama dari input (jika ada)
+            if (fileInput.files.length > 0) {
+                fileNameDisplay.textContent = fileInput.files[0].name;
+            } else {
+                fileNameDisplay.textContent = 'Belum ada file yang dipilih';
+            }
+        });
+
+        document.getElementById('addProductButton').addEventListener('click', async function () {
+            const spinner = document.getElementById('spinner');
+            spinner.style.display = 'block'; // Tampilkan spinner
+
+            try {
+                // Ambil elemen input
+                const namaProduk = document.querySelector("input[placeholder='Nama produk']").value;
+                const hargaDibeli = document.getElementById("hargaDibeli").value.replace(/\D/g, '');
+                const hargaJual = document.getElementById("hargaJual").value.replace(/\D/g, '');
+                const ukuranElems = document.querySelectorAll("input[name='ukuran[]']");
+                const stokElems = document.querySelectorAll("input[name='stok[]']");
+                const fileInput = document.getElementById('file');
+
+                // Validasi input file
+                if (!fileInput.files.length) {
+                    alert("Pilih gambar terlebih dahulu.");
+                    spinner.style.display = 'none'; // Sembunyikan spinner
+                    return;
+                }
+
+                // Array untuk ukuran dan stok
+                const ukuranStokArray = [];
+                ukuranElems.forEach((ukuranElem, index) => {
+                    ukuranStokArray.push({
+                        ukuran: ukuranElem.value,
+                        stok: stokElems[index].value
+                    });
                 });
 
-                doc.autoTable({
-                    head: [rows[0]], // Header tabel
-                    body: rows.slice(1), // Isi tabel
-                    startY: 20, // Margin atas
+                // Gambar QR Code untuk setiap ukuran dan simpan sebagai file terpisah
+                const qrCodeCanvasArray = [];
+                const qrCodeSize = 120;
+
+                for (const item of ukuranStokArray) {
+                    const qrData = `${namaProduk},${item.ukuran},${hargaJual}`;
+                    const qrCodeCanvas = document.createElement('canvas');
+                    qrCodeCanvas.width = qrCodeSize;
+                    qrCodeCanvas.height = qrCodeSize;
+
+                    const ctx = qrCodeCanvas.getContext('2d');
+                    await new Promise((resolve) => {
+                        const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=${qrCodeSize}x${qrCodeSize}`;
+                        const img = new Image();
+                        img.crossOrigin = "Anonymous";
+                        img.onload = () => {
+                            ctx.drawImage(img, 0, 0);
+                            resolve();
+                        };
+                        img.src = qrCodeUrl;
+                    });
+
+                    qrCodeCanvasArray.push({ canvas: qrCodeCanvas, ukuran: item.ukuran });
+                }
+
+                for (const item of qrCodeCanvasArray) {
+                    const canvas = item.canvas;
+                    const ukuran = item.ukuran;
+
+                    const finalCanvas = document.createElement('canvas');
+                    const finalWidth = 330;
+                    const finalHeight = 150;
+                    finalCanvas.width = finalWidth;
+                    finalCanvas.height = finalHeight;
+                    const finalCtx = finalCanvas.getContext('2d');
+
+                    finalCtx.fillStyle = "#fff";
+                    finalCtx.fillRect(0, 0, finalWidth, finalHeight);
+
+                    finalCtx.drawImage(canvas, 10, 15);
+
+                    // Fungsi untuk menggambar teks dengan pemecahan baris
+                    function drawMultilineText(ctx, text, x, y, maxWidth, lineHeight) {
+                        const words = text.split(' ');
+                        let line = '';
+
+                        for (let n = 0; n < words.length; n++) {
+                            const testLine = line + words[n] + ' ';
+                            const metrics = ctx.measureText(testLine);
+                            const testWidth = metrics.width;
+
+                            if (testWidth > maxWidth && n > 0) {
+                                ctx.fillText(line, x, y);
+                                line = words[n] + ' ';
+                                y += lineHeight; // Geser ke bawah untuk baris berikutnya
+                            } else {
+                                line = testLine;
+                            }
+                        }
+                        ctx.fillText(line, x, y); // Gambar baris terakhir
+                    }
+
+                    // Menggambar informasi produk di sebelah kanan
+                    finalCtx.fillStyle = "#000"; // Warna teks
+                    const textOffsetX = 150;
+                    const maxWidth = finalWidth - textOffsetX - 20; // Batasi lebar teks
+                    const lineHeight = 30; // Tinggi baris
+
+                    // Set font untuk nama produk dan gambar dengan memecah baris
+                    finalCtx.font = "20px Arial"; // Ukuran font untuk nama produk
+                    drawMultilineText(finalCtx, namaProduk, textOffsetX, 30, maxWidth, lineHeight);
+
+                    // Kembalikan ukuran font untuk ukuran dan harga jual
+                    finalCtx.font = "25px Arial"; // Ukuran font untuk ukuran dan harga
+                    finalCtx.fillText(`${ukuranElems[0].value}`, 280, 130); // Menggambar ukuran
+                    finalCtx.fillText(`Rp ${hargaJual}`, textOffsetX, 130); // Menggambar harga jual
+
+                    const imageDataUrl = finalCanvas.toDataURL("image/jpeg");
+
+                    const link = document.createElement('a');
+                    link.href = imageDataUrl;
+                    link.download = `${namaProduk}_${ukuran}.jpg`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+
+                // Upload gambar ke Firebase Storage
+                const file = fileInput.files[0];
+                let imageName = namaProduk.toLowerCase();
+
+                const storageRef = storage.ref(`gambar_baju/${imageName}.jpg`);
+                await storageRef.put(file);
+                const imageUrl = await storageRef.getDownloadURL();
+
+                // Simpan data ke Firestore
+                const produkRef = db.collection('produk').doc(namaProduk);
+                await produkRef.set({
+                    "nama produk": namaProduk,
+                    "harga dibeli": parseInt(hargaDibeli),
+                    imageUrl: imageUrl
                 });
 
-                doc.save(`Rekap_Transaksi_${new Date().toLocaleDateString()}.pdf`);
+                const ukuranStokRef = produkRef.collection('ukuran');
+                for (const item of ukuranStokArray) {
+                    const ukuranDocName = 'ukuran ' + item.ukuran;
+                    await ukuranStokRef.doc(ukuranDocName).set({
+                        ukuran: item.ukuran,
+                        stok: parseInt(item.stok),
+                        "harga jual": parseInt(hargaJual)
+                    });
+                }
+
+                alert("Data produk berhasil ditambahkan!");
+                // Clear form inputs setelah submit
+                document.querySelector("input[placeholder='Nama produk']").value = '';
+                document.getElementById("hargaDibeli").value = '';
+                document.getElementById("hargaJual").value = '';
+                fileInput.value = '';
+                document.getElementById('fileName').textContent = 'Belum ada file yang dipilih';
+                document.getElementById("sizeStockContainer").innerHTML = ''; // Bersihkan input ukuran & stok
+
+            } catch (error) {
+                console.error("Error menambahkan data produk: ", error);
+                alert("Gagal menambahkan data produk.");
+            } finally {
+                spinner.style.display = 'none'; // Sembunyikan spinner di akhir
             }
+        });
+
 
     </script>
+
+
+
+
 
 </body>
 
