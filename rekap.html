@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,170 +12,118 @@
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
+    <!-- SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
-    <link href="css/myCSS.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/myCss.css">
+
     <style>
-        .loading-spinner {
-            border: 8px solid #f3f3f3;
-            /* Light grey */
-            border-top: 8px solid #d69a39;
-            /* Blue */
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-            /* Pastikan spinner terlihat di atas elemen lain */
+        /* Gaya umum untuk struk */
+    .struk-container {
+        width: 100%;
+        max-width: 300px; /* Sesuaikan lebar struk */
+        margin: auto;
+        padding: 10px;
+        font-family: Arial, sans-serif;
+        font-size: 12px; /* Sesuaikan ukuran font */
+        color: #000;
+    }
+
+    /* Gaya untuk elemen yang akan dicetak */
+    @media print {
+        body {
+            margin: 0;
+            padding: 0;
+            background: #fff; /* Pastikan latar belakang putih saat dicetak */
         }
 
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+        #strukContainer {
+            display: block; /* Pastikan struk ditampilkan */
         }
 
-        #scanner {
-            width: 100%;
-            /* Agar video memenuhi kontainer */
-            height: auto;
-            /* Menjaga rasio aspek */
+        .centered {
+            text-align: center; /* Pusatkan teks */
         }
 
-        #result {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 20px;
-            font-weight: bold;
+        .line {
+            border-top: 1px solid #000; /* Garis horizontal */
+            margin: 10px 0; /* Jarak atas dan bawah */
         }
 
-        .form-container {
-
-            padding: 20px;
-            border-radius: 8px;
-            width: 100%;
+        table {
+            width: 100%; /* Lebar tabel penuh */
+            border-collapse: collapse; /* Gabungkan batas tabel */
         }
 
-        .form-container input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: none;
-            border-bottom: 1px solid #ccc;
-            font-size: 16px;
-            outline: none;
+        th, td {
+            text-align: left; /* Rata kiri untuk teks dalam tabel */
+            padding: 5px; /* Jarak dalam sel */
         }
 
-        .ukuranbaju {
-            width: 45%;
-            padding: 10px;
-            margin: 10px 0;
-            border: none;
-            border-bottom: 1px solid #ccc;
-            font-size: 16px;
-            outline: none;
+        th {
+            background-color: #f0f0f0; /* Warna latar belakang untuk header tabel */
         }
 
-        .stokbaju {
-            width: 45%;
-            padding: 10px;
-            margin: 10px 0;
-            border: none;
-            outline: none;
-            border-bottom: 1px solid #ccc;
-            font-size: 16px;
+        tfoot td {
+            font-weight: bold; /* Cetak tebal untuk total harga */
         }
 
-        .form-container input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: none;
-            border-bottom: 1px solid #ccc;
-            font-size: 16px;
+        .text-center {
+            text-align: center; /* Pusatkan teks untuk bagian terima kasih */
+            margin-top: 10px; /* Jarak atas */
         }
 
-        .form-container input[type="file"] {
-            display: none;
+        /* Sembunyikan elemen lain saat mencetak */
+        * {
+            visibility: hidden; /* Sembunyikan semua elemen secara default */
         }
 
-        .form-container label {
-            display: block;
-            width: 60%;
-            padding: 10px;
-            margin: 10px 0;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            text-align: center;
-            cursor: pointer;
-            font-size: 16px;
-            color: #d69a39;
+        #strukContainer,
+        #strukContainer * {
+            visibility: visible; /* Tampilkan struk dan semua elemennya */
         }
 
-        .form-container button {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            background-color: #d69a39;
-            border: none;
-            border-radius: 4px;
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
+        /* Pastikan struk berada di posisi yang benar saat dicetak */
+        #strukContainer {
+            position: absolute;
+            left: 0;
+            top: 0;
         }
+    }
 
-        .form-container #addSizeStock {
-            width: 60%;
-            padding: 10px;
-            margin: 10px 0;
-            background-color: #855c19;
-            border: none;
-            border-radius: 4px;
-            color: #fff;
-            font-size: 12px;
-            cursor: pointer;
-        }
     </style>
 
     <!-- my js -->
-    <script src="js/myJs.js"></script>
+     <script src="js/myJs.js"></script>
 </head>
-
 <body>
     <!-- Page Wrapper -->
     <div id="wrapper">
-
+    
         <!-- Sidebar -->
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
+    
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-
+    
                 <div class="sidebar-brand-text mx-3">Hanny <sup>BABY</sup></div>
             </a>
-
+    
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
-
+    
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
                 <a class="nav-link" href="index.html">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
-
+    
             <!-- Divider -->
             <hr class="sidebar-divider">
-
+    
             <!-- Heading -->
             <div class="sidebar-heading">
                 Interface
@@ -199,8 +146,8 @@
 
             <!-- Produk Menu -->
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseProduk"
-                    aria-expanded="true" aria-controls="collapseTwo">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseProduk" aria-expanded="true"
+                    aria-controls="collapseTwo">
                     <i class="fas fa-box"></i>
                     <span>Produk</span>
                 </a>
@@ -218,32 +165,34 @@
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Rekap</span></a>
             </li>
-
+    
             <!-- Divider -->
             <hr class="sidebar-divider">
-
+    
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block">
+    
             <!-- Sidebar Toggler (Sidebar) -->
             <div class="text-center d-none d-md-inline">
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>
             </div>
-
         </ul>
         <!-- End of Sidebar -->
-
+    
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
-
+    
             <!-- Main Content -->
             <div id="content">
-
+    
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
+    
                     <!-- Sidebar Toggle (Topbar) -->
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                         <i class="fa fa-bars"></i>
                     </button>
-
+    
                     <!-- Topbar Search -->
                     <!-- <form
                             class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
@@ -257,7 +206,7 @@
                                 </div>
                             </div>
                         </form> -->
-
+    
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
                         <!-- Nav Item - User Information -->
@@ -289,35 +238,86 @@
                                 </a>
                             </div>
                         </li>
-
+    
                     </ul>
-
+    
                 </nav>
                 <!-- End of Topbar -->
-
+    
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
+    
                     <!-- Page Heading -->
-                    <div class="flex align-items-center justify-content-between mb-2">
-                        <h1 class="h3 mb-0 text-gray-800">Daftar Produk</h1>
-
+                    <div class="flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Scan Barang</h1>
+                        <a id="startScan" class="d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#ModalInputmanual">
+                            <i class="fas fa-qrcode fa-sm text-white-50"></i> Input manual
+                        </a>
+                        
                     </div>
-                    <!-- Button to open the modal -->
-                    <button class="btn btn-success mb-2" type="button" data-toggle="modal" data-target="#addProduct">
-                        <i class="fas fa-plus"></i> Add Product
-                    </button>
-
                     <!-- Content Row -->
-                    <div class="row">
+                    
+                    <!-- Tabel untuk menampilkan hasil scan -->
+                    <table id="scanResultTable">
+                        <thead>
+                            <tr>
+                                <th>Nama Produk</th>
+                                <th>Ukuran</th>
+                                <th>Harga</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Baris hasil scan akan ditambahkan di sini -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2" class="text-end"><strong>Total Pembayaran:</strong></td>
+                                <td id="totalPayment">Rp 0</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-end">
+                                    <a href="scanning.html" class="btn btn-warning">Scan ulang</a>
+                                    <button class="btn_pembayaran btn btn-success">Pembayaran</button>
+                                </td>
+                               
+                            </tr>
+                        </tfoot>
+                        
+                    </table>
+                    
+                    
+
+                    <div class="receipt d-none">
+                        <div class="center bold">HannyBaby<br>STORE</div>
+                        <div class="center">Jl. Bukit khatulistiwa, Paccerakkang Kec. Biringkanaya, kota makassar, Sulawesi Selatan</div>
+                        <div class="line"></div>
+                        <div class="d-flex w-100 justify-content-between">
+                            <p id="tanggalTransaksi">27-01-2001</p>
+                            <p class="ms-auto" id="nama_akun">Sabir.</p>
+                        </div>
 
 
+    
+                        <div class="line"></div>
+                        <div><span id="namaproduk">Baju tidur motif dinasaurus</span> <span  id="ukuran">L</span> <span class="right" id="hargaBarang">52000</span></div>
+                        
+                        
+                        <div class="line"></div>
+                        <div id="barcode"></div>
+                        <div>Telepon : 0822 3934 2497</div>
+                        <div>E-mail: hannybabystore@gmail.com</div>
+                    </div>
+                    
+                    <video id="video" autoplay></video>
+                    <!-- Video Element to show Camera Feed -->
+                    <div class="d-flex justify-content-center">
+                        <div id="qr-reader" style="width: 600px"></div>
                     </div>
                 </div>
                 <!-- /.container-fluid -->
-
             </div>
             <!-- End of Main Content -->
-
+    
             <!-- Footer -->
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
@@ -327,18 +327,18 @@
                 </div>
             </footer>
             <!-- End of Footer -->
-
+    
         </div>
         <!-- End of Content Wrapper -->
-
+    
     </div>
     <!-- End of Page Wrapper -->
-
+    
     <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#content-wrapper">
+    <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
-
+    
     <!-- Logout Modal-->
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -359,100 +359,82 @@
         </div>
     </div>
 
-    <!-- Modal Tambah Data Baju -->
-    <div class="modal fade" id="addProduct" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <!-- Input Manual Modal-->
+    <div class="modal fade" id="ModalInputmanual" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-body">
-                    <button class="close mb-4" type="button" data-dismiss="modal" aria-label="Close">
+                <div class="modal-header">
+                    <p class="modal-title" id="exampleModalLabel">Perhatian! ini hanya digunakan pada saat produk belum terdaftar </p>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
-
+                </div>
+                <div class="modal-body">
                     <div class="form-container">
-                        <input type="text" placeholder="Nama produk">
-                        <input type="text" id="hargaDibeli" placeholder="Harga Dibeli">
-                        <input type="text" id="hargaJual" placeholder="Harga Jual">
-
+                        <input type="text" class="product-group2" id="namaBaju" name="nama_produk[]" placeholder="Nama Baju">
+                        <input type="text" class="product-group2" id="harga" name="harga[]" placeholder="Harga">
+                
                         <div id="sizeStockContainer">
                             <div class="size-stock-input d-flex">
-                                <input type="text" name="ukuran[]" class="ukuranbaju" id="ukuranbaju"
-                                    placeholder="Ukuran">
-                                <input type="number" name="stok[]" class="stokbaju" id="stokbaju" placeholder="Stok">
+                                <input type="text" name="ukuran[]" class="ukuranbaju product-group2" placeholder="Ukuran">
+                                <input type="number" name="jumlah[]" class="jumlahbaju product-group2" placeholder="Jumlah">
                             </div>
                         </div>
-
-                        <button type="button" id="addSizeStock" class="btn btn-secondary mt-2">Tambah Ukuran &
-                            Stok</button>
-
-
-                        <div class="form-container">
+                
+                        <div class="d-flex">
+                            <button type="button" id="addProduk" class="btn btn-secondary mt-2 mr-2">Tambah Produk</button>
+                            <button type="button" id="deleteAddProduk" class="btn btn-secondary mt-2">Hapus</button>
+                        </div>
+                
+                        <div class="form-container mt-3">
                             <input type="file" id="file" style="display: none;">
-                            <label for="file" id="fileLabel" class="btn">Pilih Gambar</label>
+                            <label for="file" id="fileLabel" class="btn">Foto Baju</label>
                             <span id="fileName">Belum ada file yang dipilih</span>
                         </div>
-
+                
+                        <div id="strukContainer" style="display: none;">
+                            <div id="strukContent"></div>
+                        </div>
+                
                         <div id="spinner" style="display: none;">
                             <div class="loading-spinner"></div>
                         </div>
-
-
-                        <button id="addProductButton">TAMBAH DATA</button>
                     </div>
                 </div>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- Data Modal -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div class="row col-12 col-lg-12">
-                        <button type="button" class="btn-close fa-solid fa-xmark fa-white" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                        <div class="d-flex justify-content-center container-imgProduk w-100">
-                            <img src="img/undraw_posting_photo.svg" alt="gambar baju" width="50%" id="imgProduk">
-                        </div>
-                        <div class="deskripsiProduk">
-                            <div class="ct-produkName">
-                                <h2 id="namaProduk" class="mt-5">Nama produk</h2>
-                            </div>
-                            <h6 id="hargaJual">harga jual</h6>
-                            <h6 id="stok">stok</h6>
-                            <h6 id="ukuran">ukuran</h6>
-                            <h6 id="hargadibeli">harga beli</h6>
-                        </div>
-                    </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-warning" type="button" id="resetInput">Reset</button>
+                    <button id="printStruk" class="btn btn-primary">Cetak Struk</button>
                 </div>
             </div>
         </div>
     </div>
-
-
+    
     <!-- Bootstrap core JavaScript-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    
     <!-- Core plugin JavaScript-->
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
+    
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
-
+    
     <!-- Page level plugins -->
     <script src="vendor/chart.js/Chart.min.js"></script>
+    
 
     <!-- Library tambahan -->
 
+    <!-- Zxing untuk scan barocode -->
+    <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
+    <!-- SweetAlert JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Firebase App (wajib) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-
+    
     <!-- Firebase Firestore -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <!-- Firebase Storage -->
@@ -464,354 +446,577 @@
     <script src="js/firebase-config.js"></script>
 
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-qrcode/1.0/jquery.qrcode.min.js"></script>
+    <script type="module">
+        // Konfigurasi Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
 
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-KoYR9MpOTnnWsaP3rjnvbzsFEWsuZ2Y",
+            authDomain: "toko-baju-d06b8.firebaseapp.com",
+            projectId: "toko-baju-d06b8",
+            storageBucket: "toko-baju-d06b8.appspot.com",
+            messagingSenderId: "1075045058309",
+            appId: "1:1075045058309:web:e178b52dbd0374cf17996c",
+            measurementId: "G-1K6SBT6LRJ"
+        };
 
+        // Inisialisasi Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
+        let scannedData = ''; // Menyimpan data yang dipindai
+        let scanTimeout;
+        let productQuantities = {}; // Objek untuk menyimpan jumlah produk
+        let totalHarga = 0; // Inisialisasi totalHarga
 
-    <script>
+        // Event listener untuk menangkap keydown
+        document.addEventListener('keydown', async (event) => {
+                // Cek jika key yang ditekan adalah 'Enter'
+                if (event.key === 'Enter') {
+                    // Proses data yang dipindai saat menekan Enter
+                    const trimmedData = scannedData.trim();
+                    console.log(`Scanned text: ${trimmedData}`);
 
-        // Inisialisasi Firestore
-            const db = firebase.firestore();
-
-           // Fungsi untuk mendapatkan data transaksi
-            async function getDataTransaksi() {
-                const transaksiContainer = document.querySelector('.row'); // Target div.row untuk menampilkan transaksi
-                transaksiContainer.innerHTML = ''; // Bersihkan konten sebelumnya
-
-                try {
-                    const querySnapshot = await db.collection("transaksi").get();
-
-                    querySnapshot.forEach((doc) => {
-                        const transaksiData = doc.data(); // Dapatkan data transaksi
-                        const produkArray = transaksiData.produk; // Ambil array produk
-
-                        // Ambil tanggalTransaksi dan pastikan itu adalah tipe Firestore Timestamp
-                        let tanggalTransaksi;
-                        if (transaksiData.tanggalTransaksi && transaksiData.tanggalTransaksi.toDate) {
-                            // Jika tanggalTransaksi adalah Firestore Timestamp, konversi ke Date
-                            tanggalTransaksi = transaksiData.tanggalTransaksi.toDate();
-                        } else {
-                            // Jika sudah berupa Date, langsung gunakan
-                            tanggalTransaksi = new Date(transaksiData.tanggalTransaksi);
-                        }
-
-                        // Format tanggalTransaksi ke dalam bentuk yang mudah dibaca
-                        const tanggalFormatted = tanggalTransaksi.toLocaleDateString('id-ID', {
-                            year: 'numeric', month: 'long', day: 'numeric'
-                        });
-
-                        // Buat elemen HTML untuk menampilkan data produk
-                        let produkList = '';
-                        produkArray.forEach((produk) => {
-                            produkList += `
-                    <li>
-                        <strong>Nama Produk:</strong> ${produk["nama produk"]}<br>
-                        <strong>Harga Jual:</strong> Rp${produk["harga jual"].toLocaleString()}<br>
-                        <strong>Quantity:</strong> ${produk.quantity}<br>
-                        <strong>Ukuran:</strong> ${produk.ukuran}
-                    </li><br>`;
-                        });
-
-                        // Buat elemen HTML untuk menampilkan data transaksi
-                        const transaksiElement = `
-                <div class="col-xl-4 col-md-6 mb-4">
-                    <div class="card border-left-primary shadow h-100 py-2">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col">
-                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Tanggal Transaksi</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">${tanggalFormatted}</div>
-                                    <div class="mt-3">
-                                        <h6>Produk:</h6>
-                                        <ul>${produkList}</ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-
-                        // Masukkan elemen transaksi ke dalam container
-                        transaksiContainer.innerHTML += transaksiElement;
-                    });
-                } catch (error) {
-                    console.error("Error mengambil data transaksi: ", error);
-                }
-            }
-
-            // Panggil fungsi getDataTransaksi untuk menampilkan transaksi saat halaman dimuat
-            window.onload = getDataTransaksi;
-
-
-
-
-        // Fungsi untuk mendapatkan data ukuran produk
-        async function getProductSizeData(productId) {
-            const ukuranRef = db.collection("produk").doc(productId).collection("ukuran");
-
-            try {
-                const querySnapshot = await ukuranRef.get();
-                querySnapshot.forEach((doc) => {
-                    const ukuranData = doc.data();
-                    const stok = ukuranData.stok;
-                    const hargaJual = ukuranData['harga jual'];
-                    const ukuran = ukuranData.ukuran;
-
-                    // Update elemen modal dengan data ukuran
-                    document.getElementById("stok").innerText = `Stok: ${stok}`;
-                    document.getElementById("hargaJual").innerText = `Harga Jual: Rp ${hargaJual}`;
-                    document.getElementById("ukuran").innerText = `Ukuran: ${ukuran}`;
-                });
-            } catch (error) {
-                console.error("Error mengambil data ukuran: ", error);
-            }
-        }
-
-        $('#staticBackdrop').on('show.bs.modal', function (event) {
-            const button = $(event.relatedTarget); // Tombol yang membuka modal
-            const productId = button.data('id'); // Ambil id produk dari data attribute tombol
-            const namaProduk = button.data('nama-produk'); // Ambil nama produk
-            const hargaDibeli = button.data('harga-beli'); //
-            const gambarUrl = button.data('image-url'); // Ambil URL gambar
-
-            // Set nama produk dan gambar di modal
-            document.getElementById("namaProduk").innerText = namaProduk;
-            document.getElementById("hargadibeli").innerText = hargaDibeli;
-            document.getElementById("imgProduk").src = gambarUrl;
-
-            // Panggil fungsi untuk mendapatkan data ukuran produk
-            getProductSizeData(productId);
-        });
-
-       
-
-
-
-        // Fungsi untuk memformat angka ke format mata uang Indonesia
-        function formatCurrency(input) {
-            let value = input.value.replace(/[^,\d]/g, '').toString();
-            if (value) {
-                input.value = parseInt(value, 10).toLocaleString('id-ID');
-            }
-        }
-        // Event listener untuk input harga
-        document.getElementById('hargaDibeli').addEventListener('input', function () {
-            formatCurrency(this);
-        });
-        document.getElementById('hargaJual').addEventListener('input', function () {
-            formatCurrency(this);
-        });
-
-
-        let counter = 1; // Counter untuk memberikan ID unik
-
-        document.getElementById('addSizeStock').addEventListener('click', function () {
-            // Container untuk menambahkan ukuran dan stok
-            const container = document.getElementById('sizeStockContainer');
-
-            // Elemen baru untuk ukuran dan stok dengan ID unik
-            const newSizeStock = document.createElement('div');
-            newSizeStock.classList.add('size-stock-input', 'mt-2');
-            newSizeStock.innerHTML = `
-        <div class="size-stock-input d-flex">
-            <input type="text" name="ukuran[]" class="ukuranbaju" placeholder="Ukuran">
-            <input type="number" name="stok[]" class="stokbaju" placeholder="Stok">
-            
-        </div>
-        <button type="button" class="removeSizeStock">Hapus</button> <!-- Tambahkan tombol hapus -->
-    `;
-
-            // Tambahkan elemen baru ke container
-            container.appendChild(newSizeStock);
-
-            // Tambahkan event listener untuk tombol hapus
-            newSizeStock.querySelector('.removeSizeStock').addEventListener('click', function () {
-                container.removeChild(newSizeStock);
-            });
-            // Increment counter setelah menambahkan ukuran dan stok
-            counter++;
-        });
-
-        document.getElementById('file').addEventListener('change', function () {
-            const fileInput = document.getElementById('file');
-            const fileNameDisplay = document.getElementById('fileName');
-
-            // Ambil nama file pertama dari input (jika ada)
-            if (fileInput.files.length > 0) {
-                fileNameDisplay.textContent = fileInput.files[0].name;
-            } else {
-                fileNameDisplay.textContent = 'Belum ada file yang dipilih';
-            }
-        });
-
-        document.getElementById('addProductButton').addEventListener('click', async function () {
-            const spinner = document.getElementById('spinner');
-            spinner.style.display = 'block'; // Tampilkan spinner
-
-            try {
-                // Ambil elemen input
-                const namaProduk = document.querySelector("input[placeholder='Nama produk']").value;
-                const hargaDibeli = document.getElementById("hargaDibeli").value.replace(/\D/g, '');
-                const hargaJual = document.getElementById("hargaJual").value.replace(/\D/g, '');
-                const ukuranElems = document.querySelectorAll("input[name='ukuran[]']");
-                const stokElems = document.querySelectorAll("input[name='stok[]']");
-                const fileInput = document.getElementById('file');
-
-                // Validasi input file
-                if (!fileInput.files.length) {
-                    alert("Pilih gambar terlebih dahulu.");
-                    spinner.style.display = 'none'; // Sembunyikan spinner
-                    return;
-                }
-
-                // Array untuk ukuran dan stok
-                const ukuranStokArray = [];
-                ukuranElems.forEach((ukuranElem, index) => {
-                    ukuranStokArray.push({
-                        ukuran: ukuranElem.value,
-                        stok: stokElems[index].value
-                    });
-                });
-
-                // Gambar QR Code untuk setiap ukuran dan simpan sebagai file terpisah
-                const qrCodeCanvasArray = [];
-                const qrCodeSize = 120;
-
-                for (const item of ukuranStokArray) {
-                    const qrData = `${namaProduk},${item.ukuran},${hargaJual}`;
-                    const qrCodeCanvas = document.createElement('canvas');
-                    qrCodeCanvas.width = qrCodeSize;
-                    qrCodeCanvas.height = qrCodeSize;
-
-                    const ctx = qrCodeCanvas.getContext('2d');
-                    await new Promise((resolve) => {
-                        const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=${qrCodeSize}x${qrCodeSize}`;
-                        const img = new Image();
-                        img.crossOrigin = "Anonymous";
-                        img.onload = () => {
-                            ctx.drawImage(img, 0, 0);
-                            resolve();
-                        };
-                        img.src = qrCodeUrl;
-                    });
-
-                    qrCodeCanvasArray.push({ canvas: qrCodeCanvas, ukuran: item.ukuran });
-                }
-
-                for (const item of qrCodeCanvasArray) {
-                    const canvas = item.canvas;
-                    const ukuran = item.ukuran;
-
-                    const finalCanvas = document.createElement('canvas');
-                    const finalWidth = 330;
-                    const finalHeight = 150;
-                    finalCanvas.width = finalWidth;
-                    finalCanvas.height = finalHeight;
-                    const finalCtx = finalCanvas.getContext('2d');
-
-                    finalCtx.fillStyle = "#fff";
-                    finalCtx.fillRect(0, 0, finalWidth, finalHeight);
-
-                    finalCtx.drawImage(canvas, 10, 15);
-
-                    // Fungsi untuk menggambar teks dengan pemecahan baris
-                    function drawMultilineText(ctx, text, x, y, maxWidth, lineHeight) {
-                        const words = text.split(' ');
-                        let line = '';
-
-                        for (let n = 0; n < words.length; n++) {
-                            const testLine = line + words[n] + ' ';
-                            const metrics = ctx.measureText(testLine);
-                            const testWidth = metrics.width;
-
-                            if (testWidth > maxWidth && n > 0) {
-                                ctx.fillText(line, x, y);
-                                line = words[n] + ' ';
-                                y += lineHeight; // Geser ke bawah untuk baris berikutnya
-                            } else {
-                                line = testLine;
-                            }
-                        }
-                        ctx.fillText(line, x, y); // Gambar baris terakhir
+                    // Memisahkan berdasarkan koma dan validasi data
+                    let scanData = trimmedData.split(',');
+                    if (scanData.length < 3) {
+                        alert("Data yang dipindai tidak lengkap. Pastikan memasukkan nama, ukuran, dan harga produk.");
+                        resetScanner(); // Reset pemindaian
+                        return;
                     }
 
-                    // Menggambar informasi produk di sebelah kanan
-                    finalCtx.fillStyle = "#000"; // Warna teks
-                    const textOffsetX = 150;
-                    const maxWidth = finalWidth - textOffsetX - 20; // Batasi lebar teks
-                    const lineHeight = 30; // Tinggi baris
+                    // Mengambil dan memangkas setiap bagian untuk menghilangkan spasi yang tidak perlu
+                    let namaProduk = scanData[0].trim();
+                    let ukuranProduk = scanData[1].trim();
+                    let hargaProduk = parseFloat(scanData[2]); // Mengonversi harga dan membulatkannya
 
-                    // Set font untuk nama produk dan gambar dengan memecah baris
-                    finalCtx.font = "20px Arial"; // Ukuran font untuk nama produk
-                    drawMultilineText(finalCtx, namaProduk, textOffsetX, 30, maxWidth, lineHeight);
 
-                    // Kembalikan ukuran font untuk ukuran dan harga jual
-                    finalCtx.font = "25px Arial"; // Ukuran font untuk ukuran dan harga
-                    finalCtx.fillText(`${ukuranElems[0].value}`, 280, 130); // Menggambar ukuran
-                    finalCtx.fillText(`Rp ${hargaJual}`, textOffsetX, 130); // Menggambar harga jual
+                    // Validasi harga produkBaju tidur motif dinasaurus,L,52000.0
+                    if (isNaN(hargaProduk) || hargaProduk <= 0) {
+                        alert("Harga produk tidak valid.");
+                        resetScanner(); // Reset pemindaian
+                        return;
+                    }
 
-                    const imageDataUrl = finalCanvas.toDataURL("image/jpeg");
+                    // Cek ketersediaan produk di Firestore
+                    const isAvailable = await checkProductAvailability(namaProduk, ukuranProduk);
+                    if (isAvailable) {
+                        // Format harga tanpa menambahkan "Rp" lagi
+                        const formattedPrice = hargaProduk.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+                        // Tambahkan data ke tabel hanya jika belum ada
+                        if (!isRowAlreadyExists(namaProduk, ukuranProduk, hargaProduk)) {
+                            addRowToTable(namaProduk, ukuranProduk, hargaProduk);
+                        }
+                    } else {                    
+                        Swal.fire({
+                            icon: "error",
+                            title: "Gagal",
+                            text: `Produk ${namaProduk} ukuran ${ukuranProduk} tidak tersedia`
+                        });
+                    }
 
-                    const link = document.createElement('a');
-                    link.href = imageDataUrl;
-                    link.download = `${namaProduk}_${ukuran}.jpg`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+
+                    // Bersihkan data yang dipindai setelah scan selesai
+                    scannedData = '';
+                } else if (event.key !== 'Shift' && event.key.length === 1) {
+                    // Tangkap input karakter kecuali Shift
+                    scannedData += event.key;
+
+                    // Atur timeout untuk menunggu akhir pemindaian
+                    clearTimeout(scanTimeout);
+                    scanTimeout = setTimeout(() => {
+                        scannedData = ''; // Reset jika tidak ada input dalam waktu tertentu
+                    }, 500);
                 }
+            });
 
-                // Upload gambar ke Firebase Storage
-                const file = fileInput.files[0];
-                let imageName = namaProduk.toLowerCase();
 
-                const storageRef = storage.ref(`gambar_baju/${imageName}.jpg`);
-                await storageRef.put(file);
-                const imageUrl = await storageRef.getDownloadURL();
+            // Fungsi untuk mengecek ketersediaan produk di Firestore
+            async function checkProductAvailability(namaProduk, ukuranProduk) {
+                const docRef = doc(db, 'produk', namaProduk);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const ukuranDocRef = doc(db, 'produk', namaProduk, 'ukuran', `ukuran ${ukuranProduk}`);
+                    const ukuranSnap = await getDoc(ukuranDocRef);
+                    if (ukuranSnap.exists()) {
+                        const ukuranData = ukuranSnap.data();
+                        return ukuranData.stok > 0;
+                    }
 
-                // Simpan data ke Firestore
-                const produkRef = db.collection('produk').doc(namaProduk);
-                await produkRef.set({
-                    "nama produk": namaProduk,
-                    "harga dibeli": parseInt(hargaDibeli),
-                    imageUrl: imageUrl
-                });
+                    
+                }
+                return false;
+            }
 
-                const ukuranStokRef = produkRef.collection('ukuran');
-                for (const item of ukuranStokArray) {
-                    const ukuranDocName = 'ukuran ' + item.ukuran;
-                    await ukuranStokRef.doc(ukuranDocName).set({
-                        ukuran: item.ukuran,
-                        stok: parseInt(item.stok),
-                        "harga jual": parseInt(hargaJual)
+            // Fungsi lainnya tetap sama...
+
+
+        function isRowAlreadyExists(namaProduk, ukuranProduk, hargaProduk) {
+            const tableBody = document.querySelector('#scanResultTable tbody');
+            const rows = tableBody.querySelectorAll('tr');
+
+            for (const row of rows) {
+                const cells = row.querySelectorAll('td');
+                if (cells[0].textContent === namaProduk &&
+                    cells[1].textContent === ukuranProduk &&
+                    cells[2].textContent === `Rp ${hargaProduk.toFixed(2)}`) {
+                    return true; // Baris sudah ada
+                }
+            }
+            return false; // Baris belum ada
+        }
+
+        function addRowToTable(namaProduk, ukuranProduk, hargaProduk) {
+            const tableBody = document.querySelector('#scanResultTable tbody');
+            const newRow = document.createElement('tr');
+
+            // Format harga menjadi Rp xx.xxx
+            const formattedPrice = `${hargaProduk.toLocaleString('id-ID')}`;
+            newRow.innerHTML = `
+                    <td>${namaProduk}</td>
+                    <td>${ukuranProduk}</td>
+                    <td>${formattedPrice}</td>
+                `;
+
+            // Menyimpan jumlah produk yang dibeli
+                    if (productQuantities[namaProduk]) {
+                        productQuantities[namaProduk] += 1; // Menambah jumlah jika sudah ada
+                    } else {
+                        productQuantities[namaProduk] = 1; // Menyimpan jumlah produk baru
+                    }
+
+            tableBody.appendChild(newRow);
+            totalHarga += hargaProduk; // Update totalHarga
+            updateTotalPayment(hargaProduk);
+        }
+
+        function updateTotalPayment(harga) {
+                const totalPaymentElement = document.getElementById('totalPayment');
+                const currentTotal = parseFloat(totalPaymentElement.textContent.replace('Rp ', '').replace(/\./g, '').replace(',', '.'));
+                const newTotal = currentTotal + harga;
+                totalPaymentElement.textContent = `Rp ${newTotal.toLocaleString('id-ID') }`; // Hapus formatting di sini
+            }
+
+
+        // Fungsi untuk mengatur ulang pemindaian
+        function resetScanner() {
+            scannedData = ''; // Mengosongkan data yang dipindai
+            alert("Pemindaian direset.");
+        }
+
+
+        // Event listener untuk tombol pembayaran
+            document.querySelector('.btn_pembayaran').addEventListener('click', async () => {
+                if (totalHarga > 0) {
+                    const scanResultTableBody = document.querySelector('#scanResultTable tbody');
+                    const rows = scanResultTableBody.querySelectorAll('tr');
+
+                    let productList = '';
+                    const productsToUpdate = {};
+                    const transactions = []; // Array untuk menyimpan data transaksi
+
+                    // Iterasi pertama untuk mengisi productList dan productsToUpdate
+                    rows.forEach(row => {
+                        const cells = row.querySelectorAll('td');
+                        const namaProduk = cells[0].innerText || 'Nama Tidak Diketahui';
+                        const ukuranProduk = cells[1].innerText || '-';
+                        const hargaProduk = parseFloat(cells[2].innerText.replace(/\./g, '').replace('Rp ', '')) || 0;
+
+                        // Kunci untuk produk yang sama berdasarkan nama dan ukuran
+                        const key = `${namaProduk}|${ukuranProduk}`;
+                        if (!productsToUpdate[key]) {
+                            productsToUpdate[key] = { namaProduk, ukuranProduk, jumlah: 1, hargaProduk };
+                        } else {
+                            productsToUpdate[key].jumlah += 1; // Increment jumlah jika produk sama
+                        }
+                    });
+
+                    // Mengisi transactions dengan format yang sesuai
+                    for (const { namaProduk, ukuranProduk, jumlah, hargaProduk } of Object.values(productsToUpdate)) {
+                        transactions.push({
+                            "nama produk": namaProduk,
+                            "ukuran": ukuranProduk,
+                            "harga jual": hargaProduk,
+                            quantity: jumlah // Menyimpan jumlah untuk produk
+                        });
+                        productList += `${namaProduk}|${ukuranProduk}|${hargaProduk}|${jumlah}<br/>`;
+                    }
+
+                    // Menampilkan konfirmasi pembayaran
+                    Swal.fire({
+                        title: 'Konfirmasi Pembayaran',
+                        html: `
+            <table style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Nama Produk</th>
+                        <th>Ukuran</th>
+                        <th>Harga</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${productList.split('<br/>').map(item => {
+                            const [namaProduk, ukuranProduk, hargaProduk, jumlah] = item.split('|');
+                            if (!namaProduk || !ukuranProduk || !hargaProduk || !jumlah) return ''; // Skip jika data kosong
+                            const totalHargaProduk = (parseFloat(hargaProduk.replace(/\./g, '').replace('Rp ', '')) * jumlah).toLocaleString('id-ID');
+                            return `<tr class="tbody-styles"><td>${namaProduk} ${jumlah > 1 ? `x${jumlah}` : ''}</td><td>${ukuranProduk}</td><td>Rp ${totalHargaProduk}</td></tr>`;
+                        }).join('')}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2" class="text-end"><strong>Total :</strong></td>
+                        <td><strong>Rp ${totalHarga.toLocaleString('id-ID')}</strong></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <input type="text" required class="input-styles" id="cash" name="cash" placeholder="input Cash">
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>                
+            `,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        cancelButtonText: 'Batal',
+                        confirmButtonText: 'Bayar',
+                        customClass: {
+                            cancelButton: 'swal-cancel-button',
+                            confirmButton: 'swal-confirm-button'
+                        },
+                        didOpen: () => {
+                            const cashInput = document.getElementById('cash');
+                            cashInput.addEventListener('input', () => {
+                                let value = cashInput.value.replace(/\D/g, ''); // Hanya angka
+                                value = new Intl.NumberFormat('id-ID').format(value); // Format angka dengan titik
+                                cashInput.value = value;
+                            });
+                        }
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            const cashInput = document.getElementById('cash').value.replace(/\D/g, ''); // Ambil nilai cash dan hilangkan karakter non-angka
+                            const cash = parseInt(cashInput, 10); // Ubah ke integer
+
+                            if (isNaN(cash) || cash < totalHarga) {
+                                Swal.fire('Error!', 'Jumlah cash tidak mencukupi untuk pembayaran.', 'error');
+                                return;
+                            }
+
+                            try {
+                                for (const { namaProduk, ukuranProduk, jumlah } of Object.values(productsToUpdate)) {
+                                    const ukuranDocRef = doc(db, 'produk', namaProduk, 'ukuran', `ukuran ${ukuranProduk}`);
+                                    const ukuranSnap = await getDoc(ukuranDocRef);
+
+                                    if (ukuranSnap.exists()) {
+                                        const ukuranData = ukuranSnap.data();
+                                        const stok = ukuranData.stok;
+
+                                        if (stok >= jumlah) {
+                                            await updateDoc(ukuranDocRef, { stok: stok - jumlah });
+                                        } else {
+                                            alert(`Stok tidak cukup untuk produk: ${namaProduk}`);
+                                            return;
+                                        }
+                                    }
+                                }
+
+                                // Menambahkan transaksi ke koleksi transaksi
+                                const transactionRef = collection(db, 'transaksi'); // Pastikan ini merujuk ke koleksi yang benar
+                                await addDoc(transactionRef, {
+                                    tanggalTransaksi: new Date(), // Timestamp saat transaksi
+                                    produk: transactions // Data transaksi yang ingin disimpan
+                                });
+
+                                // Panggil showReceipt dengan tambahan parameter cash
+                                showReceipt(productList, totalHarga, cash);
+
+                                Swal.fire('Pembayaran berhasil!', '', 'success');
+                                totalHarga = 0;
+                                productQuantities = {};
+                                scanResultTableBody.innerHTML = '';
+                                document.getElementById('totalPayment').innerHTML = 'Rp 0.00';
+
+                            } catch (error) {
+                                console.error("Error during payment:", error);
+                                Swal.fire('Pembayaran gagal!', 'Terjadi kesalahan saat memproses pembayaran.', 'error');
+                            }
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Mohon Maaf...",
+                        text: "Silakan tambahkan produk sebelum melanjutkan ke pembayaran."
                     });
                 }
+            });
 
-                alert("Data produk berhasil ditambahkan!");
-                // Clear form inputs setelah submit
-                document.querySelector("input[placeholder='Nama produk']").value = '';
-                document.getElementById("hargaDibeli").value = '';
-                document.getElementById("hargaJual").value = '';
-                fileInput.value = '';
-                document.getElementById('fileName').textContent = 'Belum ada file yang dipilih';
-                document.getElementById("sizeStockContainer").innerHTML = ''; // Bersihkan input ukuran & stok
 
-            } catch (error) {
-                console.error("Error menambahkan data produk: ", error);
-                alert("Gagal menambahkan data produk.");
-            } finally {
-                spinner.style.display = 'none'; // Sembunyikan spinner di akhir
+            function showReceipt(productList, totalHarga, cash) {
+                const receiptElement = document.querySelector('.receipt');
+                let tanggalTransaksi = new Date().toLocaleString(); // Format tanggal dengan waktu
+                // Hitung kembalian
+                const kembalian = cash - totalHarga;
+
+                // Bersihkan elemen struk dan buat elemen tabel untuk tampilan struk
+                receiptElement.innerHTML = `
+    <div class="centered bold">HannyBaby<br>STORE</div>
+    <div class="centered">Jl. Bukit khatulistiwa, Paccerakkang Kec. Biringkanaya, kota makassar, Sulawesi Selatan 90245</div>
+    <div class="line"></div>
+    <div class="d-flex w-100 justify-content-between p-3">
+        <p id="tanggalTransaksi">${tanggalTransaksi}</p>
+        <p class="ms-auto" id="nama_akun">Sabir.</p>
+    </div>
+    <div class="line"></div>
+    <table>
+        <thead>
+            <tr class="thead-bottom-line">
+                <th class="description">Description</th>
+                <th class="price">Harga</th>
+            </tr>
+        </thead>
+        <tbody id="product-rows">
+        </tbody>
+        <tfoot>
+            <tr class="tfoot-bottom-line">
+                <td class="description"><strong>Total</strong></td>
+                <td class="price"><strong>Rp ${totalHarga.toLocaleString('id-ID')}</strong></td>
+            </tr>
+            <tr>
+                <td class="description"><strong>Cash</strong></td>
+                <td class="price"><strong>Rp ${cash.toLocaleString('id-ID')}</strong></td>
+            </tr>
+            <tr>
+                <td class="description"><strong>Kembalian</strong></td>
+                <td class="price"><strong>Rp ${kembalian.toLocaleString('id-ID')}</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+    <div class="line"></div>
+    `;
+
+                const productRows = document.getElementById('product-rows');
+                const products = productList.split('<br/>');
+                products.forEach(product => {
+                    const [namaProduk, ukuranProduk, hargaProduk, jumlah] = product.split('|').map(item => item.trim());
+
+                    if (namaProduk && ukuranProduk && hargaProduk && jumlah) {
+                        const row = document.createElement('tr');
+                        const totalHargaProduk = (parseFloat(hargaProduk.replace(/\./g, '').replace('Rp ', '')) * jumlah).toLocaleString('id-ID');
+                        row.innerHTML = `
+                <td class="description">${namaProduk} (${ukuranProduk}) ${jumlah > 1 ? `x${jumlah}` : ''}</td>
+                <td class="harga">Rp ${totalHargaProduk}</td>
+            `;
+                        productRows.appendChild(row);
+                    }
+                });
+
+                // Tambahkan informasi kontak di bawah tabel
+                receiptElement.innerHTML += `
+    <div class="line"></div>
+    <div class="centered">Tiktok: @hanybabystore</div>
+    <div class="centered">IG: @hannybabystore</div>
+    `;
+
+                // Tampilkan elemen struk dan cetak secara otomatis
+                receiptElement.classList.remove('d-none');
+                setTimeout(() => {
+                    window.print();
+                }, 500);
             }
+
+        // Fungsi untuk menambahkan input produk baru
+        document.getElementById("addProduk").addEventListener("click", function () {
+                const newProductGroup = document.createElement("div");
+                newProductGroup.classList.add("product-group", "mt-3");
+
+                const namePriceWrapper = document.createElement("div");
+                namePriceWrapper.classList.add("d-flex", "gap-2", "mb-2");
+
+                const newNamaInput = document.createElement("input");
+                newNamaInput.type = "text";
+                newNamaInput.name = "nama_produk[]";
+                newNamaInput.classList.add("form-control", "product-group2");
+                newNamaInput.placeholder = "Nama Baju";
+
+                const newHargaInput = document.createElement("input");
+                newHargaInput.type = "text"; // Ubah menjadi 'text' agar kita bisa memformat
+                newHargaInput.name = "harga[]";
+                newHargaInput.classList.add("form-control", "product-group2");
+                newHargaInput.placeholder = "Harga";
+
+                // Tambahkan event listener untuk memformat harga
+                newHargaInput.addEventListener("input", function () {
+                    // Simpan posisi kursor saat ini
+                    const cursorPosition = this.selectionStart;
+
+                    // Memformat nilai
+                    const formattedValue = formatRupiah(this.value);
+
+                    // Set value terformat
+                    this.value = formattedValue;
+
+                    // Mengembalikan posisi kursor setelah memformat
+                    this.setSelectionRange(cursorPosition, cursorPosition);
+                });
+
+                namePriceWrapper.appendChild(newNamaInput);
+                namePriceWrapper.appendChild(newHargaInput);
+
+                const sizeQuantityWrapper = document.createElement("div");
+                sizeQuantityWrapper.classList.add("d-flex", "gap-2");
+
+                const newUkuranInput = document.createElement("input");
+                newUkuranInput.type = "text";
+                newUkuranInput.name = "ukuran[]";
+                newUkuranInput.classList.add("ukuranbaju", "form-control", "product-group2");
+                newUkuranInput.placeholder = "Ukuran";
+
+                const newJumlahInput = document.createElement("input");
+                newJumlahInput.type = "number";
+                newJumlahInput.name = "jumlah[]";
+                newJumlahInput.classList.add("jumlahbaju", "form-control", "product-group2");
+                newJumlahInput.placeholder = "Jumlah";
+
+                sizeQuantityWrapper.appendChild(newUkuranInput);
+                sizeQuantityWrapper.appendChild(newJumlahInput);
+
+                newProductGroup.appendChild(namePriceWrapper);
+                newProductGroup.appendChild(sizeQuantityWrapper);
+                document.getElementById("sizeStockContainer").appendChild(newProductGroup);
+            });
+        // Fungsi format harga menjadi mata uang Indonesia
+        function formatRupiah(angka) {
+                // Menghapus karakter non-digit
+                const num = angka.replace(/[^0-9]/g, '');
+
+                // Memformat menjadi ribuan dengan titik
+                if (num === "") return ""; // Jika tidak ada angka, kembalikan string kosong
+
+                const formatted = num.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+                console.log(formatted); // Debugging: lihat hasil format
+                return formatted;
+            }
+        // Fungsi untuk memformat angka ke format mata uang Indonesia
+        function formatCurrency(input) {
+                let value = input.value.replace(/[^,\d]/g, '').toString();
+                if (value) {
+                    input.value = parseInt(value, 10).toLocaleString('id-ID');
+                }
+            }
+        document.getElementById('harga').addEventListener('input', function () {
+            formatCurrency(this);
         });
+        // Fungsi untuk menghapus produk terakhir yang ditambahkan
+        document.getElementById("deleteAddProduk").addEventListener("click", function () {
+                const container = document.getElementById("sizeStockContainer");
+                const productGroups = container.getElementsByClassName("product-group");
+
+                if (productGroups.length > 0) {
+                    // Hapus produk terakhir
+                    container.removeChild(productGroups[productGroups.length - 1]);
+                } else {
+                    alert("Tidak ada produk untuk dihapus.");
+                }
+            });
+        // Fungsi untuk mereset semua input
+        document.getElementById("resetInput").addEventListener("click", function () {
+            const inputs = document.querySelectorAll(".product-group2"); // Ambil semua input dengan kelas product-group
+            inputs.forEach(input => {
+                input.value = ""; // Kosongkan nilai input
+            });
+        });
+        document.getElementById("printStruk").addEventListener("click", function () {
+                const strukContent = document.getElementById("strukContent");
+                strukContent.innerHTML = ""; // Hapus konten sebelumnya
+                let tanggalTransaksi = Date.now();
+
+                // Cek apakah semua input sudah diisi
+                const namaProdukInputs = document.getElementsByName("nama_produk[]");
+                const hargaInputs = document.getElementsByName("harga[]");
+                const ukuranInputs = document.getElementsByName("ukuran[]");
+                const jumlahInputs = document.getElementsByName("jumlah[]");
+
+                for (let i = 0; i < namaProdukInputs.length; i++) {
+                    const namaProduk = namaProdukInputs[i].value;
+                    const harga = hargaInputs[i].value;
+                    const ukuran = ukuranInputs[i].value;
+                    const jumlah = jumlahInputs[i].value;
+
+                    // Periksa apakah ada input yang kosong
+                    if (!namaProduk || !harga || !ukuran || !jumlah) {
+                        alert("Silakan isi semua data produk terlebih dahulu sebelum mencetak struk.");
+                        return; // Hentikan eksekusi jika ada input yang kosong
+                    }
+                }
+
+                // Bagian informasi toko
+                let strukHTML = `
+                    <div class="centered bold">HannyBaby<br>STORE</div>
+                    <div class="centered">Jl. Bukit Khatulistiwa</div>
+                    <div class="line"></div>
+                    <div class="centered"></div>
+                    <div class="line"></div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="jumlah">Jumlah</th>
+                                <th class="nama_baju">Nama Baju</th>
+                                <th class="harga">Harga</th>
+                            </tr>
+                        </thead>
+                        <tbody id="product-rows">
+                `;
+
+                let totalHarga = 0;
+
+                for (let i = 0; i < namaProdukInputs.length; i++) {
+                    const namaProduk = namaProdukInputs[i].value;
+                    const harga = parseFloat(hargaInputs[i].value) || 0;
+                    const jumlah = parseInt(jumlahInputs[i].value) || 0;
+                    const ukuran = ukuranInputs[i].value;
+
+                    const subtotal = harga * jumlah;
+                    totalHarga += subtotal;
+
+                    // Tambahkan baris produk ke strukHTML
+                    strukHTML += `
+            <tr>
+                <td>${jumlah}</td>
+                <td>${namaProduk} (${ukuran})</td>
+                <td>Rp ${subtotal.toLocaleString()}</td>
+            </tr>
+        `;
+                }
+
+                // Selesaikan struktur tabel dan tambahkan total harga
+                strukHTML += `
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2">Total Harga</td>
+                <td id="totalHarga">Rp ${totalHarga.toLocaleString()}</td>
+            </tr>
+        </tfoot>
+    </table>
+    <div class="line"></div>
+    <p class="text-center">Terima Kasih sudah membeli produk kami.</p>
+    `;
+
+                strukContent.innerHTML = strukHTML;
+                document.getElementById("strukContainer").style.display = "block";
+
+                // Tunggu sejenak agar struk tampil sebelum mencetak
+                setTimeout(() => {
+                    window.print();
+                }, 100); // Delay 100 ms untuk memastikan elemen sudah ditampilkan
+            });
+
 
 
     </script>
 
 
-
-
-
 </body>
-
 </html>
