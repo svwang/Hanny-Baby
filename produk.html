@@ -201,9 +201,15 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">tentang :</h6>
                         <a class="collapse-item" href="produk.html">Daftar Produk</a>
-                        <a class="collapse-item" href="#">Produk Terjual</a>
+                        <a class="collapse-item" href="transaksi.html">Transaksi</a>
                     </div>
                 </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="Rekap.html">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Rekap</span></a>
             </li>
 
             <!-- Divider -->
@@ -332,15 +338,15 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Anda akan keluar dari akun?</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-body">Klik logout untuk keluar.</div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
+                    <button class="btn btn-primary" id="logoutBtn">Logout</button>
                 </div>
             </div>
         </div>
@@ -441,6 +447,11 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <!-- Firebase Storage -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    
+    <!-- FIREBASE PILIHAN -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="js/firebase-config.js"></script>
 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -450,20 +461,7 @@
 
     
     <script>
-        // Konfigurasi Firebase kamu
-        const firebaseConfig = {
-            apiKey: "AIzaSyA-KoYR9MpOTnnWsaP3rjnvbzsFEWsuZ2Y",
-            authDomain: "toko-baju-d06b8.firebaseapp.com",
-            projectId: "toko-baju-d06b8",
-            storageBucket: "toko-baju-d06b8.appspot.com",
-            messagingSenderId: "1075045058309",
-            appId: "1:1075045058309:web:e178b52dbd0374cf17996c",
-            measurementId: "G-1K6SBT6LRJ"
-        };
-
-        // Inisialisasi Firebase
-        firebase.initializeApp(firebaseConfig);
-
+        
         // Inisialisasi Firestore dan Storage
         const db = firebase.firestore();
         const storage = firebase.storage();
@@ -778,7 +776,12 @@
                 }
             });
 
+
     </script>
+
+
+
+
     
 </body>
 
