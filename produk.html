@@ -18,6 +18,17 @@
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <link href="css/myCSS.css" rel="stylesheet">
     <style>
+
+    .containerDropdown {
+        background-color: #ffffff;
+        margin: 10px 2px 20px 0;
+        padding: 5px;
+        outline: 2px solid #f3af40;
+        color: rgb(0, 0, 0);
+        border: none;
+        border-radius: 5px;
+    }
+
         /* Container styling */
 #ukuranContainer {
     display: flex;
@@ -345,33 +356,22 @@
                         
                     </div>
                     <!-- Button to open the modal -->
-                    <button class="btn btn-success mb-2" type="button" data-toggle="modal" data-target="#addProduct">
+                    <button class="btn btn-success" type="button" data-toggle="modal" data-target="#addProduct">
                         <i class="fas fa-plus"></i> Add Product
                     </button>
-<!--                     
-                        <div class="dropdown">
-                            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Tutorials
-                                <span class="caret"></span></button>
-                            <ul class="dropdown-menu">
-                                <li><a tabindex="-1" href="#">HTML</a></li>
-                                <li><a tabindex="-1" href="#">CSS</a></li>
-                                <li class="dropdown-submenu">
-                                    <a class="test" tabindex="-1" href="#">New dropdown <span class="caret"></span></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a tabindex="-1" href="#">2nd level dropdown</a></li>
-                                        <li><a tabindex="-1" href="#">2nd level dropdown</a></li>
-                                        <li class="dropdown-submenu">
-                                            <a class="test" href="#">Another dropdown <span class="caret"></span></a>
-                                            <ul class="dropdown-menu">
-                                                <li><a href="#">3rd level dropdown</a></li>
-                                                <li><a href="#">3rd level dropdown</a></li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div> -->
-                    
+
+                    <select id="kategoriDropdown" class="containerDropdown">
+                        <option value="">Semua produk</option>
+                        <option value="baju">Baju</option>
+                        <option value="one set">One Set</option>
+                        <option value="celana">Celana</option>
+                        <option value="dress">Dress</option>
+                        <option value="celana panjang">Celana Panjang</option>
+                        <option value="gamis">Gamis</option>
+                        <option value="branded">Branded</option>
+                        <option value="rumahan">Rumahan</option>
+                        <!-- Tambahkan kategori lainnya sesuai kebutuhan -->
+                    </select>
                     <!-- Content Row -->
                     <div class="row">
 
@@ -534,15 +534,7 @@
 
 
 
-    <script>
-        $(document).ready(function () {
-            $('.dropdown-submenu a.test').on("click", function (e) {
-                $(this).next('ul').toggle();
-                e.stopPropagation();
-                e.preventDefault();
-            });
-        });
-    </script>
+    
     
     <script>
         
@@ -551,55 +543,123 @@
         const storage = firebase.storage();
 
         // Fungsi untuk mendapatkan data produk
-            async function getData() {
-                const produkContainer = document.querySelector('.row'); // Target div.row untuk menampilkan produk
-                produkContainer.innerHTML = ''; // Bersihkan konten sebelumnya
+        
+        async function getData() {
+            const produkContainer = document.querySelector('.row'); // Target div.row untuk menampilkan produk
+            produkContainer.innerHTML = ''; // Bersihkan konten sebelumnya
 
-                try {
-                    const querySnapshot = await db.collection("produk").get();
-                    querySnapshot.forEach(async (doc) => {
-                        const produkData = doc.data(); // Dapatkan data produk
-                        const namaProduk = produkData['nama produk']; // Ambil nama produk
-                        const hargaDibeli = produkData['harga dibeli']; // Ambil harga beli
-                        const productId = doc.id; // Simpan ID produk untuk digunakan di modal
+            // Menampilkan spinner loading
+            const loadingContainer = document.createElement('div');
+            loadingContainer.style.position = 'fixed';
+            loadingContainer.style.top = '0';
+            loadingContainer.style.left = '0';
+            loadingContainer.style.width = '100%';
+            loadingContainer.style.height = '100%';
+            loadingContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+            loadingContainer.style.display = 'flex';
+            loadingContainer.style.flexDirection = 'column';
+            loadingContainer.style.alignItems = 'center';
+            loadingContainer.style.justifyContent = 'center';
+            loadingContainer.style.zIndex = '9999';
 
-                        // Bentuk nama file gambar
-                        const namaImage = namaProduk.toLowerCase();
-                        const imageName = `gambar_baju/${namaImage}.jpg`; // Asumsi gambar berformat .jpg
+            const loadingSpinner = document.createElement('div');
+            loadingSpinner.className = 'spinner-border';
+            loadingSpinner.style.display = 'block';
+            loadingSpinner.style.marginBottom = '10px';
+            loadingSpinner.innerHTML = '<span class="sr-only">Loading...</span>';
 
-                        // Ambil URL gambar dari Firebase Storage
-                        try {
-                            const imageUrl = await storage.ref(imageName).getDownloadURL();
+            const loadingText = document.createElement('div');
+            loadingText.textContent = 'Sedang load data...';
+            loadingText.style.fontSize = '1.5rem';
+            loadingText.style.color = '#333';
 
-                            // Buat elemen HTML untuk menampilkan produk
-                            const produkElement = `
-                <div class="col-xl-3 col-md-6 mb-4" data-bs-toggle="modal" data-bs-target="#staticBackdrop" data-id="${productId}" data-nama-produk="${namaProduk}" data-image-url="${imageUrl}" data-harga-beli="${hargaDibeli}">
-                    <div class="card border-left-primary shadow h-100 py-2">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">${namaProduk}</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">Rp ${hargaDibeli}</div>
-                                </div>
-                                <div class="col-auto">
-                                    <img src="${imageUrl}" alt="${namaProduk}" style="width: 50px; height: 50px;">
-                                </div>
-                            </div>
+            loadingContainer.appendChild(loadingSpinner);
+            loadingContainer.appendChild(loadingText);
+            document.body.appendChild(loadingContainer);
+
+            try {
+                const querySnapshot = await db.collection("produk").get();
+
+                // Simpan produk dalam cache dan tampilkan produk satu per satu
+                produkCache = [];
+
+                for (const doc of querySnapshot.docs) {
+                    const produkData = doc.data();
+                    const namaProduk = produkData['nama produk'];
+                    const hargaDibeli = produkData['harga dibeli'];
+                    const kategori = produkData.kategori;
+                    const productId = doc.id;
+                    const namaImage = namaProduk.toLowerCase();
+                    const imageName = `gambar_baju/${namaImage}.jpg`;
+
+                    // Dapatkan URL gambar
+                    const imageUrl = await storage.ref(imageName).getDownloadURL();
+
+                    // Buat objek produk dan tambahkan ke cache
+                    const produk = { productId, namaProduk, hargaDibeli, kategori, imageUrl };
+                    produkCache.push(produk);
+
+                    // Hilangkan spinner saat data produk pertama muncul
+                    if (produkCache.length === 1) {
+                        document.body.removeChild(loadingContainer);
+                    }
+
+                    // Tampilkan produk yang sudah siap
+                    tampilkanProduk([produk], produkContainer);
+                }
+            } catch (error) {
+                console.error("Error mengambil data: ", error);
+            }
+        }
+
+        // Fungsi untuk menampilkan produk dalam kontainer
+        function tampilkanProduk(produkList, produkContainer) {
+            produkList.forEach(({ productId, namaProduk, hargaDibeli, imageUrl }) => {
+                const produkElement = `
+        <div class="col-xl-3 col-md-6 mb-4" data-bs-toggle="modal" data-bs-target="#staticBackdrop" data-id="${productId}" data-nama-produk="${namaProduk}" data-image-url="${imageUrl}" data-harga-beli="${hargaDibeli}">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">${namaProduk}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Rp ${hargaDibeli}</div>
+                        </div>
+                        <div class="col-auto">
+                            <img src="${imageUrl}" alt="${namaProduk}" style="width: 50px; height: 50px;">
                         </div>
                     </div>
-                </div>`;
+                </div>
+            </div>
+        </div>`;
+                produkContainer.innerHTML += produkElement;
+            });
+        }
 
-                            // Masukkan elemen produk ke dalam container
-                            produkContainer.innerHTML += produkElement;
+        // Event listener untuk dropdown kategori
+            document.getElementById('kategoriDropdown').addEventListener('change', function () {
+                const kategoriDipilih = this.value; // Ambil kategori yang dipilih
+                const produkContainer = document.querySelector('.row'); // Target kontainer produk
 
-                        } catch (error) {
-                            console.error("Error mendapatkan URL gambar: ", error);
-                        }
-                    });
-                } catch (error) {
-                    console.error("Error mengambil data: ", error);
+                // Tampilkan pesan "Mohon tunggu sebentar" jika data belum lengkap
+                if (!produkCache || produkCache.length === 0) {
+                    produkContainer.innerHTML = '<div class="text-center my-4">Mohon tunggu sebentar...</div>';
+                } else {
+                    // Filter produk sesuai kategori jika data sudah siap
+                    const produkFiltered = kategoriDipilih ?
+                        produkCache.filter(produk => produk.kategori === kategoriDipilih) :
+                        produkCache; // Jika tidak ada filter, ambil semua produk
+
+                    // Kosongkan kontainer dan tampilkan produk yang sesuai
+                    produkContainer.innerHTML = ''; // Bersihkan kontainer sebelum menampilkan produk yang difilter
+                    tampilkanProduk(produkFiltered, produkContainer); // Tampilkan produk yang sesuai
                 }
-            }
+            });
+
+
+        // Panggil fungsi getData untuk menampilkan semua produk saat halaman dimuat
+        window.onload = getData;
+
+
 
     $('#staticBackdrop').on('show.bs.modal', function (event) {
             console.log("Modal akan ditampilkan"); // Log untuk melihat apakah event berjalan
@@ -915,6 +975,8 @@
             });
 
     </script>
+
+    
 </body>
 
 </html>
