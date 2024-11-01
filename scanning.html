@@ -12,8 +12,8 @@
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
-        <!-- SweetAlert CSS -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
@@ -155,9 +155,15 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">tentang :</h6>
                         <a class="collapse-item" href="produk.html">Daftar Produk</a>
-                        <a class="collapse-item" href="#">Produk Terjual</a>
+                        <a class="collapse-item" href="transaksi.html">Transaksi</a>
                     </div>
                 </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="Rekap.html">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Rekap</span></a>
             </li>
     
             <!-- Divider -->
@@ -270,29 +276,35 @@
                             </tr>
                             <tr>
                                 <td colspan="3" class="text-end">
+                                    <a href="scanning.html" class="btn btn-warning">Scan ulang</a>
                                     <button class="btn_pembayaran btn btn-success">Pembayaran</button>
                                 </td>
+                               
                             </tr>
                         </tfoot>
                         
                     </table>
-
+                    
                     
 
                     <div class="receipt d-none">
                         <div class="center bold">HannyBaby<br>STORE</div>
-                        <div class="center">Jl. Bukit khatulistiwa</div>
+                        <div class="center">Jl. Bukit khatulistiwa, Paccerakkang Kec. Biringkanaya, kota makassar, Sulawesi Selatan</div>
                         <div class="line"></div>
-                        <div>Rech. Nr. 4572 <span class="right">30.07.2007/13:29:17</span></div>
-                        <div>Bar <span class="right">Tisch 7/01</span></div>
-                        
+                        <div class="d-flex w-100 justify-content-between">
+                            <p id="tanggalTransaksi">27-01-2001</p>
+                            <p class="ms-auto" id="nama_akun">Sabir.</p>
+                        </div>
+
+
+    
                         <div class="line"></div>
                         <div><span id="namaproduk">Baju tidur motif dinasaurus</span> <span  id="ukuran">L</span> <span class="right" id="hargaBarang">52000</span></div>
                         
                         
                         <div class="line"></div>
                         <div id="barcode"></div>
-                        <div>Telepon : 0822 39342497</div>
+                        <div>Telepon : 0822 3934 2497</div>
                         <div>E-mail: hannybabystore@gmail.com</div>
                     </div>
                     
@@ -333,15 +345,15 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Anda akan keluar dari akun?</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-body">Klik logout untuk keluar.</div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
+                    <button class="btn btn-primary" id="logoutBtn">Logout</button>
                 </div>
             </div>
         </div>
@@ -420,11 +432,24 @@
     <!-- SweetAlert JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- Firebase App (wajib) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <!-- Firebase Storage -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+    <!-- FIREBASE PILIHAN -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="js/firebase-config.js"></script>
+
 
     <script type="module">
         // Konfigurasi Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA-KoYR9MpOTnnWsaP3rjnvbzsFEWsuZ2Y",
@@ -580,7 +605,7 @@
             alert("Pemindaian direset.");
         }
 
-        // Event listener untuk tombol pembayaran
+
         // Event listener untuk tombol pembayaran
             document.querySelector('.btn_pembayaran').addEventListener('click', async () => {
                 if (totalHarga > 0) {
@@ -589,51 +614,94 @@
 
                     let productList = '';
                     const productsToUpdate = {};
+                    const transactions = []; // Array untuk menyimpan data transaksi
 
-                    // Iterasi pertama untuk mengisi productList
+                    // Iterasi pertama untuk mengisi productList dan productsToUpdate
                     rows.forEach(row => {
                         const cells = row.querySelectorAll('td');
-                        const namaProduk = cells[0].innerText;
-                        const ukuranProduk = cells[1].innerText;
-                        const hargaProduk = cells[2].innerText;
+                        const namaProduk = cells[0].innerText || 'Nama Tidak Diketahui';
+                        const ukuranProduk = cells[1].innerText || '-';
+                        const hargaProduk = parseFloat(cells[2].innerText.replace(/\./g, '').replace('Rp ', '')) || 0;
 
-                        // Tambahkan produk ke productList dengan format tertentu
-                        productList += `${namaProduk}|${ukuranProduk}|${hargaProduk}<br/>`;
-
-                        const jumlah = productQuantities[namaProduk] || 0;
+                        // Kunci untuk produk yang sama berdasarkan nama dan ukuran
                         const key = `${namaProduk}|${ukuranProduk}`;
                         if (!productsToUpdate[key]) {
-                            productsToUpdate[key] = { namaProduk, ukuranProduk, jumlah };
+                            productsToUpdate[key] = { namaProduk, ukuranProduk, jumlah: 1, hargaProduk };
+                        } else {
+                            productsToUpdate[key].jumlah += 1; // Increment jumlah jika produk sama
                         }
                     });
+
+                    // Mengisi transactions dengan format yang sesuai
+                    for (const { namaProduk, ukuranProduk, jumlah, hargaProduk } of Object.values(productsToUpdate)) {
+                        transactions.push({
+                            "nama produk": namaProduk,
+                            "ukuran": ukuranProduk,
+                            "harga jual": hargaProduk,
+                            quantity: jumlah // Menyimpan jumlah untuk produk
+                        });
+                        productList += `${namaProduk}|${ukuranProduk}|${hargaProduk}|${jumlah}<br/>`;
+                    }
 
                     // Menampilkan konfirmasi pembayaran
                     Swal.fire({
                         title: 'Konfirmasi Pembayaran',
                         html: `
-                <table style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>Nama Produk</th>
-                            <th>Ukuran</th>
-                            <th>Harga</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${productList.split('<br/>').map(item => {
-                            const [namaProduk, ukuranProduk, hargaProduk] = item.split('|');
-                            return `<tr><td>${namaProduk}</td><td>${ukuranProduk}</td><td>${hargaProduk}</td></tr>`;
+            <table style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Nama Produk</th>
+                        <th>Ukuran</th>
+                        <th>Harga</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${productList.split('<br/>').map(item => {
+                            const [namaProduk, ukuranProduk, hargaProduk, jumlah] = item.split('|');
+                            if (!namaProduk || !ukuranProduk || !hargaProduk || !jumlah) return ''; // Skip jika data kosong
+                            const totalHargaProduk = (parseFloat(hargaProduk.replace(/\./g, '').replace('Rp ', '')) * jumlah).toLocaleString('id-ID');
+                            return `<tr class="tbody-styles"><td>${namaProduk} ${jumlah > 1 ? `x${jumlah}` : ''}</td><td>${ukuranProduk}</td><td>Rp ${totalHargaProduk}</td></tr>`;
                         }).join('')}
-                    </tbody>
-                </table>
-                <div>Total Pembayaran: <strong>Rp ${totalHarga.toLocaleString('id-ID')}</strong></div>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2" class="text-end"><strong>Total :</strong></td>
+                        <td><strong>Rp ${totalHarga.toLocaleString('id-ID')}</strong></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <input type="text" required class="input-styles" id="cash" name="cash" placeholder="input Cash">
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>                
             `,
                         icon: 'warning',
                         showCancelButton: true,
+                        cancelButtonText: 'Batal',
                         confirmButtonText: 'Bayar',
-                        cancelButtonText: 'Batal'
+                        customClass: {
+                            cancelButton: 'swal-cancel-button',
+                            confirmButton: 'swal-confirm-button'
+                        },
+                        didOpen: () => {
+                            const cashInput = document.getElementById('cash');
+                            cashInput.addEventListener('input', () => {
+                                let value = cashInput.value.replace(/\D/g, ''); // Hanya angka
+                                value = new Intl.NumberFormat('id-ID').format(value); // Format angka dengan titik
+                                cashInput.value = value;
+                            });
+                        }
                     }).then(async (result) => {
                         if (result.isConfirmed) {
+                            const cashInput = document.getElementById('cash').value.replace(/\D/g, ''); // Ambil nilai cash dan hilangkan karakter non-angka
+                            const cash = parseInt(cashInput, 10); // Ubah ke integer
+
+                            if (isNaN(cash) || cash < totalHarga) {
+                                Swal.fire('Error!', 'Jumlah cash tidak mencukupi untuk pembayaran.', 'error');
+                                return;
+                            }
+
                             try {
                                 for (const { namaProduk, ukuranProduk, jumlah } of Object.values(productsToUpdate)) {
                                     const ukuranDocRef = doc(db, 'produk', namaProduk, 'ukuran', `ukuran ${ukuranProduk}`);
@@ -652,8 +720,15 @@
                                     }
                                 }
 
-                                // Panggil showReceipt setelah konfirmasi pembayaran berhasil
-                                showReceipt(productList, totalHarga);
+                                // Menambahkan transaksi ke koleksi transaksi
+                                const transactionRef = collection(db, 'transaksi'); // Pastikan ini merujuk ke koleksi yang benar
+                                await addDoc(transactionRef, {
+                                    tanggalTransaksi: new Date(), // Timestamp saat transaksi
+                                    produk: transactions // Data transaksi yang ingin disimpan
+                                });
+
+                                // Panggil showReceipt dengan tambahan parameter cash
+                                showReceipt(productList, totalHarga, cash);
 
                                 Swal.fire('Pembayaran berhasil!', '', 'success');
                                 totalHarga = 0;
@@ -676,70 +751,82 @@
                 }
             });
 
-            function showReceipt(productList, totalHarga) {
-                    const receiptElement = document.querySelector('.receipt');
 
-                    // Bersihkan elemen struk dan buat elemen tabel untuk tampilan struk
-                    receiptElement.innerHTML = `
-        <div class="centered bold">HannyBaby<br>STORE</div>
-        <div class="centered">Jl. Bukit Khatulistiwa</div>
-        <div class="line"></div>
-        <table>
-            <thead>
-                <tr>
-                    <th class="description">Description</th>
-                    <th class="price">Harga</th>
-                </tr>
-            </thead>
-            <tbody id="product-rows">
-            </tbody>
-        </table>
-        <div class="line"></div>
+            function showReceipt(productList, totalHarga, cash) {
+                const receiptElement = document.querySelector('.receipt');
+                let tanggalTransaksi = new Date().toLocaleString(); // Format tanggal dengan waktu
+                // Hitung kembalian
+                const kembalian = cash - totalHarga;
+
+                // Bersihkan elemen struk dan buat elemen tabel untuk tampilan struk
+                receiptElement.innerHTML = `
+    <div class="centered bold">HannyBaby<br>STORE</div>
+    <div class="centered">Jl. Bukit khatulistiwa, Paccerakkang Kec. Biringkanaya, kota makassar, Sulawesi Selatan 90245</div>
+    <div class="line"></div>
+    <div class="d-flex w-100 justify-content-between p-3">
+        <p id="tanggalTransaksi">${tanggalTransaksi}</p>
+        <p class="ms-auto" id="nama_akun">Sabir.</p>
+    </div>
+    <div class="line"></div>
+    <table>
+        <thead>
+            <tr class="thead-bottom-line">
+                <th class="description">Description</th>
+                <th class="price">Harga</th>
+            </tr>
+        </thead>
+        <tbody id="product-rows">
+        </tbody>
+        <tfoot>
+            <tr class="tfoot-bottom-line">
+                <td class="description"><strong>Total</strong></td>
+                <td class="price"><strong>Rp ${totalHarga.toLocaleString('id-ID')}</strong></td>
+            </tr>
+            <tr>
+                <td class="description"><strong>Cash</strong></td>
+                <td class="price"><strong>Rp ${cash.toLocaleString('id-ID')}</strong></td>
+            </tr>
+            <tr>
+                <td class="description"><strong>Kembalian</strong></td>
+                <td class="price"><strong>Rp ${kembalian.toLocaleString('id-ID')}</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+    <div class="line"></div>
     `;
 
-                    // Ambil elemen tbody tempat produk akan ditambahkan
-                    const productRows = document.getElementById('product-rows');
+                const productRows = document.getElementById('product-rows');
+                const products = productList.split('<br/>');
+                products.forEach(product => {
+                    const [namaProduk, ukuranProduk, hargaProduk, jumlah] = product.split('|').map(item => item.trim());
 
-                    // Pisahkan setiap produk dari productList
-                    const products = productList.split('<br/>');
-                    products.forEach(product => {
-                        const [namaProduk, ukuranProduk, hargaProduk] = product.split('|').map(item => item.trim());
-
-                        if (namaProduk && ukuranProduk && hargaProduk) {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                <td class="description">${namaProduk} ${ukuranProduk}</td>
-                <td class="harga">${hargaProduk.toLocaleString('id-ID')}</td>
+                    if (namaProduk && ukuranProduk && hargaProduk && jumlah) {
+                        const row = document.createElement('tr');
+                        const totalHargaProduk = (parseFloat(hargaProduk.replace(/\./g, '').replace('Rp ', '')) * jumlah).toLocaleString('id-ID');
+                        row.innerHTML = `
+                <td class="description">${namaProduk} (${ukuranProduk}) ${jumlah > 1 ? `x${jumlah}` : ''}</td>
+                <td class="harga">Rp ${totalHargaProduk}</td>
             `;
-                            productRows.appendChild(row);
-                        }
-                    });
+                        productRows.appendChild(row);
+                    }
+                });
 
-                    // Tambahkan total harga ke tabel
-                    const totalRow = document.createElement('tr');
-                    totalRow.innerHTML = `
-        <td class="description"><strong>Total</strong></td>
-        <td class="price"><strong>Rp ${totalHarga.toLocaleString('id-ID')}</strong></td>
-    `;
-                    productRows.appendChild(totalRow);
-
-                    // Tambahkan informasi kontak di bawah tabel
-                    receiptElement.innerHTML += `
-        <div class="line"></div>
-        <div class="centered">Telepon: 0822 39342497</div>
-        <div class="centered">E-mail: hannybabystore@gmail.com</div>
+                // Tambahkan informasi kontak di bawah tabel
+                receiptElement.innerHTML += `
+    <div class="line"></div>
+    <div class="centered">Tiktok: @hanybabystore</div>
+    <div class="centered">IG: @hannybabystore</div>
     `;
 
-                    // Tampilkan elemen struk dan cetak secara otomatis
-                    receiptElement.classList.remove('d-none');
-                    setTimeout(() => {
-                        window.print();
-                    }, 500);
-                }
-
+                // Tampilkan elemen struk dan cetak secara otomatis
+                receiptElement.classList.remove('d-none');
+                setTimeout(() => {
+                    window.print();
+                }, 500);
+            }
 
         // Fungsi untuk menambahkan input produk baru
-            document.getElementById("addProduk").addEventListener("click", function () {
+        document.getElementById("addProduk").addEventListener("click", function () {
                 const newProductGroup = document.createElement("div");
                 newProductGroup.classList.add("product-group", "mt-3");
 
@@ -798,9 +885,8 @@
                 newProductGroup.appendChild(sizeQuantityWrapper);
                 document.getElementById("sizeStockContainer").appendChild(newProductGroup);
             });
-
-            // Fungsi format harga menjadi mata uang Indonesia
-            function formatRupiah(angka) {
+        // Fungsi format harga menjadi mata uang Indonesia
+        function formatRupiah(angka) {
                 // Menghapus karakter non-digit
                 const num = angka.replace(/[^0-9]/g, '');
 
@@ -812,22 +898,18 @@
                 console.log(formatted); // Debugging: lihat hasil format
                 return formatted;
             }
-
-            // Fungsi untuk memformat angka ke format mata uang Indonesia
-            function formatCurrency(input) {
+        // Fungsi untuk memformat angka ke format mata uang Indonesia
+        function formatCurrency(input) {
                 let value = input.value.replace(/[^,\d]/g, '').toString();
                 if (value) {
                     input.value = parseInt(value, 10).toLocaleString('id-ID');
                 }
             }
-            document.getElementById('harga').addEventListener('input', function () {
-                formatCurrency(this);
-            });
-
-
-
-            // Fungsi untuk menghapus produk terakhir yang ditambahkan
-            document.getElementById("deleteAddProduk").addEventListener("click", function () {
+        document.getElementById('harga').addEventListener('input', function () {
+            formatCurrency(this);
+        });
+        // Fungsi untuk menghapus produk terakhir yang ditambahkan
+        document.getElementById("deleteAddProduk").addEventListener("click", function () {
                 const container = document.getElementById("sizeStockContainer");
                 const productGroups = container.getElementsByClassName("product-group");
 
@@ -838,21 +920,17 @@
                     alert("Tidak ada produk untuk dihapus.");
                 }
             });
-
-            // Fungsi untuk mereset semua input
-            document.getElementById("resetInput").addEventListener("click", function () {
-                const inputs = document.querySelectorAll(".product-group2"); // Ambil semua input dengan kelas product-group
-                inputs.forEach(input => {
-                    input.value = ""; // Kosongkan nilai input
-                });
+        // Fungsi untuk mereset semua input
+        document.getElementById("resetInput").addEventListener("click", function () {
+            const inputs = document.querySelectorAll(".product-group2"); // Ambil semua input dengan kelas product-group
+            inputs.forEach(input => {
+                input.value = ""; // Kosongkan nilai input
             });
-
-
-
-
+        });
         document.getElementById("printStruk").addEventListener("click", function () {
                 const strukContent = document.getElementById("strukContent");
                 strukContent.innerHTML = ""; // Hapus konten sebelumnya
+                let tanggalTransaksi = Date.now();
 
                 // Cek apakah semua input sudah diisi
                 const namaProdukInputs = document.getElementsByName("nama_produk[]");
@@ -875,19 +953,21 @@
 
                 // Bagian informasi toko
                 let strukHTML = `
-        <div class="centered bold">HannyBaby<br>STORE</div>
-        <div class="centered">Jl. Bukit Khatulistiwa</div>
-        <div class="line"></div>
-        <table>
-            <thead>
-                <tr>
-                    <th class="jumlah">Jumlah</th>
-                    <th class="nama_baju">Nama Baju</th>
-                    <th class="harga">Harga</th>
-                </tr>
-            </thead>
-            <tbody id="product-rows">
-    `;
+                    <div class="centered bold">HannyBaby<br>STORE</div>
+                    <div class="centered">Jl. Bukit Khatulistiwa</div>
+                    <div class="line"></div>
+                    <div class="centered"></div>
+                    <div class="line"></div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="jumlah">Jumlah</th>
+                                <th class="nama_baju">Nama Baju</th>
+                                <th class="harga">Harga</th>
+                            </tr>
+                        </thead>
+                        <tbody id="product-rows">
+                `;
 
                 let totalHarga = 0;
 
