@@ -197,7 +197,7 @@
 
                         <!-- Pendapatan perpekan -->
                         <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card border-left-primary shadow h-100 py-2 pendapatanPerpekan">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
@@ -318,7 +318,7 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="produkTerlarisLabel">Daftar Produk Terjual Bulan Ini</h5>
+                    <h5 class="modal-title text-success" id="produkTerlarisLabel">Daftar Produk Terjual Bulan Ini</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -328,7 +328,7 @@
                         <thead>
                             <tr>
                                 <th>Nama Produk</th>
-                                <th>Terjual</th>
+                                <th>Jumlah Terjual</th>
                             </tr>
                         </thead>
                         <tbody id="produkTerlarisList">
@@ -460,7 +460,7 @@
         }
     }
     
-    document.querySelector('.card').addEventListener('click', async () => {
+    document.querySelector('.pendapatanPerpekan').addEventListener('click', async () => {
         await getItemTerlarisBulanIni();
         $('#produkTerlarisModal').modal('show'); // Tampilkan modal setelah data dimuat
     });
@@ -536,9 +536,6 @@
 
     // Panggil fungsi setelah halaman selesai dimuat
     window.addEventListener('DOMContentLoaded', getItemTerlarisBulanIni);
-
-
-
 
     // Panggil fungsi saat halaman dimuat
     window.onload = filterTransaksiByDate;
