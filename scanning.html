@@ -929,119 +929,149 @@
         });
         
     document.getElementById("printStruk").addEventListener("click", async function () {
-        const strukContent = document.getElementById("strukContent");
-        strukContent.innerHTML = ""; // Hapus konten sebelumnya
-        let tanggalTransaksi = Date.now();
+            const strukContent = document.getElementById("strukContent");
+            strukContent.innerHTML = ""; // Hapus konten sebelumnya
+            let tanggalTransaksi = Date.now();
 
-        // Cek apakah semua input sudah diisi
-        const namaProdukInputs = document.getElementsByName("nama_produk[]");
-        const hargaInputs = document.getElementsByName("harga[]");
-        const ukuranInputs = document.getElementsByName("ukuran[]");
-        const jumlahInputs = document.getElementsByName("jumlah[]");
+            // Cek apakah semua input sudah diisi
+            const namaProdukInputs = document.getElementsByName("nama_produk[]");
+            const hargaInputs = document.getElementsByName("harga[]");
+            const ukuranInputs = document.getElementsByName("ukuran[]");
+            const jumlahInputs = document.getElementsByName("jumlah[]");
 
-        for (let i = 0; i < namaProdukInputs.length; i++) {
-            const namaProduk = namaProdukInputs[i].value;
-            const harga = hargaInputs[i].getAttribute('data-value'); // Ambil nilai dari data-value
-            const ukuran = ukuranInputs[i].value;
-            const jumlah = jumlahInputs[i].value;
+            let isValid = true; // Untuk melacak apakah semua input valid
 
-            // Periksa apakah ada input yang kosong
-            if (!namaProduk || !harga || !ukuran || !jumlah) {
-                alert("Silakan isi semua data produk terlebih dahulu sebelum mencetak struk.");
+            for (let i = 0; i < namaProdukInputs.length; i++) {
+                const namaProduk = namaProdukInputs[i].value.trim();
+                const harga = hargaInputs[i].getAttribute('data-value'); // Ambil nilai dari data-value
+                const ukuran = ukuranInputs[i].value.trim();
+                const jumlah = jumlahInputs[i].value.trim();
+
+                // Reset warna border sebelum validasi
+                namaProdukInputs[i].style.borderColor = "";
+                hargaInputs[i].style.borderColor = "";
+                ukuranInputs[i].style.borderColor = "";
+                jumlahInputs[i].style.borderColor = "";
+
+                // Periksa apakah ada input yang kosong
+                if (!namaProduk) {
+                    namaProdukInputs[i].style.borderColor = "red";
+                    isValid = false;
+                }
+                if (!harga) {
+                    hargaInputs[i].style.borderColor = "red";
+                    isValid = false;
+                }
+                if (!ukuran) {
+                    ukuranInputs[i].style.borderColor = "red";
+                    isValid = false;
+                }
+                if (!jumlah) {
+                    jumlahInputs[i].style.borderColor = "red";
+                    isValid = false;
+                }
+            }
+
+            if (!isValid) {
+                Swal.fire({
+                    title: "Periksa inputan",
+                    icon: "info",
+                    html: `Kesalahan ditandai dengan garis berwarna merah!`,
+                    showCloseButton: true,
+                    focusConfirm: false,
+                    confirmButtonText: `
+    <i class="fa fa-thumbs-up"></i> Okee!
+  `,
+                    confirmButtonAriaLabel: "Thumbs up, great!",
+                    
+                });
                 return; // Hentikan eksekusi jika ada input yang kosong
             }
-        }
 
-        // Bagian informasi toko
-        let strukHTML = `
-        <div class="centered bold">HannyBaby<br>STORE</div>
-        <div class="centered">Jl. Bukit Khatulistiwa</div>
-        <div class="line"></div>
-        <div class="centered"></div>
-        <div class="line"></div>
-        <table>
-            <thead>
-                <tr>
-                    <th class="jumlah">Jumlah</th>
-                    <th class="nama_baju">Nama Baju</th>
-                    <th class="harga">Harga</th>
-                </tr>
-            </thead>
-            <tbody id="product-rows">
+            // Bagian informasi toko
+            let strukHTML = `
+    <div class="centered bold">HannyBaby<br>STORE</div>
+    <div class="centered">Jl. Bukit Khatulistiwa</div>
+    <div class="line"></div>
+    <div class="centered"></div>
+    <div class="line"></div>
+    <table>
+        <thead>
+            <tr>
+                <th class="jumlah">Jumlah</th>
+                <th class="nama_baju">Nama Baju</th>
+                <th class="harga">Harga</th>
+            </tr>
+        </thead>
+        <tbody id="product-rows">
+`;
+
+            let totalHarga = 0;
+            const produkArray = []; // Array untuk menyimpan data produk
+
+            for (let i = 0; i < namaProdukInputs.length; i++) {
+                const namaProduk = namaProdukInputs[i].value;
+                const harga = parseFloat(hargaInputs[i].getAttribute('data-value')) || 0;
+                const jumlah = parseInt(jumlahInputs[i].value) || 0;
+                const ukuran = ukuranInputs[i].value;
+
+                const subtotal = harga * jumlah;
+                totalHarga += subtotal;
+
+                // Tambahkan objek produk ke dalam array
+                produkArray.push({
+                    "nama produk": namaProduk,
+                    "harga jual": harga,
+                    quantity: jumlah,
+                    ukuran: ukuran
+                });
+
+                // Tambahkan baris produk ke strukHTML
+                strukHTML += `
+        <tr>
+            <td>${jumlah}</td>
+            <td>${namaProduk} (${ukuran})</td>
+            <td>Rp ${subtotal.toLocaleString()}</td>
+        </tr>
     `;
-
-        let totalHarga = 0;
-        const produkArray = []; // Array untuk menyimpan data produk
-
-        for (let i = 0; i < namaProdukInputs.length; i++) {
-            const namaProduk = namaProdukInputs[i].value;
-            const harga = parseFloat(hargaInputs[i].getAttribute('data-value')) || 0; // Ambil nilai dari data-value
-            const jumlah = parseInt(jumlahInputs[i].value) || 0;
-            const ukuran = ukuranInputs[i].value;
-
-            // Validasi jika ada input yang kosong atau tidak valid
-            if (!namaProduk || !harga || !ukuran || !jumlah) {
-                alert("Silakan isi semua data produk (nama produk, harga, ukuran, dan jumlah) sebelum mencetak struk.");
-                return;
             }
 
-            const subtotal = harga * jumlah;
-            totalHarga += subtotal;
-
-            // Tambahkan objek produk ke dalam array
-            produkArray.push({
-                "nama produk": namaProduk,
-                "harga jual": harga,
-                quantity: jumlah,
-                ukuran: ukuran
-            });
-
-            // Tambahkan baris produk ke strukHTML
+            // Selesaikan struktur tabel dan tambahkan total harga
             strukHTML += `
-            <tr>
-                <td>${jumlah}</td>
-                <td>${namaProduk} (${ukuran})</td>
-                <td>Rp ${subtotal.toLocaleString()}</td>
-            </tr>
-        `;
-        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="2">Total Harga</td>
+            <td id="totalHarga">Rp ${totalHarga.toLocaleString()}</td>
+        </tr>
+    </tfoot>
+</table>
+<div class="line"></div>
+<p class="text-center">Terima Kasih sudah membeli produk kami.</p>
+`;
 
-        // Selesaikan struktur tabel dan tambahkan total harga
-        strukHTML += `
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="2">Total Harga</td>
-                <td id="totalHarga">Rp ${totalHarga.toLocaleString()}</td>
-            </tr>
-        </tfoot>
-    </table>
-    <div class="line"></div>
-    <p class="text-center">Terima Kasih sudah membeli produk kami.</p>
-    `;
+            strukContent.innerHTML = strukHTML;
+            document.getElementById("strukContainer").style.display = "block";
 
-        strukContent.innerHTML = strukHTML;
-        document.getElementById("strukContainer").style.display = "block";
+            // Tunggu sejenak agar struk tampil sebelum mencetak
+            setTimeout(() => {
+                window.print();
+            }, 100); // Delay 100 ms untuk memastikan elemen sudah ditampilkan
 
-        // Tunggu sejenak agar struk tampil sebelum mencetak
-        setTimeout(() => {
-            window.print();
-        }, 100); // Delay 100 ms untuk memastikan elemen sudah ditampilkan
+            // Simpan transaksi ke Firestore
+            try {
+                const transactionRef = collection(db, 'transaksi'); // Pastikan ini merujuk ke koleksi yang benar
+                await addDoc(transactionRef, {
+                    tanggalTransaksi: new Date(), // Timestamp saat transaksi
+                    produk: produkArray // Data transaksi yang ingin disimpan
+                });
+                alert("Transaksi berhasil disimpan.");
+            } catch (error) {
+                console.error("Error menyimpan transaksi: ", error);
+                alert("Gagal menyimpan transaksi.");
+            }
+        });
 
-        // Simpan transaksi ke Firestore
-        try {
-            // Menambahkan transaksi ke koleksi transaksi
-            const transactionRef = collection(db, 'transaksi'); // Pastikan ini merujuk ke koleksi yang benar
-            await addDoc(transactionRef, {
-                tanggalTransaksi: new Date(), // Timestamp saat transaksi
-                produk: produkArray // Data transaksi yang ingin disimpan
-            });
-            alert("Transaksi berhasil disimpan.");
-        } catch (error) {
-            console.error("Error menyimpan transaksi: ", error);
-            alert("Gagal menyimpan transaksi.");
-        }
-    });
         
     </script>
 
