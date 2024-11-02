@@ -825,66 +825,60 @@
                 }, 500);
             }
 
-        // Fungsi untuk menambahkan input produk baru
-        document.getElementById("addProduk").addEventListener("click", function () {
-                const newProductGroup = document.createElement("div");
-                newProductGroup.classList.add("product-group", "mt-3");
+    // Fungsi untuk menambahkan input produk baru
+    document.getElementById("addProduk").addEventListener("click", function () {
+        const newProductGroup = document.createElement("div");
+        newProductGroup.classList.add("product-group", "mt-3");
 
-                const namePriceWrapper = document.createElement("div");
-                namePriceWrapper.classList.add("d-flex", "gap-2", "mb-2");
+        const namePriceWrapper = document.createElement("div");
+        namePriceWrapper.classList.add("d-flex", "gap-2", "mb-2");
 
-                const newNamaInput = document.createElement("input");
-                newNamaInput.type = "text";
-                newNamaInput.name = "nama_produk[]";
-                newNamaInput.classList.add("form-control", "product-group2");
-                newNamaInput.placeholder = "Nama Baju";
+        const newNamaInput = document.createElement("input");
+        newNamaInput.type = "text";
+        newNamaInput.name = "nama_produk[]";
+        newNamaInput.classList.add("form-control", "product-group2");
+        newNamaInput.placeholder = "Nama Baju";
 
-                const newHargaInput = document.createElement("input");
-                newHargaInput.type = "text"; // Ubah menjadi 'text' agar kita bisa memformat
-                newHargaInput.name = "harga[]";
-                newHargaInput.classList.add("form-control", "product-group2");
-                newHargaInput.placeholder = "Harga";
+        const newHargaInput = document.createElement("input");
+        newHargaInput.type = "text"; 
+        newHargaInput.name = "harga[]";
+        newHargaInput.classList.add("form-control", "product-group2");
+        newHargaInput.placeholder = "Harga";
 
-                // Tambahkan event listener untuk memformat harga
-                newHargaInput.addEventListener("input", function () {
-                    // Simpan posisi kursor saat ini
-                    const cursorPosition = this.selectionStart;
+        // Tambahkan event listener untuk memformat harga dan mengisi `data-value`
+        newHargaInput.addEventListener("input", function () {
+            const cursorPosition = this.selectionStart;
+            const formattedValue = formatRupiah(this.value);
+            this.value = formattedValue;
+            this.setAttribute('data-value', this.value.replace(/[^0-9]/g, '')); // Set `data-value`
+            this.setSelectionRange(cursorPosition, cursorPosition);
+        });
 
-                    // Memformat nilai
-                    const formattedValue = formatRupiah(this.value);
+        namePriceWrapper.appendChild(newNamaInput);
+        namePriceWrapper.appendChild(newHargaInput);
 
-                    // Set value terformat
-                    this.value = formattedValue;
+        const sizeQuantityWrapper = document.createElement("div");
+        sizeQuantityWrapper.classList.add("d-flex", "gap-2");
 
-                    // Mengembalikan posisi kursor setelah memformat
-                    this.setSelectionRange(cursorPosition, cursorPosition);
-                });
+        const newUkuranInput = document.createElement("input");
+        newUkuranInput.type = "text";
+        newUkuranInput.name = "ukuran[]";
+        newUkuranInput.classList.add("ukuranbaju", "form-control", "product-group2");
+        newUkuranInput.placeholder = "Ukuran";
 
-                namePriceWrapper.appendChild(newNamaInput);
-                namePriceWrapper.appendChild(newHargaInput);
+        const newJumlahInput = document.createElement("input");
+        newJumlahInput.type = "number";
+        newJumlahInput.name = "jumlah[]";
+        newJumlahInput.classList.add("jumlahbaju", "form-control", "product-group2");
+        newJumlahInput.placeholder = "Jumlah";
 
-                const sizeQuantityWrapper = document.createElement("div");
-                sizeQuantityWrapper.classList.add("d-flex", "gap-2");
+        sizeQuantityWrapper.appendChild(newUkuranInput);
+        sizeQuantityWrapper.appendChild(newJumlahInput);
 
-                const newUkuranInput = document.createElement("input");
-                newUkuranInput.type = "text";
-                newUkuranInput.name = "ukuran[]";
-                newUkuranInput.classList.add("ukuranbaju", "form-control", "product-group2");
-                newUkuranInput.placeholder = "Ukuran";
-
-                const newJumlahInput = document.createElement("input");
-                newJumlahInput.type = "number";
-                newJumlahInput.name = "jumlah[]";
-                newJumlahInput.classList.add("jumlahbaju", "form-control", "product-group2");
-                newJumlahInput.placeholder = "Jumlah";
-
-                sizeQuantityWrapper.appendChild(newUkuranInput);
-                sizeQuantityWrapper.appendChild(newJumlahInput);
-
-                newProductGroup.appendChild(namePriceWrapper);
-                newProductGroup.appendChild(sizeQuantityWrapper);
-                document.getElementById("sizeStockContainer").appendChild(newProductGroup);
-            });
+        newProductGroup.appendChild(namePriceWrapper);
+        newProductGroup.appendChild(sizeQuantityWrapper);
+        document.getElementById("sizeStockContainer").appendChild(newProductGroup);
+    });
         // Fungsi format harga menjadi mata uang Indonesia
         function formatRupiah(angka) {
                 // Menghapus karakter non-digit
@@ -985,6 +979,12 @@
             const jumlah = parseInt(jumlahInputs[i].value) || 0;
             const ukuran = ukuranInputs[i].value;
 
+            // Validasi jika ada input yang kosong atau tidak valid
+            if (!namaProduk || !harga || !ukuran || !jumlah) {
+                alert("Silakan isi semua data produk (nama produk, harga, ukuran, dan jumlah) sebelum mencetak struk.");
+                return;
+            }
+
             const subtotal = harga * jumlah;
             totalHarga += subtotal;
 
@@ -1043,9 +1043,7 @@
         }
     });
         
-
     </script>
-
 
 </body>
 </html>
