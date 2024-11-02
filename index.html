@@ -217,19 +217,21 @@
                             </div>
                         </div>
 
-                        <!-- Iem terlaris bulan ini -->
+                        <!-- Item terlaris bulan ini -->
                         <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card border-left-success shadow h-100 py-2" id="cardTerlaris">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                                 Baju Terlaris untuk bulan ini</div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800 terlaris">loading</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800 terlaris mb-2">loading</div>
+                                                <p class="text-success">Klik untuk melihat</p>
                                         </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                        <div class="col-auto mb-3">
+                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>                                            
                                         </div>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -310,6 +312,38 @@
         <i class="fas fa-angle-up"></i>
     </a>
 
+    <!-- Modal -->
+    <div class="modal fade" id="produkTerlarisModal" tabindex="-1" role="dialog" aria-labelledby="produkTerlarisLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="produkTerlarisLabel">Daftar Produk Terjual Bulan Ini</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nama Produk</th>
+                                <th>Jumlah Terjual</th>
+                            </tr>
+                        </thead>
+                        <tbody id="produkTerlarisList">
+                            <!-- Data produk akan dimuat di sini -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Logout Modal-->
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -377,67 +411,69 @@
     }
 
     // Fungsi untuk mendapatkan dan menampilkan total pendapatan perpekan
-        async function filterTransaksiByDate() {
-            const { start, end } = getWeeklyRange();
+    async function filterTransaksiByDate() {
+        const { start, end } = getWeeklyRange();
 
-            let totalPendapatanMingguan = 0;
-            const transaksiMingguan = {
-                Senin: [], Selasa: [], Rabu: [], Kamis: [], Jumat: [], Sabtu: [], Minggu: []
-            };
+        let totalPendapatanMingguan = 0;
+        const transaksiMingguan = {
+            Senin: [], Selasa: [], Rabu: [], Kamis: [], Jumat: [], Sabtu: [], Minggu: []
+        };
 
-            try {
-                const querySnapshot = await db.collection("transaksi")
-                    .where("tanggalTransaksi", ">=", start)
-                    .where("tanggalTransaksi", "<=", end)
-                    .get();
+        try {
+            const querySnapshot = await db.collection("transaksi")
+                .where("tanggalTransaksi", ">=", start)
+                .where("tanggalTransaksi", "<=", end)
+                .get();
 
-                querySnapshot.forEach((doc) => {
-                    const transaksiData = doc.data();
-                    const produkArray = transaksiData.produk;
-                    const tanggalTransaksi = transaksiData.tanggalTransaksi.toDate();
-                    const options = { weekday: 'long' };
-                    const hariTransaksi = tanggalTransaksi.toLocaleDateString('id-ID', options);
+            querySnapshot.forEach((doc) => {
+                const transaksiData = doc.data();
+                const produkArray = transaksiData.produk;
+                const tanggalTransaksi = transaksiData.tanggalTransaksi.toDate();
+                const options = { weekday: 'long' };
+                const hariTransaksi = tanggalTransaksi.toLocaleDateString('id-ID', options);
 
-                    if (transaksiMingguan[hariTransaksi]) {
-                        transaksiMingguan[hariTransaksi].push({ tanggalTransaksi, produkArray });
-                    }
-                });
+                if (transaksiMingguan[hariTransaksi]) {
+                    transaksiMingguan[hariTransaksi].push({ tanggalTransaksi, produkArray });
+                }
+            });
 
-                // Menghitung total pendapatan tanpa menampilkan tabel
-                Object.keys(transaksiMingguan).forEach((hari) => {
-                    transaksiMingguan[hari].forEach((transaksi) => {
-                        transaksi.produkArray.forEach((produk) => {
-                            const subtotal = produk["harga jual"] * produk.quantity;
-                            totalPendapatanMingguan += subtotal;
-                        });
+            // Menghitung total pendapatan tanpa menampilkan tabel
+            Object.keys(transaksiMingguan).forEach((hari) => {
+                transaksiMingguan[hari].forEach((transaksi) => {
+                    transaksi.produkArray.forEach((produk) => {
+                        const subtotal = produk["harga jual"] * produk.quantity;
+                        totalPendapatanMingguan += subtotal;
                     });
                 });
+            });
 
-                // Update total pendapatan perpekan di tampilan
-                document.getElementById('totalPendapatanPerpekan').textContent = `Rp${totalPendapatanMingguan.toLocaleString()}`;
+            // Update total pendapatan perpekan di tampilan
+            document.getElementById('totalPendapatanPerpekan').textContent = `Rp${totalPendapatanMingguan.toLocaleString()}`;
 
-                // Update tanggal awal dan akhir di tampilan
-                const formattedStart = start.toLocaleDateString('id-ID');
-                const formattedEnd = end.toLocaleDateString('id-ID');
-                document.getElementById('tanggalawalakhir').textContent = `${formattedStart} - ${formattedEnd}`;
+            // Update tanggal awal dan akhir di tampilan
+            const formattedStart = start.toLocaleDateString('id-ID');
+            const formattedEnd = end.toLocaleDateString('id-ID');
+            document.getElementById('tanggalawalakhir').textContent = `${formattedStart} - ${formattedEnd}`;
 
-            } catch (error) {
-                console.error("Error mengambil data transaksi: ", error);
-            }
+        } catch (error) {
+            console.error("Error mengambil data transaksi: ", error);
         }
-    // Fungsi untuk mendapatkan item terlaris dalam bulan ini
+    }
+    
+    document.querySelector('.card').addEventListener('click', async () => {
+        await getItemTerlarisBulanIni();
+        $('#produkTerlarisModal').modal('show'); // Tampilkan modal setelah data dimuat
+    });
+
     async function getItemTerlarisBulanIni() {
         const tanggalSekarang = new Date();
         const awalBulan = new Date(tanggalSekarang.getFullYear(), tanggalSekarang.getMonth(), 1);
         const akhirBulan = new Date(tanggalSekarang.getFullYear(), tanggalSekarang.getMonth() + 1, 0);
-        akhirBulan.setHours(23, 59, 59); // Set jam akhir di akhir hari untuk inklusi
+        akhirBulan.setHours(23, 59, 59);
 
-        let produkTerlaris = 'Tidak ada data bulan ini';
-        let jumlahTerbanyak = 0;
         const produkCounts = {};
 
         try {
-            // Ambil transaksi dalam rentang bulan ini
             const querySnapshot = await db.collection("transaksi")
                 .where("tanggalTransaksi", ">=", awalBulan)
                 .where("tanggalTransaksi", "<=", akhirBulan)
@@ -455,22 +491,48 @@
                         produkCounts[namaProduk] = (produkCounts[namaProduk] || 0) + jumlah;
                     });
                 });
+            }
 
-                for (const [produk, jumlah] of Object.entries(produkCounts)) {
-                    if (jumlah > jumlahTerbanyak) {
-                        jumlahTerbanyak = jumlah;
-                        produkTerlaris = produk;
-                    }
+            // Cari produk dengan jumlah terjual terbanyak
+            let produkTerlaris = 'Tidak ada data bulan ini';
+            let jumlahTerbanyak = 0;
+
+            for (const [produk, jumlah] of Object.entries(produkCounts)) {
+                if (jumlah > jumlahTerbanyak) {
+                    jumlahTerbanyak = jumlah;
+                    produkTerlaris = produk;
                 }
             }
 
-            // Update tampilan produk terlaris bulan ini
+            // Update tampilan "Item Terlaris Bulan Ini"
             document.querySelector('.terlaris').textContent = `${produkTerlaris}`;
+
+            // Tampilkan daftar produk dan jumlahnya di modal
+            const produkList = document.getElementById('produkTerlarisList');
+            produkList.innerHTML = ''; // Kosongkan daftar sebelumnya
+
+            for (const [nama, jumlah] of Object.entries(produkCounts)) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${nama}</td>
+                <td>${jumlah}</td>
+            `;
+                produkList.appendChild(row);
+            }
 
         } catch (error) {
             console.error("Error mendapatkan item terlaris: ", error);
         }
     }
+
+    document.getElementById('cardTerlaris').addEventListener('click', function () {
+            // Tampilkan modal saat card diklik
+            $('#produkTerlarisModal').modal('show');
+
+            // Panggil fungsi untuk menampilkan daftar produk dan jumlah terjual
+            getItemTerlarisBulanIni();
+        });
+
 
     // Panggil fungsi setelah halaman selesai dimuat
     window.addEventListener('DOMContentLoaded', getItemTerlarisBulanIni);
