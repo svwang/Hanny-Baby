@@ -460,10 +460,7 @@
         }
     }
     
-    document.querySelector('.pendapatanPerpekan').addEventListener('click', async () => {
-        await getItemTerlarisBulanIni();
-        $('#produkTerlarisModal').modal('show'); // Tampilkan modal setelah data dimuat
-    });
+    
 
     async function getItemTerlarisBulanIni() {
         const tanggalSekarang = new Date();
