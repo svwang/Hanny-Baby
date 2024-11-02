@@ -195,33 +195,37 @@
                     <!-- Content Row -->
                     <div class="row">
 
-                        <!-- Earnings (Monthly) Card Example -->
+                        <!-- Pendapatan perpekan -->
                         <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-primary shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                Penjualan (Bulanan)</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">Rp.0.000</div>
+                                                Pendapatan (Pekan ini)</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalPendapatanPerpekan">Rp.0.000</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                        </div>
+
+                                        <div class="col-auto" id="tanggalawalakhir">
+                                            
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Earnings (Monthly) Card Example -->
+                        <!-- Iem terlaris bulan ini -->
                         <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-success shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                Stok Baju (Seluruh Baju)</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                                                Baju Terlaris untuk bulan ini</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800 terlaris">loading</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -355,7 +359,129 @@
 
     <script src="js/firebase-config.js"></script>
 
+    <script>
+        
+    // Inisialisasi Firestore
+    const db = firebase.firestore();
 
+    // Fungsi untuk mendapatkan rentang tanggal minggu berjalan
+    function getWeeklyRange() {
+        const today = new Date();
+        const dayOfWeek = today.getDay();
+        const differenceToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+        const startDate = new Date(today);
+        startDate.setDate(today.getDate() + differenceToMonday);
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 6);
+        return { start: startDate, end: endDate };
+    }
+
+    // Fungsi untuk mendapatkan dan menampilkan total pendapatan perpekan
+        async function filterTransaksiByDate() {
+            const { start, end } = getWeeklyRange();
+
+            let totalPendapatanMingguan = 0;
+            const transaksiMingguan = {
+                Senin: [], Selasa: [], Rabu: [], Kamis: [], Jumat: [], Sabtu: [], Minggu: []
+            };
+
+            try {
+                const querySnapshot = await db.collection("transaksi")
+                    .where("tanggalTransaksi", ">=", start)
+                    .where("tanggalTransaksi", "<=", end)
+                    .get();
+
+                querySnapshot.forEach((doc) => {
+                    const transaksiData = doc.data();
+                    const produkArray = transaksiData.produk;
+                    const tanggalTransaksi = transaksiData.tanggalTransaksi.toDate();
+                    const options = { weekday: 'long' };
+                    const hariTransaksi = tanggalTransaksi.toLocaleDateString('id-ID', options);
+
+                    if (transaksiMingguan[hariTransaksi]) {
+                        transaksiMingguan[hariTransaksi].push({ tanggalTransaksi, produkArray });
+                    }
+                });
+
+                // Menghitung total pendapatan tanpa menampilkan tabel
+                Object.keys(transaksiMingguan).forEach((hari) => {
+                    transaksiMingguan[hari].forEach((transaksi) => {
+                        transaksi.produkArray.forEach((produk) => {
+                            const subtotal = produk["harga jual"] * produk.quantity;
+                            totalPendapatanMingguan += subtotal;
+                        });
+                    });
+                });
+
+                // Update total pendapatan perpekan di tampilan
+                document.getElementById('totalPendapatanPerpekan').textContent = `Rp${totalPendapatanMingguan.toLocaleString()}`;
+
+                // Update tanggal awal dan akhir di tampilan
+                const formattedStart = start.toLocaleDateString('id-ID');
+                const formattedEnd = end.toLocaleDateString('id-ID');
+                document.getElementById('tanggalawalakhir').textContent = `${formattedStart} - ${formattedEnd}`;
+
+            } catch (error) {
+                console.error("Error mengambil data transaksi: ", error);
+            }
+        }
+    // Fungsi untuk mendapatkan item terlaris dalam bulan ini
+    async function getItemTerlarisBulanIni() {
+        const tanggalSekarang = new Date();
+        const awalBulan = new Date(tanggalSekarang.getFullYear(), tanggalSekarang.getMonth(), 1);
+        const akhirBulan = new Date(tanggalSekarang.getFullYear(), tanggalSekarang.getMonth() + 1, 0);
+        akhirBulan.setHours(23, 59, 59); // Set jam akhir di akhir hari untuk inklusi
+
+        let produkTerlaris = 'Tidak ada data bulan ini';
+        let jumlahTerbanyak = 0;
+        const produkCounts = {};
+
+        try {
+            // Ambil transaksi dalam rentang bulan ini
+            const querySnapshot = await db.collection("transaksi")
+                .where("tanggalTransaksi", ">=", awalBulan)
+                .where("tanggalTransaksi", "<=", akhirBulan)
+                .get();
+
+            if (!querySnapshot.empty) {
+                querySnapshot.forEach((doc) => {
+                    const transaksiData = doc.data();
+                    const produkArray = transaksiData.produk;
+
+                    produkArray.forEach((produk) => {
+                        const namaProduk = produk["nama produk"];
+                        const jumlah = produk.quantity;
+
+                        produkCounts[namaProduk] = (produkCounts[namaProduk] || 0) + jumlah;
+                    });
+                });
+
+                for (const [produk, jumlah] of Object.entries(produkCounts)) {
+                    if (jumlah > jumlahTerbanyak) {
+                        jumlahTerbanyak = jumlah;
+                        produkTerlaris = produk;
+                    }
+                }
+            }
+
+            // Update tampilan produk terlaris bulan ini
+            document.querySelector('.terlaris').textContent = `${produkTerlaris}`;
+
+        } catch (error) {
+            console.error("Error mendapatkan item terlaris: ", error);
+        }
+    }
+
+    // Panggil fungsi setelah halaman selesai dimuat
+    window.addEventListener('DOMContentLoaded', getItemTerlarisBulanIni);
+
+
+
+
+    // Panggil fungsi saat halaman dimuat
+    window.onload = filterTransaksiByDate;
+
+    </script>
 </body>
 
 </html>
