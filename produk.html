@@ -436,6 +436,18 @@
 
                     <div class="form-container">
                         <input type="text" placeholder="Nama produk">
+                        <select id="kategoriInputDropdown" class="containerDropdown">
+                            <option value="">Semua produk</option>
+                            <option value="baju">Baju</option>
+                            <option value="one set">One Set</option>
+                            <option value="celana">Celana</option>
+                            <option value="dress">Dress</option>
+                            <option value="celana panjang">Celana Panjang</option>
+                            <option value="gamis">Gamis</option>
+                            <option value="branded">Branded</option>
+                            <option value="rumahan">Rumahan</option>
+                            <!-- Tambahkan kategori lainnya sesuai kebutuhan -->
+                        </select>
                         <input type="text" id="hargaDibeli" placeholder="Harga Dibeli">
                         <input type="text" id="hargaJual" placeholder="Harga Jual">
                     
@@ -531,10 +543,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-qrcode/1.0/jquery.qrcode.min.js"></script>
-
-
-
-    
     
     <script>
         
@@ -755,9 +763,6 @@
         }
 
 
-
-
-
         // Fungsi untuk memformat angka ke format mata uang Indonesia
         function formatCurrency(input) {
             let value = input.value.replace(/[^,\d]/g, '').toString();
@@ -822,6 +827,7 @@
                 try {
                     // Ambil elemen input
                     const namaProduk = document.querySelector("input[placeholder='Nama produk']").value;
+                    const kategori = document.getElementById("kategoriInputDropdown").value;
                     const hargaDibeli = document.getElementById("hargaDibeli").value.replace(/\D/g, '');
                     const hargaJual = document.getElementById("hargaJual").value.replace(/\D/g, '');
                     const ukuranElems = document.querySelectorAll("input[name='ukuran[]']");
@@ -832,6 +838,12 @@
                     if (!fileInput.files.length) {
                         alert("Pilih gambar terlebih dahulu.");
                         spinner.style.display = 'none'; // Sembunyikan spinner
+                        return;
+                    }
+
+                    if (!namaProduk || !kategori || !hargaDibeli || !hargaJual) {
+                        alert("Semua field harus diisi.");
+                        spinner.style.display = 'none';
                         return;
                     }
 
@@ -943,6 +955,7 @@
                     const produkRef = db.collection('produk').doc(namaProduk);
                     await produkRef.set({
                         "nama produk": namaProduk,
+                        kategori : kategori,
                         "harga dibeli": parseInt(hargaDibeli),
                         imageUrl: imageUrl
                     });
@@ -960,6 +973,7 @@
                     alert("Data produk berhasil ditambahkan!");
                     // Clear form inputs setelah submit
                     document.querySelector("input[placeholder='Nama produk']").value = '';
+                    document.getElementById("kategoriInputDropdown").value = '';
                     document.getElementById("hargaDibeli").value = '';
                     document.getElementById("hargaJual").value = '';
                     fileInput.value = '';
