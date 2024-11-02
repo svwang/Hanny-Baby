@@ -12,73 +12,77 @@
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
-        
+
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <link href="css/myCSS.css" rel="stylesheet">
     <style>
-
-    .containerDropdown {
-        background-color: #ffffff;
-        margin: 10px 2px 20px 0;
-        padding: 5px;
-        outline: 2px solid #f3af40;
-        color: rgb(0, 0, 0);
-        border: none;
-        border-radius: 5px;
-    }
+        .containerDropdown {
+            background-color: #ffffff;
+            margin: 10px 2px 20px 0;
+            padding: 5px;
+            outline: 2px solid #f3af40;
+            color: rgb(0, 0, 0);
+            border: none;
+            border-radius: 5px;
+        }
 
         /* Container styling */
-#ukuranContainer {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center; /* Mengatur jarak antar card */
-    gap: 1;
-}
+        #ukuranContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            /* Mengatur jarak antar card */
+            gap: 1;
+        }
 
-.ukuran-card {
-        width: calc(340px - 0.5rem); /* Membuat card menjadi dua kolom */
-        max-width: none; /* Menyeting max-width agar sesuai dengan lebar */
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        background-color: #f9f9f9;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        margin: 5px;
-        transition: transform 0.2s ease;
-    }
+        .ukuran-card {
+            width: calc(340px - 0.5rem);
+            /* Membuat card menjadi dua kolom */
+            max-width: none;
+            /* Menyeting max-width agar sesuai dengan lebar */
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 5px;
+            transition: transform 0.2s ease;
+        }
 
-.ukuran-card:hover {
-    transform: translateY(-5px);
-}
+        .ukuran-card:hover {
+            transform: translateY(-5px);
+        }
 
-.ukuran-card-header {
-    background-color: #4e73df;
-    color: #fff;
-    padding: 10px;
-    text-align: center;
-}
+        .ukuran-card-header {
+            background-color: #4e73df;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
 
-.ukuran-card-header h6 {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: bold;
-}
+        .ukuran-card-header h6 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: bold;
+        }
 
-.ukuran-card-body {
-    padding: 10px;
-}
+        .ukuran-card-body {
+            padding: 10px;
+        }
 
-.ukuran-card-body p {
-    margin: 0.5rem 0;
-    font-size: 0.9rem;
-}
+        .ukuran-card-body p {
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
 
 
         .loading-spinner {
-            border: 8px solid #f3f3f3; /* Light grey */
-            border-top: 8px solid #d69a39; /* Blue */
+            border: 8px solid #f3f3f3;
+            /* Light grey */
+            border-top: 8px solid #d69a39;
+            /* Blue */
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -87,12 +91,18 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 1000; /* Pastikan spinner terlihat di atas elemen lain */
+            z-index: 1000;
+            /* Pastikan spinner terlihat di atas elemen lain */
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         #scanner {
@@ -110,7 +120,7 @@
         }
 
         .form-container {
-            
+
             padding: 20px;
             border-radius: 8px;
             width: 100%;
@@ -196,8 +206,6 @@
             font-size: 12px;
             cursor: pointer;
         }
-
-
     </style>
 
     <!-- my js -->
@@ -252,8 +260,8 @@
 
             <!-- Produk Menu -->
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseProduk" aria-expanded="true"
-                    aria-controls="collapseTwo">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseProduk"
+                    aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-box"></i>
                     <span>Produk</span>
                 </a>
@@ -298,18 +306,17 @@
                     </button>
 
                     <!-- Topbar Search -->
-                    <!-- <form
-                            class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                            <div class="input-group">
-                                <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
-                                    aria-label="Search" aria-describedby="basic-addon2">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button">
-                                        <i class="fas fa-search fa-sm"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </form> -->
+                <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                    <div class="input-group">
+                        <input type="text" class="form-control bg-light border-0 small" id="searchInput" placeholder="Search for..."
+                            aria-label="Search" aria-describedby="basic-addon2">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="button">
+                                <i class="fas fa-search fa-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
@@ -353,7 +360,7 @@
                     <!-- Page Heading -->
                     <div class="flex align-items-center justify-content-between mb-2">
                         <h1 class="h3 mb-0 text-gray-800">Daftar Produk</h1>
-                        
+
                     </div>
                     <!-- Button to open the modal -->
                     <button class="btn btn-success" type="button" data-toggle="modal" data-target="#addProduct">
@@ -456,17 +463,19 @@
                         </select>
                         <input type="text" id="hargaDibeli" placeholder="Harga Dibeli">
                         <input type="text" id="hargaJual" placeholder="Harga Jual">
-                    
+
                         <div id="sizeStockContainer">
                             <div class="size-stock-input d-flex">
-                                <input type="text" name="ukuran[]" class="ukuranbaju" id="ukuranbaju" placeholder="Ukuran">
+                                <input type="text" name="ukuran[]" class="ukuranbaju" id="ukuranbaju"
+                                    placeholder="Ukuran">
                                 <input type="number" name="stok[]" class="stokbaju" id="stokbaju" placeholder="Stok">
                             </div>
                         </div>
-                    
-                        <button type="button" id="addSizeStock" class="btn btn-secondary mt-2">Tambah Ukuran & Stok</button>
-                    
-                        
+
+                        <button type="button" id="addSizeStock" class="btn btn-secondary mt-2">Tambah Ukuran &
+                            Stok</button>
+
+
                         <div class="form-container">
                             <input type="file" id="file" style="display: none;">
                             <label for="file" id="fileLabel" class="btn">Pilih Gambar</label>
@@ -477,11 +486,11 @@
                             <div class="loading-spinner"></div>
                         </div>
 
-                        
+
                         <button id="addProductButton">TAMBAH DATA</button>
                     </div>
                 </div>
-                
+
             </div>
         </div>
     </div>
@@ -493,10 +502,11 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <div class="row col-12 col-lg-12">
-                        <button type="button" class="btn-close fa-solid fa-xmark fa-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close fa-solid fa-xmark fa-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                         <div class="d-flex justify-content-center container-imgProduk w-100">
                             <img src="img/undraw_posting_photo.svg" alt="gambar baju" width="50%" id="imgProduk">
-                            
+
                         </div>
                         <div class="deskripsiProduk">
                             <div class="ct-produkName">
@@ -506,10 +516,10 @@
                             <h6 id="hargaJual"></h6>
                             <h6 id="stok"></h6>
                             <h6 id="ukuran"></h6>
-                        
-                        
+
+
                             <div id="ukuranContainer">
-                        
+
                             </div>
                         </div>
                     </div>
@@ -521,7 +531,7 @@
 
     <!-- Bootstrap core JavaScript-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    
+
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -535,12 +545,12 @@
 
     <!-- Firebase App (wajib) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    
+
     <!-- Firebase Firestore -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <!-- Firebase Storage -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-    
+
     <!-- FIREBASE PILIHAN -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -549,15 +559,26 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-qrcode/1.0/jquery.qrcode.min.js"></script>
-    
+
     <script>
-        
+
         // Inisialisasi Firestore dan Storage
         const db = firebase.firestore();
         const storage = firebase.storage();
 
+        // Event listener untuk input pencarian
+            document.getElementById('searchInput').addEventListener('input', function () {
+                const searchTerm = this.value.toLowerCase();
+                const filteredProduk = produkCache.filter(produk => produk.namaProduk.toLowerCase().includes(searchTerm));
+
+                const produkContainer = document.querySelector('.row');
+                produkContainer.innerHTML = ''; // Bersihkan konten sebelumnya
+
+                // Tampilkan produk yang sesuai dengan pencarian
+                tampilkanProduk(filteredProduk, produkContainer);
+            });
+
         // Fungsi untuk mendapatkan data produk
-        
         async function getData() {
             const produkContainer = document.querySelector('.row'); // Target div.row untuk menampilkan produk
             produkContainer.innerHTML = ''; // Bersihkan konten sebelumnya
@@ -650,32 +671,29 @@
         }
 
         // Event listener untuk dropdown kategori
-            document.getElementById('kategoriDropdown').addEventListener('change', function () {
-                const kategoriDipilih = this.value; // Ambil kategori yang dipilih
-                const produkContainer = document.querySelector('.row'); // Target kontainer produk
+        document.getElementById('kategoriDropdown').addEventListener('change', function () {
+            const kategoriDipilih = this.value; // Ambil kategori yang dipilih
+            const produkContainer = document.querySelector('.row'); // Target kontainer produk
 
-                // Tampilkan pesan "Mohon tunggu sebentar" jika data belum lengkap
-                if (!produkCache || produkCache.length === 0) {
-                    produkContainer.innerHTML = '<div class="text-center my-4">Mohon tunggu sebentar...</div>';
-                } else {
-                    // Filter produk sesuai kategori jika data sudah siap
-                    const produkFiltered = kategoriDipilih ?
-                        produkCache.filter(produk => produk.kategori === kategoriDipilih) :
-                        produkCache; // Jika tidak ada filter, ambil semua produk
+            // Tampilkan pesan "Mohon tunggu sebentar" jika data belum lengkap
+            if (!produkCache || produkCache.length === 0) {
+                produkContainer.innerHTML = '<div class="text-center my-4">Mohon tunggu sebentar...</div>';
+            } else {
+                // Filter produk sesuai kategori jika data sudah siap
+                const produkFiltered = kategoriDipilih ?
+                    produkCache.filter(produk => produk.kategori === kategoriDipilih) :
+                    produkCache; // Jika tidak ada filter, ambil semua produk
 
-                    // Kosongkan kontainer dan tampilkan produk yang sesuai
-                    produkContainer.innerHTML = ''; // Bersihkan kontainer sebelum menampilkan produk yang difilter
-                    tampilkanProduk(produkFiltered, produkContainer); // Tampilkan produk yang sesuai
-                }
-            });
-
+                // Kosongkan kontainer dan tampilkan produk yang sesuai
+                produkContainer.innerHTML = ''; // Bersihkan kontainer sebelum menampilkan produk yang difilter
+                tampilkanProduk(produkFiltered, produkContainer); // Tampilkan produk yang sesuai
+            }
+        });
 
         // Panggil fungsi getData untuk menampilkan semua produk saat halaman dimuat
         window.onload = getData;
 
-
-
-    $('#staticBackdrop').on('show.bs.modal', function (event) {
+        $('#staticBackdrop').on('show.bs.modal', function (event) {
             console.log("Modal akan ditampilkan"); // Log untuk melihat apakah event berjalan
             const button = $(event.relatedTarget); // Tombol yang membuka modal
             const productId = button.data('id'); // Ambil id produk dari data attribute tombol
@@ -688,7 +706,7 @@
             const hargadibeliElement = document.getElementById("hargadibeli");
             const imgProdukElement = document.getElementById("imgProduk");
 
-            console.log(namaProdukElement,  imgProdukElement); // Log untuk melihat elemen
+            console.log(namaProdukElement, imgProdukElement); // Log untuk melihat elemen
 
             if (namaProdukElement && imgProdukElement) {
                 // Update elemen dengan data yang diterima
@@ -743,11 +761,10 @@
             }
         }
 
+        // Panggil fungsi getData untuk menampilkan produk saat halaman dimuat
+        window.onload = getData;
 
-    // Panggil fungsi getData untuk menampilkan produk saat halaman dimuat
-    window.onload = getData;
-
-    function editStok(productId, ukuran, currentStok, hargaDibeli) {
+        function editStok(productId, ukuran, currentStok, hargaDibeli) {
             const newStok = prompt("Masukkan jumlah stok baru:", currentStok);
             if (newStok !== null) {
                 // Membuat nama dokumen sesuai format "ukuran + ukuran"
@@ -759,7 +776,7 @@
                 })
                     .then(() => {
                         alert("Stok berhasil diperbarui!");
-                        getProductSizeData(productId,hargaDibeli); // Panggil kembali untuk memperbarui tampilan
+                        getProductSizeData(productId, hargaDibeli); // Panggil kembali untuk memperbarui tampilan
                     })
                     .catch((error) => {
                         console.error("Error memperbarui stok: ", error);
@@ -767,7 +784,6 @@
                     });
             }
         }
-
 
         // Fungsi untuk memformat angka ke format mata uang Indonesia
         function formatCurrency(input) {
@@ -814,185 +830,185 @@
             counter++;
         });
 
-         document.getElementById('file').addEventListener('change', function () {
-                const fileInput = document.getElementById('file');
-                const fileNameDisplay = document.getElementById('fileName');
+        document.getElementById('file').addEventListener('change', function () {
+            const fileInput = document.getElementById('file');
+            const fileNameDisplay = document.getElementById('fileName');
 
-                // Ambil nama file pertama dari input (jika ada)
-                if (fileInput.files.length > 0) {
-                    fileNameDisplay.textContent = fileInput.files[0].name;
-                } else {
-                    fileNameDisplay.textContent = 'Belum ada file yang dipilih';
-                }
-            });
+            // Ambil nama file pertama dari input (jika ada)
+            if (fileInput.files.length > 0) {
+                fileNameDisplay.textContent = fileInput.files[0].name;
+            } else {
+                fileNameDisplay.textContent = 'Belum ada file yang dipilih';
+            }
+        });
 
         document.getElementById('addProductButton').addEventListener('click', async function () {
-                const spinner = document.getElementById('spinner');
-                spinner.style.display = 'block'; // Tampilkan spinner
+            const spinner = document.getElementById('spinner');
+            spinner.style.display = 'block'; // Tampilkan spinner
 
-                try {
-                    // Ambil elemen input
-                    const namaProduk = document.querySelector("input[placeholder='Nama produk']").value;
-                    const kategori = document.getElementById("kategoriInputDropdown").value;
-                    const hargaDibeli = document.getElementById("hargaDibeli").value.replace(/\D/g, '');
-                    const hargaJual = document.getElementById("hargaJual").value.replace(/\D/g, '');
-                    const ukuranElems = document.querySelectorAll("input[name='ukuran[]']");
-                    const stokElems = document.querySelectorAll("input[name='stok[]']");
-                    const fileInput = document.getElementById('file');
+            try {
+                // Ambil elemen input
+                const namaProduk = document.querySelector("input[placeholder='Nama produk']").value;
+                const kategori = document.getElementById("kategoriInputDropdown").value;
+                const hargaDibeli = document.getElementById("hargaDibeli").value.replace(/\D/g, '');
+                const hargaJual = document.getElementById("hargaJual").value.replace(/\D/g, '');
+                const ukuranElems = document.querySelectorAll("input[name='ukuran[]']");
+                const stokElems = document.querySelectorAll("input[name='stok[]']");
+                const fileInput = document.getElementById('file');
 
-                    // Validasi input file
-                    if (!fileInput.files.length) {
-                        alert("Pilih gambar terlebih dahulu.");
-                        spinner.style.display = 'none'; // Sembunyikan spinner
-                        return;
-                    }
-
-                    if (!namaProduk || !kategori || !hargaDibeli || !hargaJual) {
-                        alert("Semua field harus diisi.");
-                        spinner.style.display = 'none';
-                        return;
-                    }
-
-                    // Array untuk ukuran dan stok
-                    const ukuranStokArray = [];
-                    ukuranElems.forEach((ukuranElem, index) => {
-                        ukuranStokArray.push({
-                            ukuran: ukuranElem.value,
-                            stok: stokElems[index].value
-                        });
-                    });
-
-                    // Gambar QR Code untuk setiap ukuran dan simpan sebagai file terpisah
-                    const qrCodeCanvasArray = [];
-                    const qrCodeSize = 120;
-
-                    for (const item of ukuranStokArray) {
-                        const qrData = `${namaProduk},${item.ukuran},${hargaJual}`;
-                        const qrCodeCanvas = document.createElement('canvas');
-                        qrCodeCanvas.width = qrCodeSize;
-                        qrCodeCanvas.height = qrCodeSize;
-
-                        const ctx = qrCodeCanvas.getContext('2d');
-                        await new Promise((resolve) => {
-                            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=${qrCodeSize}x${qrCodeSize}`;
-                            const img = new Image();
-                            img.crossOrigin = "Anonymous";
-                            img.onload = () => {
-                                ctx.drawImage(img, 0, 0);
-                                resolve();
-                            };
-                            img.src = qrCodeUrl;
-                        });
-
-                        qrCodeCanvasArray.push({ canvas: qrCodeCanvas, ukuran: item.ukuran });
-                    }
-
-                    for (const item of qrCodeCanvasArray) {
-                        const canvas = item.canvas;
-                        const ukuran = item.ukuran;
-
-                        const finalCanvas = document.createElement('canvas');
-                        const finalWidth = 330;
-                        const finalHeight = 150;
-                        finalCanvas.width = finalWidth;
-                        finalCanvas.height = finalHeight;
-                        const finalCtx = finalCanvas.getContext('2d');
-
-                        finalCtx.fillStyle = "#fff";
-                        finalCtx.fillRect(0, 0, finalWidth, finalHeight);
-
-                        finalCtx.drawImage(canvas, 10, 15);
-                        
-                        // Fungsi untuk menggambar teks dengan pemecahan baris
-                        function drawMultilineText(ctx, text, x, y, maxWidth, lineHeight) {
-                            const words = text.split(' ');
-                            let line = '';
-
-                            for (let n = 0; n < words.length; n++) {
-                                const testLine = line + words[n] + ' ';
-                                const metrics = ctx.measureText(testLine);
-                                const testWidth = metrics.width;
-
-                                if (testWidth > maxWidth && n > 0) {
-                                    ctx.fillText(line, x, y);
-                                    line = words[n] + ' ';
-                                    y += lineHeight; // Geser ke bawah untuk baris berikutnya
-                                } else {
-                                    line = testLine;
-                                }
-                            }
-                            ctx.fillText(line, x, y); // Gambar baris terakhir
-                        }
-
-                        // Menggambar informasi produk di sebelah kanan
-                        finalCtx.fillStyle = "#000"; // Warna teks
-                        const textOffsetX = 150;
-                        const maxWidth = finalWidth - textOffsetX - 20; // Batasi lebar teks
-                        const lineHeight = 30; // Tinggi baris
-
-                        // Set font untuk nama produk dan gambar dengan memecah baris
-                        finalCtx.font = "20px Arial"; // Ukuran font untuk nama produk
-                        drawMultilineText(finalCtx, namaProduk, textOffsetX, 30, maxWidth, lineHeight);
-
-                        // Kembalikan ukuran font untuk ukuran dan harga jual
-                        finalCtx.font = "25px Arial"; // Ukuran font untuk ukuran dan harga
-                        finalCtx.fillText(`${ukuran}`, 280, 130); // Menggambar ukuran
-                        finalCtx.fillText(`Rp ${hargaJual}`, textOffsetX, 130); // Menggambar harga jual
-
-                        const imageDataUrl = finalCanvas.toDataURL("image/jpeg");
-
-                        const link = document.createElement('a');
-                        link.href = imageDataUrl;
-                        link.download = `${namaProduk}_${ukuran}.jpg`;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    }
-
-                    // Upload gambar ke Firebase Storage
-                    const file = fileInput.files[0];
-                    let imageName = namaProduk.toLowerCase();
-
-                    const storageRef = storage.ref(`gambar_baju/${imageName}.jpg`);
-                    await storageRef.put(file);
-                    const imageUrl = await storageRef.getDownloadURL();
-
-                    // Simpan data ke Firestore
-                    const produkRef = db.collection('produk').doc(namaProduk);
-                    await produkRef.set({
-                        "nama produk": namaProduk,
-                        kategori : kategori,
-                        "harga dibeli": parseInt(hargaDibeli),
-                        imageUrl: imageUrl
-                    });
-
-                    const ukuranStokRef = produkRef.collection('ukuran');
-                    for (const item of ukuranStokArray) {
-                        const ukuranDocName = 'ukuran ' + item.ukuran;
-                        await ukuranStokRef.doc(ukuranDocName).set({
-                            ukuran: item.ukuran,
-                            stok: parseInt(item.stok),
-                            "harga jual": parseInt(hargaJual)
-                        });
-                    }
-
-                    alert("Data produk berhasil ditambahkan!");
-                    // Clear form inputs setelah submit
-                    document.querySelector("input[placeholder='Nama produk']").value = '';
-                    document.getElementById("kategoriInputDropdown").value = '';
-                    document.getElementById("hargaDibeli").value = '';
-                    document.getElementById("hargaJual").value = '';
-                    fileInput.value = '';
-                    document.getElementById('fileName').textContent = 'Belum ada file yang dipilih';
-                    document.getElementById("sizeStockContainer").innerHTML = ''; // Bersihkan input ukuran & stok
-
-                } catch (error) {
-                    console.error("Error menambahkan data produk: ", error);
-                    alert("Gagal menambahkan data produk.");
-                } finally {
-                    spinner.style.display = 'none'; // Sembunyikan spinner di akhir
+                // Validasi input file
+                if (!fileInput.files.length) {
+                    alert("Pilih gambar terlebih dahulu.");
+                    spinner.style.display = 'none'; // Sembunyikan spinner
+                    return;
                 }
-            });
+
+                if (!namaProduk || !kategori || !hargaDibeli || !hargaJual) {
+                    alert("Semua field harus diisi.");
+                    spinner.style.display = 'none';
+                    return;
+                }
+
+                // Array untuk ukuran dan stok
+                const ukuranStokArray = [];
+                ukuranElems.forEach((ukuranElem, index) => {
+                    ukuranStokArray.push({
+                        ukuran: ukuranElem.value,
+                        stok: stokElems[index].value
+                    });
+                });
+
+                // Gambar QR Code untuk setiap ukuran dan simpan sebagai file terpisah
+                const qrCodeCanvasArray = [];
+                const qrCodeSize = 120;
+
+                for (const item of ukuranStokArray) {
+                    const qrData = `${namaProduk},${item.ukuran},${hargaJual}`;
+                    const qrCodeCanvas = document.createElement('canvas');
+                    qrCodeCanvas.width = qrCodeSize;
+                    qrCodeCanvas.height = qrCodeSize;
+
+                    const ctx = qrCodeCanvas.getContext('2d');
+                    await new Promise((resolve) => {
+                        const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=${qrCodeSize}x${qrCodeSize}`;
+                        const img = new Image();
+                        img.crossOrigin = "Anonymous";
+                        img.onload = () => {
+                            ctx.drawImage(img, 0, 0);
+                            resolve();
+                        };
+                        img.src = qrCodeUrl;
+                    });
+
+                    qrCodeCanvasArray.push({ canvas: qrCodeCanvas, ukuran: item.ukuran });
+                }
+
+                for (const item of qrCodeCanvasArray) {
+                    const canvas = item.canvas;
+                    const ukuran = item.ukuran;
+
+                    const finalCanvas = document.createElement('canvas');
+                    const finalWidth = 330;
+                    const finalHeight = 150;
+                    finalCanvas.width = finalWidth;
+                    finalCanvas.height = finalHeight;
+                    const finalCtx = finalCanvas.getContext('2d');
+
+                    finalCtx.fillStyle = "#fff";
+                    finalCtx.fillRect(0, 0, finalWidth, finalHeight);
+
+                    finalCtx.drawImage(canvas, 10, 15);
+
+                    // Fungsi untuk menggambar teks dengan pemecahan baris
+                    function drawMultilineText(ctx, text, x, y, maxWidth, lineHeight) {
+                        const words = text.split(' ');
+                        let line = '';
+
+                        for (let n = 0; n < words.length; n++) {
+                            const testLine = line + words[n] + ' ';
+                            const metrics = ctx.measureText(testLine);
+                            const testWidth = metrics.width;
+
+                            if (testWidth > maxWidth && n > 0) {
+                                ctx.fillText(line, x, y);
+                                line = words[n] + ' ';
+                                y += lineHeight; // Geser ke bawah untuk baris berikutnya
+                            } else {
+                                line = testLine;
+                            }
+                        }
+                        ctx.fillText(line, x, y); // Gambar baris terakhir
+                    }
+
+                    // Menggambar informasi produk di sebelah kanan
+                    finalCtx.fillStyle = "#000"; // Warna teks
+                    const textOffsetX = 150;
+                    const maxWidth = finalWidth - textOffsetX - 20; // Batasi lebar teks
+                    const lineHeight = 30; // Tinggi baris
+
+                    // Set font untuk nama produk dan gambar dengan memecah baris
+                    finalCtx.font = "20px Arial"; // Ukuran font untuk nama produk
+                    drawMultilineText(finalCtx, namaProduk, textOffsetX, 30, maxWidth, lineHeight);
+
+                    // Kembalikan ukuran font untuk ukuran dan harga jual
+                    finalCtx.font = "25px Arial"; // Ukuran font untuk ukuran dan harga
+                    finalCtx.fillText(`${ukuran}`, 280, 130); // Menggambar ukuran
+                    finalCtx.fillText(`Rp ${hargaJual}`, textOffsetX, 130); // Menggambar harga jual
+
+                    const imageDataUrl = finalCanvas.toDataURL("image/jpeg");
+
+                    const link = document.createElement('a');
+                    link.href = imageDataUrl;
+                    link.download = `${namaProduk}_${ukuran}.jpg`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+
+                // Upload gambar ke Firebase Storage
+                const file = fileInput.files[0];
+                let imageName = namaProduk.toLowerCase();
+
+                const storageRef = storage.ref(`gambar_baju/${imageName}.jpg`);
+                await storageRef.put(file);
+                const imageUrl = await storageRef.getDownloadURL();
+
+                // Simpan data ke Firestore
+                const produkRef = db.collection('produk').doc(namaProduk);
+                await produkRef.set({
+                    "nama produk": namaProduk,
+                    kategori: kategori,
+                    "harga dibeli": parseInt(hargaDibeli),
+                    imageUrl: imageUrl
+                });
+
+                const ukuranStokRef = produkRef.collection('ukuran');
+                for (const item of ukuranStokArray) {
+                    const ukuranDocName = 'ukuran ' + item.ukuran;
+                    await ukuranStokRef.doc(ukuranDocName).set({
+                        ukuran: item.ukuran,
+                        stok: parseInt(item.stok),
+                        "harga jual": parseInt(hargaJual)
+                    });
+                }
+
+                alert("Data produk berhasil ditambahkan!");
+                // Clear form inputs setelah submit
+                document.querySelector("input[placeholder='Nama produk']").value = '';
+                document.getElementById("kategoriInputDropdown").value = '';
+                document.getElementById("hargaDibeli").value = '';
+                document.getElementById("hargaJual").value = '';
+                fileInput.value = '';
+                document.getElementById('fileName').textContent = 'Belum ada file yang dipilih';
+                document.getElementById("sizeStockContainer").innerHTML = ''; // Bersihkan input ukuran & stok
+
+            } catch (error) {
+                console.error("Error menambahkan data produk: ", error);
+                alert("Gagal menambahkan data produk.");
+            } finally {
+                spinner.style.display = 'none'; // Sembunyikan spinner di akhir
+            }
+        });
 
     </script>
 
