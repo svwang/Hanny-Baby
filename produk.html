@@ -305,7 +305,7 @@
                         <i class="fa fa-bars"></i>
                     </button>
 
-                    
+
 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
@@ -350,8 +350,8 @@
                     <!-- Topbar Search -->
                     <form class="d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                         <div class="input-group">
-                            <input type="text" class="form-control bg-light border-0 small" id="searchInput" placeholder="Search for..."
-                                aria-label="Search" aria-describedby="basic-addon2">
+                            <input type="text" class="form-control bg-light border-0 small" id="searchInput"
+                                placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
                             <div class="input-group-append">
                                 <button class="btn btn-primary" type="button">
                                     <i class="fas fa-search fa-sm"></i>
@@ -383,6 +383,8 @@
                         <option value="kemeja">kemeja</option>
                         <option value="rompi">Rompi</option>
                         <option value="jaket">Jaket</option>
+                        <option value="kaos">Kaos</option>
+                        <option value="aksesories">Aksesories</option>
                         <!-- Tambahkan kategori lainnya sesuai kebutuhan -->
                     </select>
                     <!-- Content Row -->
@@ -463,6 +465,8 @@
                             <option value="kemeja">Kemeja</option>
                             <option value="rompi">Rompi</option>
                             <option value="jaket">Jaket</option>
+                            <option value="kaos">Kaos</option>
+                            <option value="aksesories">Aksesories</option>
                             <!-- Tambahkan kategori lainnya sesuai kebutuhan -->
                         </select>
                         <input type="text" id="hargaDibeli" placeholder="Harga Dibeli">
@@ -571,16 +575,16 @@
         const storage = firebase.storage();
 
         // Event listener untuk input pencarian
-            document.getElementById('searchInput').addEventListener('input', function () {
-                const searchTerm = this.value.toLowerCase();
-                const filteredProduk = produkCache.filter(produk => produk.namaProduk.toLowerCase().includes(searchTerm));
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const searchTerm = this.value.toLowerCase();
+            const filteredProduk = produkCache.filter(produk => produk.namaProduk.toLowerCase().includes(searchTerm));
 
-                const produkContainer = document.querySelector('.row');
-                produkContainer.innerHTML = ''; // Bersihkan konten sebelumnya
+            const produkContainer = document.querySelector('.row');
+            produkContainer.innerHTML = ''; // Bersihkan konten sebelumnya
 
-                // Tampilkan produk yang sesuai dengan pencarian
-                tampilkanProduk(filteredProduk, produkContainer);
-            });
+            // Tampilkan produk yang sesuai dengan pencarian
+            tampilkanProduk(filteredProduk, produkContainer);
+        });
 
         // Fungsi untuk mendapatkan data produk
         async function getData() {
