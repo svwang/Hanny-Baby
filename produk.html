@@ -584,81 +584,81 @@
 
             // Tampilkan produk yang sesuai dengan pencarian
             tampilkanProduk(filteredProduk, produkContainer);
-        });
+        });      
 
         // Fungsi untuk mendapatkan data produk
-        async function getData() {
-            const produkContainer = document.querySelector('.row'); // Target div.row untuk menampilkan produk
-            produkContainer.innerHTML = ''; // Bersihkan konten sebelumnya
+            async function getData() {
+                const produkContainer = document.querySelector('.row'); // Target div.row untuk menampilkan produk
+                produkContainer.innerHTML = ''; // Bersihkan konten sebelumnya
 
-            // Menampilkan spinner loading
-            const loadingContainer = document.createElement('div');
-            loadingContainer.style.position = 'fixed';
-            loadingContainer.style.top = '0';
-            loadingContainer.style.left = '0';
-            loadingContainer.style.width = '100%';
-            loadingContainer.style.height = '100%';
-            loadingContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
-            loadingContainer.style.display = 'flex';
-            loadingContainer.style.flexDirection = 'column';
-            loadingContainer.style.alignItems = 'center';
-            loadingContainer.style.justifyContent = 'center';
-            loadingContainer.style.zIndex = '9999';
+                // Menampilkan spinner loading
+                const loadingContainer = document.createElement('div');
+                loadingContainer.style.position = 'fixed';
+                loadingContainer.style.top = '0';
+                loadingContainer.style.left = '0';
+                loadingContainer.style.width = '100%';
+                loadingContainer.style.height = '100%';
+                loadingContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+                loadingContainer.style.display = 'flex';
+                loadingContainer.style.flexDirection = 'column';
+                loadingContainer.style.alignItems = 'center';
+                loadingContainer.style.justifyContent = 'center';
+                loadingContainer.style.zIndex = '9999';
 
-            const loadingSpinner = document.createElement('div');
-            loadingSpinner.className = 'spinner-border';
-            loadingSpinner.style.display = 'block';
-            loadingSpinner.style.marginBottom = '10px';
-            loadingSpinner.innerHTML = '<span class="sr-only">Loading...</span>';
+                const loadingSpinner = document.createElement('div');
+                loadingSpinner.className = 'spinner-border';
+                loadingSpinner.style.display = 'block';
+                loadingSpinner.style.marginBottom = '10px';
+                loadingSpinner.innerHTML = '<span class="sr-only">Loading...</span>';
 
-            const loadingText = document.createElement('div');
-            loadingText.textContent = 'Sedang load data...';
-            loadingText.style.fontSize = '1.5rem';
-            loadingText.style.color = '#333';
+                const loadingText = document.createElement('div');
+                loadingText.textContent = 'Sedang load data...';
+                loadingText.style.fontSize = '1.5rem';
+                loadingText.style.color = '#333';
 
-            loadingContainer.appendChild(loadingSpinner);
-            loadingContainer.appendChild(loadingText);
-            document.body.appendChild(loadingContainer);
+                loadingContainer.appendChild(loadingSpinner);
+                loadingContainer.appendChild(loadingText);
+                document.body.appendChild(loadingContainer);
 
-            try {
-                const querySnapshot = await db.collection("produk").get();
+                try {
+                    const querySnapshot = await db.collection("produk").get();
 
-                // Simpan produk dalam cache dan tampilkan produk satu per satu
-                produkCache = [];
+                    // Simpan produk dalam cache dan tampilkan produk satu per satu
+                    produkCache = [];
 
-                for (const doc of querySnapshot.docs) {
-                    const produkData = doc.data();
-                    const namaProduk = produkData['nama produk'];
-                    const hargaDibeli = produkData['harga dibeli'];
-                    const kategori = produkData.kategori;
-                    const productId = doc.id;
-                    const namaImage = namaProduk.toLowerCase();
-                    const imageName = `gambar_baju/${namaImage}.jpg`;
+                    for (const doc of querySnapshot.docs) {
+                        const produkData = doc.data();
+                        const namaProduk = produkData['nama produk'];
+                        const hargaDibeli = produkData['harga dibeli'];
+                        const kategori = produkData.kategori;
+                        const productId = doc.id;
+                        const namaImage = namaProduk.toLowerCase();
+                        const imageName = `gambar_baju/${namaImage}.jpg`;
 
-                    // Dapatkan URL gambar
-                    const imageUrl = await storage.ref(imageName).getDownloadURL();
+                        // Dapatkan URL gambar
+                        const imageUrl = await storage.ref(imageName).getDownloadURL();
 
-                    // Buat objek produk dan tambahkan ke cache
-                    const produk = { productId, namaProduk, hargaDibeli, kategori, imageUrl };
-                    produkCache.push(produk);
+                        // Buat objek produk dan tambahkan ke cache
+                        const produk = { productId, namaProduk, hargaDibeli, kategori, imageUrl };
+                        produkCache.push(produk);
 
-                    // Hilangkan spinner saat data produk pertama muncul
-                    if (produkCache.length === 1) {
-                        document.body.removeChild(loadingContainer);
+                        // Hilangkan spinner saat data produk pertama muncul
+                        if (produkCache.length === 1) {
+                            document.body.removeChild(loadingContainer);
+                        }
+
+                        // Tampilkan produk yang sudah siap
+                        tampilkanProduk([produk], produkContainer);
                     }
-
-                    // Tampilkan produk yang sudah siap
-                    tampilkanProduk([produk], produkContainer);
+                } catch (error) {
+                    console.error("Error mengambil data: ", error);
                 }
-            } catch (error) {
-                console.error("Error mengambil data: ", error);
             }
-        }
 
-        // Fungsi untuk menampilkan produk dalam kontainer
-        function tampilkanProduk(produkList, produkContainer) {
-            produkList.forEach(({ productId, namaProduk, hargaDibeli, imageUrl }) => {
-                const produkElement = `
+            // Fungsi untuk menampilkan produk dalam kontainer
+            function tampilkanProduk(produkList, produkContainer) {
+                produkList.forEach(({ productId, namaProduk, hargaDibeli, imageUrl }) => {
+                    const produkElement = `
         <div class="col-xl-3 col-md-6 mb-4" data-bs-toggle="modal" data-bs-target="#staticBackdrop" data-id="${productId}" data-nama-produk="${namaProduk}" data-image-url="${imageUrl}" data-harga-beli="${hargaDibeli}">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
@@ -674,9 +674,9 @@
                 </div>
             </div>
         </div>`;
-                produkContainer.innerHTML += produkElement;
-            });
-        }
+                    produkContainer.innerHTML += produkElement;
+                });
+            }
 
         // Event listener untuk dropdown kategori
         document.getElementById('kategoriDropdown').addEventListener('change', function () {
