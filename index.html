@@ -46,7 +46,7 @@
             overflow: hidden;
             width: 100%;
             background: #f5f5f5;
-            box-shadow: 5px 5px 15px rgba(182, 131, 64, 0.5);
+            box-shadow: 5px 5px 15px rgba(216, 190, 156, 0.267);
             border-radius: 10px;
             padding: 20px;
         }
@@ -773,24 +773,39 @@
             .then((videoInputDevices) => {
                 const sourceSelect = document.getElementById('sourceSelect')
                 let demoContentVideo = document.getElementById('demo-content')
-                const resultElement = document.getElementById('result')
-
-                selectedDeviceId = videoInputDevices[0].deviceId
-                if (videoInputDevices.length >= 1) {
-                    videoInputDevices.forEach((element) => {
-                        const sourceOption = document.createElement('option')
-                        sourceOption.text = element.label
-                        sourceOption.value = element.deviceId
-                        sourceSelect.appendChild(sourceOption)
-                    })
-                    sourceSelect.onchange = () => {
-                        selectedDeviceId = sourceSelect.value;
-                    };
-                    const sourceSelectPanel = document.getElementById('sourceSelectPanel')
-                    sourceSelectPanel.style.display = 'block'
-                }
+                const resultElement = document.getElementById('result')                
 
                 document.getElementById('scan-button').addEventListener('click', () => {
+                    if (videoInputDevices.length > 0) {
+                        // Menampilkan daftar perangkat kamera dengan prompt
+                        let cameraOptions = videoInputDevices.map((device, index) => `${index + 1}. ${device.label}`).join('\n');
+                        let userChoice = prompt(`Pilih kamera:\n${cameraOptions}`);
+
+                        // Cek apakah pilihan valid
+                        if (userChoice !== null && userChoice > 0 && userChoice <= videoInputDevices.length) {
+                            selectedDeviceId = videoInputDevices[userChoice - 1].deviceId;
+                            console.log(`Kamera yang dipilih: ${videoInputDevices[userChoice - 1].label}`);
+
+                            // Mulai pemindaian setelah memilih kamera
+                            demoContentVideo.style.display = 'block';
+                            codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+                                if (result) {
+                                    console.log("Barcode detected: ", result.text);
+                                    resultElement.textContent = `Barcode terdeteksi: ${result.text}`;
+                                    resultElement.style.color = 'green';
+                                }
+                                if (err && !(err instanceof ZXing.NotFoundException)) {
+                                    console.error(err);
+                                    resultElement.textContent = err;
+                                }
+                            });
+                            console.log(`Started continuous decode from camera with id ${selectedDeviceId}`);
+                        } else {
+                            alert("Pilihan tidak valid.");
+                        }
+                    } else {
+                        alert("Tidak ada perangkat video yang terdeteksi.");
+                    }
                     demoContentVideo.style.display = 'block'
                     resultElement.textContent = ""; // Kosongkan hasil sebelumnya
 
