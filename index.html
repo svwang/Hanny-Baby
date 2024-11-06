@@ -26,6 +26,158 @@
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/teCss.css">
+
+    <style>
+        video {
+            width: 100%;
+            height: auto;
+            border: 1px solid black;
+        }
+        @import url("https://fonts.googleapis.com/css?family=Lato:400,700");
+
+
+
+        .container-card-produk {
+            position: relative;
+            margin: auto;
+            overflow: hidden;
+            width: 100%;
+            background: #f5f5f5;
+            box-shadow: 5px 5px 15px rgba(182, 131, 64, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .text-paraf {
+            font-size: 0.6em;
+            color: #baa27e;
+            letter-spacing: 1px;
+        }
+
+        .text-namaProduk {
+            font-size: 1.2em;
+            color: #4e4e4e;
+            margin-top: -5px;
+        }
+
+        .text-harga {
+            color: #d19e30;
+            margin-top: -5px;
+        }
+
+        .images {
+            width: 290px;
+            margin-top: 47px;
+        }
+
+        .slideshow-buttons {
+            top: 70%;
+            display: none;
+        }
+
+        .one,
+        .two,
+        .three,
+        .four {
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #e0c9cb;
+        }
+
+        .one {
+            left: 22%;
+        }
+
+        .two {
+            left: 27%;
+        }
+
+        .three {
+            left: 32%;
+        }
+
+        .four {
+            left: 37%;
+        }
+
+        .product {
+            position: absolute;
+            width: 40%;
+            height: 100%;
+            top: 10%;
+            left: 60%;
+        }
+
+        .desc {
+            text-transform: none;
+            letter-spacing: 0;
+            margin-bottom: 17px;
+            color: #4e4e4e;
+            font-size: 0.7em;
+            line-height: 1.6em;
+            margin-right: 25px;
+            text-align: justify;
+        }
+
+        .sizes {
+            display: grid;
+            color: #dfa150;
+            grid-template-columns: repeat(auto-fill, 50px);
+            width: 100%;
+            grid-gap: 4px;
+            cursor: pointer;
+        }
+
+        /* .pick {
+            margin-top: 11px;
+            margin-bottom: 0;
+            margin-left: 20px;
+        } */
+
+        .size {
+            padding: 10px;
+            border: 1px solid #e0c9cb;
+            font-size: 0.7em;
+            text-align: center;
+            transition: all 0.4s ease-in-out;
+        }
+
+        .size:hover {
+            background: #ba9e7e;
+            color: #f5f5f5;
+        }
+
+        .focus {
+            background: #baaf7e;
+            color: #f5f5f5;
+        }
+
+        @media (max-width: 768px) {
+            .container-card-produk {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .images {
+                width: 100%;
+                margin-top: 0;
+            }
+
+            .product {
+                position: relative;
+                width: 100%;
+                height: auto;
+                top: 0;
+                left: 0;
+                margin-top: 20px;
+            }
+        }
+    </style>
 
 </head>
 
@@ -188,9 +340,10 @@
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-                        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
-                    </div>
+                        <button type="button" id="cek-barang" class="d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#cekBarangModal">
+                            <i class="fas fa-box fa-sm text-white-50"></i> Cek Barang
+                        </button>
+                    </div>                                        
 
                     <!-- Content Row -->
                     <div class="row">
@@ -312,7 +465,7 @@
         <i class="fas fa-angle-up"></i>
     </a>
 
-    <!-- Modal -->
+    <!-- Modal List Produk yang terjual bulan ini -->
     <div class="modal fade" id="produkTerlarisModal" tabindex="-1" role="dialog" aria-labelledby="produkTerlarisLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -335,6 +488,37 @@
                             <!-- Data produk akan dimuat di sini -->
                         </tbody>
                     </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cek barang -->
+    <div class="modal fade" id="cekBarangModal" tabindex="-1" role="dialog" aria-labelledby="cekBarangLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-success" id="produkTerlarisLabel">Silahkan Scan atau input kode barang untuk cek informasi</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <button type="button" id="scan-button" class="d-sm-inline-block btn btn-sm btn-primary shadow-sm mb-3">
+                        <i class="fas fa-box fa-sm text-white-50"></i> Scan Barang
+                    </button>
+                    <div id="video-container" style="display: none;">
+                        <video id="video" autoplay></video>
+                    </div>
+                    
+                    <p id="resultCekBarang" style="display: none;"></p>
+
+                    <div id="productDataDisplay" style="display: none;"></div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -382,16 +566,22 @@
     <script src="js/demo/chart-pie-demo.js"></script>
     
 
-    <!-- FIREBASE WAJIB -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <!-- Firebase App (wajib) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <!-- Firebase Storage -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     
     <!-- FIREBASE PILIHAN -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
 
     <script src="js/firebase-config.js"></script>
+
+    
 
     <script>
         
@@ -460,8 +650,6 @@
         }
     }
     
-    
-
     async function getItemTerlarisBulanIni() {
         const tanggalSekarang = new Date();
         const awalBulan = new Date(tanggalSekarang.getFullYear(), tanggalSekarang.getMonth(), 1);
@@ -530,14 +718,180 @@
             getItemTerlarisBulanIni();
         });
 
-
     // Panggil fungsi setelah halaman selesai dimuat
     window.addEventListener('DOMContentLoaded', getItemTerlarisBulanIni);
-
     // Panggil fungsi saat halaman dimuat
     window.onload = filterTransaksiByDate;
 
     </script>
+
+
+    <script type="module">
+
+        // Konfigurasi Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
+
+        const app = initializeApp(firebaseConfig);
+        const db2 = getFirestore(app);
+        const scanButton = document.getElementById('scan-button');
+        const videoContainer = document.getElementById('video-container');
+        const video = document.getElementById('video');
+        const resultElement = document.getElementById('resultCekBarang');
+        const codeReader = new ZXing.BrowserQRCodeReader();
+
+        let scannedData = '';
+        let scanTimeout;
+
+        scanButton.addEventListener('click', async () => {
+            videoContainer.style.display = 'block';
+            scanButton.style.display = 'none';
+            resultElement.textContent = ""; // Kosongkan hasil sebelumnya
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                video.srcObject = stream;
+
+                codeReader.decodeFromVideoDevice(null, video, (result, err) => {
+                    if (result) {
+                        console.log("Barcode detected: ", result.text);
+                        resultElement.textContent = `Barcode terdeteksi: ${result.text}`;
+                        resultElement.style.color = 'green';
+
+                        // Proses data yang dipindai
+                        const trimmedData = result.text.trim();
+                        console.log(`Scanned text: ${trimmedData}`);
+
+                        let scanData = trimmedData.split(',');
+                        if (scanData.length < 3) {
+                            alert("Data yang dipindai tidak lengkap. Pastikan memasukkan nama, ukuran, dan harga produk.");
+                            return;
+                        }
+
+                        let namaProduk = scanData[0].trim();
+                        let ukuranProduk = scanData[1].trim();
+                        let hargaProduk = parseFloat(scanData[2]);
+
+                        if (isNaN(hargaProduk) || hargaProduk <= 0) {
+                            alert("Harga produk tidak valid.");
+                            return;
+                        }
+
+                        // Cek ketersediaan produk di Firestore dan tampilkan data
+                        checkProductAvailability(namaProduk, ukuranProduk).then(productData => {
+                            if (productData) {
+                                const formattedPrice = hargaProduk.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });                                
+                                // Tampilkan semua data produk yang sama
+                                displayProductData(productData);
+                            } else {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Gagal",
+                                    text: `Produk ${namaProduk} ukuran ${ukuranProduk} tidak tersedia`
+                                });
+                            }
+                        });
+
+                        // Hentikan pemindaian
+                        stream.getTracks().forEach(track => track.stop());
+                        videoContainer.style.display = 'none';
+                        scanButton.style.display = 'block';
+                    }
+                    if (err && !(err instanceof ZXing.NotFoundException)) {
+                        console.error(err);
+                    }
+                });
+            } catch (error) {
+                console.error("Error accessing the camera: ", error);
+            }
+        });
+
+    async function checkProductAvailability(namaProduk) {
+        const docRef = doc(db2, 'produk', namaProduk);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            const imageUrl = docSnap.get('imageUrl');
+            const kategori = docSnap.get('kategori').toUpperCase();
+            const hargaBeli = docSnap.data()['harga dibeli'];
+
+            // Mengambil semua ukuran dari sub-collection "ukuran"
+            const ukuranCollectionRef = collection(db2, 'produk', namaProduk, 'ukuran');
+            const ukuranSnapshots = await getDocs(ukuranCollectionRef);
+
+            // Menyimpan semua ukuran yang ditemukan dalam array
+            const ukuranDataArray = [];
+            ukuranSnapshots.forEach((ukuranDoc) => {
+                ukuranDataArray.push({
+                    ukuran: ukuranDoc.id,
+                    stok: ukuranDoc.data().stok,
+                    harga: ukuranDoc.data()['harga jual']
+                });
+            });
+
+            return {
+                imageUrl: imageUrl,
+                nama: namaProduk,
+                kategori: kategori,
+                hargabeli: hargaBeli,
+                ukuranData: ukuranDataArray // Semua ukuran yang ditemukan
+            };
+        }
+        return false;
+    }
+    
+    function displayProductData(productData) {
+        let displayElement = document.getElementById('productDataDisplay');
+
+        // Menyusun elemen ukuran dengan event listener
+        let ukuranElements = productData.ukuranData.map((ukuranItem, index) => `
+        <div class="size" id="size-${index}" onclick="updatePriceAndStock(${index})">
+            ${ukuranItem.ukuran}
+        </div>
+    `).join("");
+
+        // Menampilkan data produk secara keseluruhan
+        displayElement.innerHTML = `                
+        <div class="container-card-produk">
+            <div class="images">
+                <img src="${productData.imageUrl}" alt="${productData.nama}" width="100%"/>
+            </div>
+            <div class="product">
+                <p>${productData.kategori}</p>
+                <h1 class="text-namaProduk">${productData.nama}</h1>
+                <h2 class="text-harga" id="productPrice">Harga: ${productData.ukuranData[0].harga}</h2>
+                <p id="productStock">Stok: ${productData.ukuranData[0].stok}</p>
+                <p class="pick">Size</p>
+                <div class="sizes">
+                    ${ukuranElements}
+                </div>                
+            </div>
+        </div>                        
+    `;
+        displayElement.style.display = 'block';
+
+        // Fungsi untuk memperbarui harga dan stok saat ukuran diklik
+        window.updatePriceAndStock = function (index) {
+            const selectedSize = productData.ukuranData[index];
+            document.getElementById('productPrice').textContent = `Harga: ${selectedSize.harga}`;
+            document.getElementById('productStock').textContent = `Stok: ${selectedSize.stok}`;
+
+            // Opsional: Tambahkan kelas atau gaya untuk menyoroti ukuran yang dipilih
+            document.querySelectorAll('.size').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`size-${index}`).classList.add('selected');
+        };
+    }
+
+
+
+    let cek_barang = document.getElementById('cek-barang');
+    cek_barang.addEventListener('click', function () {
+        $('#cekBarangModal').modal('show');
+    });
+    </script>
+
+
+    
 </body>
 
 </html>
