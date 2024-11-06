@@ -725,86 +725,108 @@
 
     </script>
 
-
     <script type="module">
 
-        // Konfigurasi Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, getDoc, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
+    // Konfigurasi Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, doc, getDoc, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
 
-        const app = initializeApp(firebaseConfig);
-        const db2 = getFirestore(app);
-        const scanButton = document.getElementById('scan-button');
-        const videoContainer = document.getElementById('video-container');
-        const video = document.getElementById('video');
-        const resultElement = document.getElementById('resultCekBarang');
-        const codeReader = new ZXing.BrowserQRCodeReader();
+    const app = initializeApp(firebaseConfig);
+    const db2 = getFirestore(app);
+    const scanButton = document.getElementById('scan-button');
+    const videoContainer = document.getElementById('video-container');
+    const video = document.getElementById('video');
+    const resultElement = document.getElementById('resultCekBarang');
+    const codeReader = new ZXing.BrowserQRCodeReader();
 
-        let scannedData = '';
-        let scanTimeout;
+    let scannedData = '';
+    let scanTimeout;
 
-        scanButton.addEventListener('click', async () => {
-            videoContainer.style.display = 'block';
-            scanButton.style.display = 'none';
-            resultElement.textContent = ""; // Kosongkan hasil sebelumnya
+    scanButton.addEventListener('click', async () => {
+        videoContainer.style.display = 'block';
+        scanButton.style.display = 'none';
+        resultElement.textContent = ""; // Kosongkan hasil sebelumnya
 
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                video.srcObject = stream;
+        try {
+            // Ambil daftar perangkat media yang tersedia
+            const devices = await navigator.mediaDevices.enumerateDevices();
 
-                codeReader.decodeFromVideoDevice(null, video, (result, err) => {
-                    if (result) {
-                        console.log("Barcode detected: ", result.text);
-                        resultElement.textContent = `Barcode terdeteksi: ${result.text}`;
-                        resultElement.style.color = 'green';
+            // Filter untuk kamera video belakang (environment)
+            const videoDevices = devices.filter(device => device.kind === 'videoinput');
+            let selectedDeviceId;
 
-                        // Proses data yang dipindai
-                        const trimmedData = result.text.trim();
-                        console.log(`Scanned text: ${trimmedData}`);
-
-                        let scanData = trimmedData.split(',');
-                        if (scanData.length < 3) {
-                            alert("Data yang dipindai tidak lengkap. Pastikan memasukkan nama, ukuran, dan harga produk.");
-                            return;
-                        }
-
-                        let namaProduk = scanData[0].trim();
-                        let ukuranProduk = scanData[1].trim();
-                        let hargaProduk = parseFloat(scanData[2]);
-
-                        if (isNaN(hargaProduk) || hargaProduk <= 0) {
-                            alert("Harga produk tidak valid.");
-                            return;
-                        }
-
-                        // Cek ketersediaan produk di Firestore dan tampilkan data
-                        checkProductAvailability(namaProduk, ukuranProduk).then(productData => {
-                            if (productData) {
-                                const formattedPrice = hargaProduk.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });                                
-                                // Tampilkan semua data produk yang sama
-                                displayProductData(productData);
-                            } else {
-                                Swal.fire({
-                                    icon: "error",
-                                    title: "Gagal",
-                                    text: `Produk ${namaProduk} ukuran ${ukuranProduk} tidak tersedia`
-                                });
-                            }
-                        });
-
-                        // Hentikan pemindaian
-                        stream.getTracks().forEach(track => track.stop());
-                        videoContainer.style.display = 'none';
-                        scanButton.style.display = 'block';
-                    }
-                    if (err && !(err instanceof ZXing.NotFoundException)) {
-                        console.error(err);
-                    }
-                });
-            } catch (error) {
-                console.error("Error accessing the camera: ", error);
+            // Prioritaskan kamera yang bernama tanpa "wide" atau "ultra"
+            for (const device of videoDevices) {
+                if (device.label.toLowerCase().includes('back') && !device.label.toLowerCase().includes('wide')) {
+                    selectedDeviceId = device.deviceId;
+                    break;
+                }
             }
-        });
+
+            // Jika tidak ada kamera yang cocok, gunakan kamera pertama yang tersedia
+            if (!selectedDeviceId && videoDevices.length > 0) {
+                selectedDeviceId = videoDevices[0].deviceId;
+            }
+
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined }
+            });
+
+            video.srcObject = stream;
+
+            codeReader.decodeFromVideoDevice(null, video, (result, err) => {
+                if (result) {
+                    console.log("Barcode detected: ", result.text);
+                    resultElement.textContent = `Barcode terdeteksi: ${result.text}`;
+                    resultElement.style.color = 'green';
+
+                    // Proses data yang dipindai
+                    const trimmedData = result.text.trim();
+                    console.log(`Scanned text: ${trimmedData}`);
+
+                    let scanData = trimmedData.split(',');
+                    if (scanData.length < 3) {
+                        alert("Data yang dipindai tidak lengkap. Pastikan memasukkan nama, ukuran, dan harga produk.");
+                        return;
+                    }
+
+                    let namaProduk = scanData[0].trim();
+                    let ukuranProduk = scanData[1].trim();
+                    let hargaProduk = parseFloat(scanData[2]);
+
+                    if (isNaN(hargaProduk) || hargaProduk <= 0) {
+                        alert("Harga produk tidak valid.");
+                        return;
+                    }
+
+                    // Cek ketersediaan produk di Firestore dan tampilkan data
+                    checkProductAvailability(namaProduk, ukuranProduk).then(productData => {
+                        if (productData) {
+                            const formattedPrice = hargaProduk.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+                            displayProductData(productData);
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Gagal",
+                                text: `Produk ${namaProduk} ukuran ${ukuranProduk} tidak tersedia`
+                            });
+                        }
+                    });
+
+                    // Hentikan pemindaian
+                    stream.getTracks().forEach(track => track.stop());
+                    videoContainer.style.display = 'none';
+                    scanButton.style.display = 'block';
+                }
+                if (err && !(err instanceof ZXing.NotFoundException)) {
+                    console.error(err);
+                }
+            });
+        } catch (error) {
+            console.error("Error accessing the camera: ", error);
+        }
+    });
+        
 
     async function checkProductAvailability(namaProduk) {
         const docRef = doc(db2, 'produk', namaProduk);
