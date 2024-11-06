@@ -767,33 +767,57 @@
     let scanTimeout;
 
     window.addEventListener('load', function () {
-            let selectedDeviceId;
-            const codeReader = new ZXing.BrowserMultiFormatReader()
-            console.log('ZXing code reader initialized')
+        let selectedDeviceId;
+        const codeReader = new ZXing.BrowserMultiFormatReader();
+        console.log('ZXing code reader initialized');
 
-            codeReader.listVideoInputDevices()
-                .then((videoInputDevices) => {
-                    const sourceSelect = document.getElementById('sourceSelect')
-                    const setDefaultKamera = document.getElementById('selectKameraDefaultButton')
-                    let demoContentVideo = document.getElementById('demo-content')
-                    const resultElement = document.getElementById('result')
+        codeReader.listVideoInputDevices()
+            .then((videoInputDevices) => {
+                const sourceSelect = document.getElementById('sourceSelect');
+                const setDefaultKamera = document.getElementById('selectKameraDefaultButton');
+                let demoContentVideo = document.getElementById('demo-content');
+                const resultElement = document.getElementById('result');
 
-                    
+                
+                // Event listener untuk tombol scan-button
+                document.getElementById('scan-button').addEventListener('click', () => {
+                    // Cek apakah kamera default sudah disimpan di localStorage
+                    const savedDeviceId = localStorage.getItem('selectedDeviceId');
+                    if (savedDeviceId) {
+                        // Jika ada, gunakan deviceId yang disimpan
+                        selectedDeviceId = savedDeviceId;
+                        console.log(`Menggunakan kamera default: ${savedDeviceId}`);
+                        startScanning(selectedDeviceId);
+                    } else {
+                        // Jika tidak ada, tampilkan prompt untuk memilih kamera pertama kali
+                        if (videoInputDevices.length > 0) {
+                            let cameraOptions = videoInputDevices.map((device, index) => `${index + 1}. ${device.label}`).join('\n');
+                            let userChoice = prompt(`Pilih kamera:\n${cameraOptions}`);
+                            if (userChoice !== null && userChoice > 0 && userChoice <= videoInputDevices.length) {
+                                selectedDeviceId = videoInputDevices[userChoice - 1].deviceId;
+                                console.log(`Kamera yang dipilih: ${videoInputDevices[userChoice - 1].label}`);
+
+                                // Simpan deviceId ke localStorage
+                                localStorage.setItem('selectedDeviceId', selectedDeviceId);
+
+                                // Mulai pemindaian setelah memilih kamera
+                                startScanning(selectedDeviceId);
+                            } else {
+                                alert("Pilihan tidak valid.");
+                            }
+                        } else {
+                            alert("Tidak ada perangkat video yang terdeteksi.");
+                        }
+                    }
 
                     // Event listener untuk tombol setDefaultKamera
                     setDefaultKamera.addEventListener('click', () => {
                         // Cek apakah ada kamera yang sudah disimpan di localStorage
-                        const savedDeviceId = localStorage.getItem('selectedDeviceId');
-                        if (savedDeviceId) {
-                            // Jika ada, gunakan deviceId yang disimpan
-                            selectedDeviceId = savedDeviceId;
-                            console.log(`Menggunakan kamera default: ${savedDeviceId}`);
-                            startScanning(selectedDeviceId);
-                        }
                         if (videoInputDevices.length > 0) {
                             let cameraOptions = videoInputDevices.map((device, index) => `${index + 1}. ${device.label}`).join('\n');
-                            let userChoice = prompt(`Pilih kamera:\n${cameraOptions}`);
+                            let userChoice = prompt(`Pilih kamera untuk diset sebagai default:\n${cameraOptions}`);
 
+                            // Cek apakah pilihan valid
                             if (userChoice !== null && userChoice > 0 && userChoice <= videoInputDevices.length) {
                                 selectedDeviceId = videoInputDevices[userChoice - 1].deviceId;
                                 console.log(`Kamera yang dipilih: ${videoInputDevices[userChoice - 1].label}`);
@@ -811,78 +835,98 @@
                         }
                     });
 
-                    // Event listener untuk tombol scan-button
-                    document.getElementById('scan-button').addEventListener('click', () => {
-                        if (selectedDeviceId) {
-                            startScanning(selectedDeviceId);
-                        } else {
-                            alert("Pilih kamera terlebih dahulu.");
+                    if (selectedDeviceId) {
+                        startScanning(selectedDeviceId);
+                    } else {
+                        alert("Pilih kamera terlebih dahulu.");
+                    }
+                });
+
+                // Fungsi untuk mulai scanning menggunakan kamera yang dipilih
+                function startScanning(deviceId) {
+                    demoContentVideo.style.display = 'block';
+                    resultElement.textContent = ""; // Kosongkan hasil sebelumnya
+                    codeReader.decodeFromVideoDevice(deviceId, 'video', (result, err) => {
+                        if (result) {
+                            console.log("Barcode detected: ", result.text);
+                            resultElement.textContent = `Barcode terdeteksi: ${result.text}`;
+                            resultElement.style.color = 'green';
+
+                            // Proses data yang dipindai
+                            const trimmedData = result.text.trim();
+                            console.log(`Scanned text: ${trimmedData}`);
+
+                            let scanData = trimmedData.split(',');
+                            if (scanData.length < 3) {
+                                alert("Data yang dipindai tidak lengkap. Pastikan memasukkan nama, ukuran, dan harga produk.");
+                                return;
+                            }
+
+                            let namaProduk = scanData[0].trim();
+                            let ukuranProduk = scanData[1].trim();
+                            let hargaProduk = parseFloat(scanData[2]);
+
+                            if (isNaN(hargaProduk) || hargaProduk <= 0) {
+                                alert("Harga produk tidak valid.");
+                                return;
+                            }
+
+                            // Cek ketersediaan produk di Firestore dan tampilkan data
+                            checkProductAvailability(namaProduk, ukuranProduk).then(productData => {
+                                if (productData) {
+                                    const formattedPrice = hargaProduk.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+                                    displayProductData(productData);
+                                } else {
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Gagal",
+                                        text: `Produk ${namaProduk} ukuran ${ukuranProduk} tidak tersedia`
+                                    });
+                                }
+                            });
+                            demoContentVideo.style.display = 'none';
+                        }
+                        if (err && !(err instanceof ZXing.NotFoundException)) {
+                            console.error(err);
+                            resultElement.textContent = err;
                         }
                     });
+                    console.log(`Started continuous decode from camera with id ${deviceId}`);
+                }
 
-                    // Fungsi untuk mulai scanning menggunakan kamera yang dipilih
-                    function startScanning(deviceId) {
-                        demoContentVideo.style.display = 'block';
-                        resultElement.textContent = ""; // Kosongkan hasil sebelumnya
-                        codeReader.decodeFromVideoDevice(deviceId, 'video', (result, err) => {
-                            if (result) {
-                                console.log("Barcode detected: ", result.text);
-                                resultElement.textContent = `Barcode terdeteksi: ${result.text}`;
-                                resultElement.style.color = 'green';
+                document.getElementById('resetButton').addEventListener('click', () => {
+                    // Menyembunyikan video stream
+                    demoContentVideo.style.display = 'none'; // Menutup video stream
 
-                                // Proses data yang dipindai
-                                const trimmedData = result.text.trim();
-                                console.log(`Scanned text: ${trimmedData}`);
-
-                                let scanData = trimmedData.split(',');
-                                if (scanData.length < 3) {
-                                    alert("Data yang dipindai tidak lengkap. Pastikan memasukkan nama, ukuran, dan harga produk.");
-                                    return;
-                                }
-
-                                let namaProduk = scanData[0].trim();
-                                let ukuranProduk = scanData[1].trim();
-                                let hargaProduk = parseFloat(scanData[2]);
-
-                                if (isNaN(hargaProduk) || hargaProduk <= 0) {
-                                    alert("Harga produk tidak valid.");
-                                    return;
-                                }
-
-                                // Cek ketersediaan produk di Firestore dan tampilkan data
-                                checkProductAvailability(namaProduk, ukuranProduk).then(productData => {
-                                    if (productData) {
-                                        const formattedPrice = hargaProduk.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
-                                        displayProductData(productData);
-                                    } else {
-                                        Swal.fire({
-                                            icon: "error",
-                                            title: "Gagal",
-                                            text: `Produk ${namaProduk} ukuran ${ukuranProduk} tidak tersedia`
-                                        });
-                                    }
-                                });
-                                demoContentVideo.style.display = 'none';
-                            }
-                            if (err && !(err instanceof ZXing.NotFoundException)) {
-                                console.error(err);
-                                resultElement.textContent = err;
-                            }
-                        });
-                        console.log(`Started continuous decode from camera with id ${deviceId}`);
+                    // Menghentikan stream video yang aktif
+                    if (codeReader && codeReader.reset) {
+                        // Jika codeReader masih aktif, reset dan hentikan streamnya
+                        codeReader.reset();
                     }
 
-                    document.getElementById('resetButton').addEventListener('click', () => {
-                        demoContentVideo.style.display = 'block';
-                        codeReader.reset();
-                        resultElement.textContent = '';
-                        console.log('Reset.');
-                    });
-                })
-                .catch((err) => {
-                    console.error(err);
+                    // Jika stream video aktif, hentikan track video
+                    const stream = demoContentVideo.srcObject;
+                    if (stream) {
+                        const tracks = stream.getTracks();
+                        tracks.forEach(track => {
+                            track.stop(); // Hentikan setiap track video
+                            console.log("Kamera dihentikan.");
+                        });
+                    } else {
+                        console.log("Tidak ada stream yang ditemukan.");
+                    }
+
+                    // Kosongkan hasil pemindaian
+                    resultElement.textContent = '';
+                    console.log('Reset selesai dan kamera dihentikan.');
                 });
-        });
+
+
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+    });
 
 
     async function checkProductAvailability(namaProduk) {
