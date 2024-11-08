@@ -250,9 +250,36 @@
                     <!-- Page Heading -->
                     <div class="flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Scan Barang</h1>
-                        <a id="startScan" class="d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#ModalInputmanual">
+                        <a id="startScan" class="d-sm-inline-block btn btn-sm btn-primary shadow-sm m-1" data-toggle="modal" data-target="#ModalInputmanual">
                             <i class="fas fa-qrcode fa-sm text-white-50"></i> Input manual
                         </a>
+                        <button type="button" id="scan-button" class="d-sm-inline-block btn btn-sm btn-primary shadow-sm m-1">
+                            <i class="fas fa-box fa-sm text-white-50"></i> Scan Mobile
+                        </button>
+
+                        <button type="button" class="button d-sm-inline-block btn btn-sm btn-primary shadow-sm m-1"
+                            id="selectKameraDefaultButton">Atur Camera</button>
+                        <button type="button" class="button d-sm-inline-block btn btn-sm btn-primary shadow-sm m-1"
+                            id="resetButton">Reset Camera</button>
+                        
+                        <section class="container" id="demo-content" style="display: none;">
+                            <!-- <div>
+                                                    <a class="button" id="startButton">Start</a>
+                                                    <a class="button" id="resetButton">Reset</a>
+                                                </div> -->
+                            <div class="container-videoScan">
+                                <video id="video" width="300" height="200" style="border: 1px solid gray"></video>
+                            </div>
+                            <div id="sourceSelectPanel" style="display:none">
+                                <label for="sourceSelect">Change video source:</label>
+                                <select id="sourceSelect" style="max-width:400px">
+                                </select>
+                            </div>
+                            <label>Result:</label>
+                            <pre><code id="result"></code></pre>
+                        </section>
+                        
+                        <div id="productDataDisplay" style="display: none;"></div>
                         
                     </div>
                     <!-- Content Row -->
@@ -472,85 +499,82 @@
 
         // Event listener untuk menangkap keydown
         document.addEventListener('keydown', async (event) => {
-                // Cek jika key yang ditekan adalah 'Enter'
-                if (event.key === 'Enter') {
-                    // Proses data yang dipindai saat menekan Enter
-                    const trimmedData = scannedData.trim();
-                    console.log(`Scanned text: ${trimmedData}`);
+            // Cek jika key yang ditekan adalah 'Enter'
+            if (event.key === 'Enter') {
+                // Proses data yang dipindai saat menekan Enter
+                const trimmedData = scannedData.trim();
+                console.log(`Scanned text: ${trimmedData}`);
 
-                    // Memisahkan berdasarkan koma dan validasi data
-                    let scanData = trimmedData.split(',');
-                    if (scanData.length < 3) {
-                        alert("Data yang dipindai tidak lengkap. Pastikan memasukkan nama, ukuran, dan harga produk.");
-                        resetScanner(); // Reset pemindaian
-                        return;
-                    }
-
-                    // Mengambil dan memangkas setiap bagian untuk menghilangkan spasi yang tidak perlu
-                    let namaProduk = scanData[0].trim();
-                    let ukuranProduk = scanData[1].trim();
-                    let hargaProduk = parseFloat(scanData[2]); // Mengonversi harga dan membulatkannya
-
-
-                    // Validasi harga produkBaju tidur motif dinasaurus,L,52000.0
-                    if (isNaN(hargaProduk) || hargaProduk <= 0) {
-                        alert("Harga produk tidak valid.");
-                        resetScanner(); // Reset pemindaian
-                        return;
-                    }
-
-                    // Cek ketersediaan produk di Firestore
-                    const isAvailable = await checkProductAvailability(namaProduk, ukuranProduk);
-                    if (isAvailable) {
-                        // Format harga tanpa menambahkan "Rp" lagi
-                        const formattedPrice = hargaProduk.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
-                        // Tambahkan data ke tabel hanya jika belum ada
-                        if (!isRowAlreadyExists(namaProduk, ukuranProduk, hargaProduk)) {
-                            addRowToTable(namaProduk, ukuranProduk, hargaProduk);
-                        }
-                    } else {                    
-                        Swal.fire({
-                            icon: "error",
-                            title: "Gagal",
-                            text: `Produk ${namaProduk} ukuran ${ukuranProduk} tidak tersedia`
-                        });
-                    }
-
-
-                    // Bersihkan data yang dipindai setelah scan selesai
-                    scannedData = '';
-                } else if (event.key !== 'Shift' && event.key.length === 1) {
-                    // Tangkap input karakter kecuali Shift
-                    scannedData += event.key;
-
-                    // Atur timeout untuk menunggu akhir pemindaian
-                    clearTimeout(scanTimeout);
-                    scanTimeout = setTimeout(() => {
-                        scannedData = ''; // Reset jika tidak ada input dalam waktu tertentu
-                    }, 500);
+                // Memisahkan berdasarkan koma dan validasi data
+                let scanData = trimmedData.split(',');
+                if (scanData.length < 3) {
+                    alert("Data yang dipindai tidak lengkap. Pastikan memasukkan nama, ukuran, dan harga produk.");
+                    resetScanner(); // Reset pemindaian
+                    return;
                 }
-            });
+
+                // Mengambil dan memangkas setiap bagian untuk menghilangkan spasi yang tidak perlu
+                let namaProduk = scanData[0].trim();
+                let ukuranProduk = scanData[1].trim();
+                let hargaProduk = parseFloat(scanData[2]); // Mengonversi harga dan membulatkannya
 
 
-            // Fungsi untuk mengecek ketersediaan produk di Firestore
-            async function checkProductAvailability(namaProduk, ukuranProduk) {
-                const docRef = doc(db, 'produk', namaProduk);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const ukuranDocRef = doc(db, 'produk', namaProduk, 'ukuran', `ukuran ${ukuranProduk}`);
-                    const ukuranSnap = await getDoc(ukuranDocRef);
-                    if (ukuranSnap.exists()) {
-                        const ukuranData = ukuranSnap.data();
-                        return ukuranData.stok > 0;
-                    }
-
-                    
+                // Validasi harga produkBaju tidur motif dinasaurus,L,52000.0
+                if (isNaN(hargaProduk) || hargaProduk <= 0) {
+                    alert("Harga produk tidak valid.");
+                    resetScanner(); // Reset pemindaian
+                    return;
                 }
-                return false;
+
+                // Cek ketersediaan produk di Firestore
+                const isAvailable = await checkProductAvailability(namaProduk, ukuranProduk);
+                if (isAvailable) {
+                    // Format harga tanpa menambahkan "Rp" lagi
+                    const formattedPrice = hargaProduk.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+                    // Tambahkan data ke tabel hanya jika belum ada
+                    if (!isRowAlreadyExists(namaProduk, ukuranProduk, hargaProduk)) {
+                        addRowToTable(namaProduk, ukuranProduk, hargaProduk);
+                    }
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Gagal",
+                        text: `Produk ${namaProduk} ukuran ${ukuranProduk} tidak tersedia`
+                    });
+                }
+
+
+                // Bersihkan data yang dipindai setelah scan selesai
+                scannedData = '';
+            } else if (event.key !== 'Shift' && event.key.length === 1) {
+                // Tangkap input karakter kecuali Shift
+                scannedData += event.key;
+
+                // Atur timeout untuk menunggu akhir pemindaian
+                clearTimeout(scanTimeout);
+                scanTimeout = setTimeout(() => {
+                    scannedData = ''; // Reset jika tidak ada input dalam waktu tertentu
+                }, 500);
             }
+        });
 
-            // Fungsi lainnya tetap sama...
 
+        // Fungsi untuk mengecek ketersediaan produk di Firestore
+        async function checkProductAvailability(namaProduk, ukuranProduk) {
+            const docRef = doc(db, 'produk', namaProduk);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const ukuranDocRef = doc(db, 'produk', namaProduk, 'ukuran', `ukuran ${ukuranProduk}`);
+                const ukuranSnap = await getDoc(ukuranDocRef);
+                if (ukuranSnap.exists()) {
+                    const ukuranData = ukuranSnap.data();
+                    return ukuranData.stok > 0;
+                }
+
+
+            }
+            return false;
+        }
 
         function isRowAlreadyExists(namaProduk, ukuranProduk, hargaProduk) {
             const tableBody = document.querySelector('#scanResultTable tbody');
@@ -580,11 +604,11 @@
                 `;
 
             // Menyimpan jumlah produk yang dibeli
-                    if (productQuantities[namaProduk]) {
-                        productQuantities[namaProduk] += 1; // Menambah jumlah jika sudah ada
-                    } else {
-                        productQuantities[namaProduk] = 1; // Menyimpan jumlah produk baru
-                    }
+            if (productQuantities[namaProduk]) {
+                productQuantities[namaProduk] += 1; // Menambah jumlah jika sudah ada
+            } else {
+                productQuantities[namaProduk] = 1; // Menyimpan jumlah produk baru
+            }
 
             tableBody.appendChild(newRow);
             totalHarga += hargaProduk; // Update totalHarga
@@ -592,12 +616,11 @@
         }
 
         function updateTotalPayment(harga) {
-                const totalPaymentElement = document.getElementById('totalPayment');
-                const currentTotal = parseFloat(totalPaymentElement.textContent.replace('Rp ', '').replace(/\./g, '').replace(',', '.'));
-                const newTotal = currentTotal + harga;
-                totalPaymentElement.textContent = `Rp ${newTotal.toLocaleString('id-ID') }`; // Hapus formatting di sini
-            }
-
+            const totalPaymentElement = document.getElementById('totalPayment');
+            const currentTotal = parseFloat(totalPaymentElement.textContent.replace('Rp ', '').replace(/\./g, '').replace(',', '.'));
+            const newTotal = currentTotal + harga;
+            totalPaymentElement.textContent = `Rp ${newTotal.toLocaleString('id-ID')}`; // Hapus formatting di sini
+        }
 
         // Fungsi untuk mengatur ulang pemindaian
         function resetScanner() {
@@ -605,48 +628,47 @@
             alert("Pemindaian direset.");
         }
 
-
         // Event listener untuk tombol pembayaran
-            document.querySelector('.btn_pembayaran').addEventListener('click', async () => {
-                if (totalHarga > 0) {
-                    const scanResultTableBody = document.querySelector('#scanResultTable tbody');
-                    const rows = scanResultTableBody.querySelectorAll('tr');
+        document.querySelector('.btn_pembayaran').addEventListener('click', async () => {
+            if (totalHarga > 0) {
+                const scanResultTableBody = document.querySelector('#scanResultTable tbody');
+                const rows = scanResultTableBody.querySelectorAll('tr');
 
-                    let productList = '';
-                    const productsToUpdate = {};
-                    const transactions = []; // Array untuk menyimpan data transaksi
+                let productList = '';
+                const productsToUpdate = {};
+                const transactions = []; // Array untuk menyimpan data transaksi
 
-                    // Iterasi pertama untuk mengisi productList dan productsToUpdate
-                    rows.forEach(row => {
-                        const cells = row.querySelectorAll('td');
-                        const namaProduk = cells[0].innerText || 'Nama Tidak Diketahui';
-                        const ukuranProduk = cells[1].innerText || '-';
-                        const hargaProduk = parseFloat(cells[2].innerText.replace(/\./g, '').replace('Rp ', '')) || 0;
+                // Iterasi pertama untuk mengisi productList dan productsToUpdate
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    const namaProduk = cells[0].innerText || 'Nama Tidak Diketahui';
+                    const ukuranProduk = cells[1].innerText || '-';
+                    const hargaProduk = parseFloat(cells[2].innerText.replace(/\./g, '').replace('Rp ', '')) || 0;
 
-                        // Kunci untuk produk yang sama berdasarkan nama dan ukuran
-                        const key = `${namaProduk}|${ukuranProduk}`;
-                        if (!productsToUpdate[key]) {
-                            productsToUpdate[key] = { namaProduk, ukuranProduk, jumlah: 1, hargaProduk };
-                        } else {
-                            productsToUpdate[key].jumlah += 1; // Increment jumlah jika produk sama
-                        }
-                    });
-
-                    // Mengisi transactions dengan format yang sesuai
-                    for (const { namaProduk, ukuranProduk, jumlah, hargaProduk } of Object.values(productsToUpdate)) {
-                        transactions.push({
-                            "nama produk": namaProduk,
-                            "ukuran": ukuranProduk,
-                            "harga jual": hargaProduk,
-                            quantity: jumlah // Menyimpan jumlah untuk produk
-                        });
-                        productList += `${namaProduk}|${ukuranProduk}|${hargaProduk}|${jumlah}<br/>`;
+                    // Kunci untuk produk yang sama berdasarkan nama dan ukuran
+                    const key = `${namaProduk}|${ukuranProduk}`;
+                    if (!productsToUpdate[key]) {
+                        productsToUpdate[key] = { namaProduk, ukuranProduk, jumlah: 1, hargaProduk };
+                    } else {
+                        productsToUpdate[key].jumlah += 1; // Increment jumlah jika produk sama
                     }
+                });
 
-                    // Menampilkan konfirmasi pembayaran
-                    Swal.fire({
-                        title: 'Konfirmasi Pembayaran',
-                        html: `
+                // Mengisi transactions dengan format yang sesuai
+                for (const { namaProduk, ukuranProduk, jumlah, hargaProduk } of Object.values(productsToUpdate)) {
+                    transactions.push({
+                        "nama produk": namaProduk,
+                        "ukuran": ukuranProduk,
+                        "harga jual": hargaProduk,
+                        quantity: jumlah // Menyimpan jumlah untuk produk
+                    });
+                    productList += `${namaProduk}|${ukuranProduk}|${hargaProduk}|${jumlah}<br/>`;
+                }
+
+                // Menampilkan konfirmasi pembayaran
+                Swal.fire({
+                    title: 'Konfirmasi Pembayaran',
+                    html: `
             <table style="width: 100%;">
                 <thead>
                     <tr>
@@ -657,11 +679,11 @@
                 </thead>
                 <tbody>
                     ${productList.split('<br/>').map(item => {
-                            const [namaProduk, ukuranProduk, hargaProduk, jumlah] = item.split('|');
-                            if (!namaProduk || !ukuranProduk || !hargaProduk || !jumlah) return ''; // Skip jika data kosong
-                            const totalHargaProduk = (parseFloat(hargaProduk.replace(/\./g, '').replace('Rp ', '')) * jumlah).toLocaleString('id-ID');
-                            return `<tr class="tbody-styles"><td>${namaProduk} ${jumlah > 1 ? `x${jumlah}` : ''}</td><td>${ukuranProduk}</td><td>Rp ${totalHargaProduk}</td></tr>`;
-                        }).join('')}
+                        const [namaProduk, ukuranProduk, hargaProduk, jumlah] = item.split('|');
+                        if (!namaProduk || !ukuranProduk || !hargaProduk || !jumlah) return ''; // Skip jika data kosong
+                        const totalHargaProduk = (parseFloat(hargaProduk.replace(/\./g, '').replace('Rp ', '')) * jumlah).toLocaleString('id-ID');
+                        return `<tr class="tbody-styles"><td>${namaProduk} ${jumlah > 1 ? `x${jumlah}` : ''}</td><td>${ukuranProduk}</td><td>Rp ${totalHargaProduk}</td></tr>`;
+                    }).join('')}
                 </tbody>
                 <tfoot>
                     <tr>
@@ -676,90 +698,90 @@
                 </tfoot>
             </table>                
             `,
-                        icon: 'warning',
-                        showCancelButton: true,
-                        cancelButtonText: 'Batal',
-                        confirmButtonText: 'Bayar',
-                        customClass: {
-                            cancelButton: 'swal-cancel-button',
-                            confirmButton: 'swal-confirm-button'
-                        },
-                        didOpen: () => {
-                            const cashInput = document.getElementById('cash');
-                            cashInput.addEventListener('input', () => {
-                                let value = cashInput.value.replace(/\D/g, ''); // Hanya angka
-                                value = new Intl.NumberFormat('id-ID').format(value); // Format angka dengan titik
-                                cashInput.value = value;
-                            });
+                    icon: 'warning',
+                    showCancelButton: true,
+                    cancelButtonText: 'Batal',
+                    confirmButtonText: 'Bayar',
+                    customClass: {
+                        cancelButton: 'swal-cancel-button',
+                        confirmButton: 'swal-confirm-button'
+                    },
+                    didOpen: () => {
+                        const cashInput = document.getElementById('cash');
+                        cashInput.addEventListener('input', () => {
+                            let value = cashInput.value.replace(/\D/g, ''); // Hanya angka
+                            value = new Intl.NumberFormat('id-ID').format(value); // Format angka dengan titik
+                            cashInput.value = value;
+                        });
+                    }
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        const cashInput = document.getElementById('cash').value.replace(/\D/g, ''); // Ambil nilai cash dan hilangkan karakter non-angka
+                        const cash = parseInt(cashInput, 10); // Ubah ke integer
+
+                        if (isNaN(cash) || cash < totalHarga) {
+                            Swal.fire('Error!', 'Jumlah cash tidak mencukupi untuk pembayaran.', 'error');
+                            return;
                         }
-                    }).then(async (result) => {
-                        if (result.isConfirmed) {
-                            const cashInput = document.getElementById('cash').value.replace(/\D/g, ''); // Ambil nilai cash dan hilangkan karakter non-angka
-                            const cash = parseInt(cashInput, 10); // Ubah ke integer
 
-                            if (isNaN(cash) || cash < totalHarga) {
-                                Swal.fire('Error!', 'Jumlah cash tidak mencukupi untuk pembayaran.', 'error');
-                                return;
-                            }
+                        try {
+                            for (const { namaProduk, ukuranProduk, jumlah } of Object.values(productsToUpdate)) {
+                                const ukuranDocRef = doc(db, 'produk', namaProduk, 'ukuran', `ukuran ${ukuranProduk}`);
+                                const ukuranSnap = await getDoc(ukuranDocRef);
 
-                            try {
-                                for (const { namaProduk, ukuranProduk, jumlah } of Object.values(productsToUpdate)) {
-                                    const ukuranDocRef = doc(db, 'produk', namaProduk, 'ukuran', `ukuran ${ukuranProduk}`);
-                                    const ukuranSnap = await getDoc(ukuranDocRef);
+                                if (ukuranSnap.exists()) {
+                                    const ukuranData = ukuranSnap.data();
+                                    const stok = ukuranData.stok;
 
-                                    if (ukuranSnap.exists()) {
-                                        const ukuranData = ukuranSnap.data();
-                                        const stok = ukuranData.stok;
-
-                                        if (stok >= jumlah) {
-                                            await updateDoc(ukuranDocRef, { stok: stok - jumlah });
-                                        } else {
-                                            alert(`Stok tidak cukup untuk produk: ${namaProduk}`);
-                                            return;
-                                        }
+                                    if (stok >= jumlah) {
+                                        await updateDoc(ukuranDocRef, { stok: stok - jumlah });
+                                    } else {
+                                        alert(`Stok tidak cukup untuk produk: ${namaProduk}`);
+                                        return;
                                     }
                                 }
-
-                                // Menambahkan transaksi ke koleksi transaksi
-                                const transactionRef = collection(db, 'transaksi'); // Pastikan ini merujuk ke koleksi yang benar
-                                await addDoc(transactionRef, {
-                                    tanggalTransaksi: new Date(), // Timestamp saat transaksi
-                                    produk: transactions // Data transaksi yang ingin disimpan
-                                });
-
-                                // Panggil showReceipt dengan tambahan parameter cash
-                                showReceipt(productList, totalHarga, cash);
-
-                                Swal.fire('Pembayaran berhasil!', '', 'success');
-                                totalHarga = 0;
-                                productQuantities = {};
-                                scanResultTableBody.innerHTML = '';
-                                document.getElementById('totalPayment').innerHTML = 'Rp 0.00';
-
-                            } catch (error) {
-                                console.error("Error during payment:", error);
-                                Swal.fire('Pembayaran gagal!', 'Terjadi kesalahan saat memproses pembayaran.', 'error');
                             }
+
+                            // Menambahkan transaksi ke koleksi transaksi
+                            const transactionRef = collection(db, 'transaksi'); // Pastikan ini merujuk ke koleksi yang benar
+                            await addDoc(transactionRef, {
+                                tanggalTransaksi: new Date(), // Timestamp saat transaksi
+                                produk: transactions // Data transaksi yang ingin disimpan
+                            });
+
+                            // Panggil showReceipt dengan tambahan parameter cash
+                            showReceipt(productList, totalHarga, cash);
+
+                            Swal.fire('Pembayaran berhasil!', '', 'success');
+                            totalHarga = 0;
+                            productQuantities = {};
+                            scanResultTableBody.innerHTML = '';
+                            document.getElementById('totalPayment').innerHTML = 'Rp 0.00';
+
+                        } catch (error) {
+                            console.error("Error during payment:", error);
+                            Swal.fire('Pembayaran gagal!', 'Terjadi kesalahan saat memproses pembayaran.', 'error');
                         }
-                    });
-                } else {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Mohon Maaf...",
-                        text: "Silakan tambahkan produk sebelum melanjutkan ke pembayaran."
-                    });
-                }
-            });
+                    }
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Mohon Maaf...",
+                    text: "Silakan tambahkan produk sebelum melanjutkan ke pembayaran."
+                });
+            }
+        });
 
 
-            function showReceipt(productList, totalHarga, cash) {
-                const receiptElement = document.querySelector('.receipt');
-                let tanggalTransaksi = new Date().toLocaleString(); // Format tanggal dengan waktu
-                // Hitung kembalian
-                const kembalian = cash - totalHarga;
+        function showReceipt(productList, totalHarga, cash) {
+            const receiptElement = document.querySelector('.receipt');
+            let tanggalTransaksi = new Date().toLocaleString(); // Format tanggal dengan waktu
+            // Hitung kembalian
+            const kembalian = cash - totalHarga;
 
-                // Bersihkan elemen struk dan buat elemen tabel untuk tampilan struk
-                receiptElement.innerHTML = `
+            // Bersihkan elemen struk dan buat elemen tabel untuk tampilan struk
+            receiptElement.innerHTML = `
     <div class="centered bold">HannyBaby<br>STORE</div>
     <div class="centered">Jl. Bukit khatulistiwa, Paccerakkang Kec. Biringkanaya, kota makassar, Sulawesi Selatan 90245</div>
     <div class="line"></div>
@@ -795,131 +817,131 @@
     <div class="line"></div>
     `;
 
-                const productRows = document.getElementById('product-rows');
-                const products = productList.split('<br/>');
-                products.forEach(product => {
-                    const [namaProduk, ukuranProduk, hargaProduk, jumlah] = product.split('|').map(item => item.trim());
+            const productRows = document.getElementById('product-rows');
+            const products = productList.split('<br/>');
+            products.forEach(product => {
+                const [namaProduk, ukuranProduk, hargaProduk, jumlah] = product.split('|').map(item => item.trim());
 
-                    if (namaProduk && ukuranProduk && hargaProduk && jumlah) {
-                        const row = document.createElement('tr');
-                        const totalHargaProduk = (parseFloat(hargaProduk.replace(/\./g, '').replace('Rp ', '')) * jumlah).toLocaleString('id-ID');
-                        row.innerHTML = `
+                if (namaProduk && ukuranProduk && hargaProduk && jumlah) {
+                    const row = document.createElement('tr');
+                    const totalHargaProduk = (parseFloat(hargaProduk.replace(/\./g, '').replace('Rp ', '')) * jumlah).toLocaleString('id-ID');
+                    row.innerHTML = `
                 <td class="description">${namaProduk} (${ukuranProduk}) ${jumlah > 1 ? `x${jumlah}` : ''}</td>
                 <td class="harga">Rp ${totalHargaProduk}</td>
             `;
-                        productRows.appendChild(row);
-                    }
-                });
+                    productRows.appendChild(row);
+                }
+            });
 
-                // Tambahkan informasi kontak di bawah tabel
-                receiptElement.innerHTML += `
+            // Tambahkan informasi kontak di bawah tabel
+            receiptElement.innerHTML += `
     <div class="line"></div>
     <div class="centered">Tiktok: @hanybabystore</div>
     <div class="centered">IG: @hannybabystore</div>
     `;
 
-                // Tampilkan elemen struk dan cetak secara otomatis
-                receiptElement.classList.remove('d-none');
-                setTimeout(() => {
-                    window.print();
-                }, 500);
-            }
+            // Tampilkan elemen struk dan cetak secara otomatis
+            receiptElement.classList.remove('d-none');
+            setTimeout(() => {
+                window.print();
+            }, 500);
+        }
 
-    // Fungsi untuk menambahkan input produk baru
-    document.getElementById("addProduk").addEventListener("click", function () {
-        const newProductGroup = document.createElement("div");
-        newProductGroup.classList.add("product-group", "mt-3");
+        // Fungsi untuk menambahkan input produk baru
+        document.getElementById("addProduk").addEventListener("click", function () {
+            const newProductGroup = document.createElement("div");
+            newProductGroup.classList.add("product-group", "mt-3");
 
-        const namePriceWrapper = document.createElement("div");
-        namePriceWrapper.classList.add("d-flex", "gap-2", "mb-2");
+            const namePriceWrapper = document.createElement("div");
+            namePriceWrapper.classList.add("d-flex", "gap-2", "mb-2");
 
-        const newNamaInput = document.createElement("input");
-        newNamaInput.type = "text";
-        newNamaInput.name = "nama_produk[]";
-        newNamaInput.classList.add("form-control", "product-group2");
-        newNamaInput.placeholder = "Nama Baju";
+            const newNamaInput = document.createElement("input");
+            newNamaInput.type = "text";
+            newNamaInput.name = "nama_produk[]";
+            newNamaInput.classList.add("form-control", "product-group2");
+            newNamaInput.placeholder = "Nama Baju";
 
-        const newHargaInput = document.createElement("input");
-        newHargaInput.type = "text"; 
-        newHargaInput.name = "harga[]";
-        newHargaInput.classList.add("form-control", "product-group2");
-        newHargaInput.placeholder = "Harga";
+            const newHargaInput = document.createElement("input");
+            newHargaInput.type = "text";
+            newHargaInput.name = "harga[]";
+            newHargaInput.classList.add("form-control", "product-group2");
+            newHargaInput.placeholder = "Harga";
 
-        // Tambahkan event listener untuk memformat harga dan mengisi `data-value`
-        newHargaInput.addEventListener("input", function () {
-            const cursorPosition = this.selectionStart;
-            const formattedValue = formatRupiah(this.value);
-            this.value = formattedValue;
-            this.setAttribute('data-value', this.value.replace(/[^0-9]/g, '')); // Set `data-value`
-            this.setSelectionRange(cursorPosition, cursorPosition);
+            // Tambahkan event listener untuk memformat harga dan mengisi `data-value`
+            newHargaInput.addEventListener("input", function () {
+                const cursorPosition = this.selectionStart;
+                const formattedValue = formatRupiah(this.value);
+                this.value = formattedValue;
+                this.setAttribute('data-value', this.value.replace(/[^0-9]/g, '')); // Set `data-value`
+                this.setSelectionRange(cursorPosition, cursorPosition);
+            });
+
+            namePriceWrapper.appendChild(newNamaInput);
+            namePriceWrapper.appendChild(newHargaInput);
+
+            const sizeQuantityWrapper = document.createElement("div");
+            sizeQuantityWrapper.classList.add("d-flex", "gap-2");
+
+            const newUkuranInput = document.createElement("input");
+            newUkuranInput.type = "text";
+            newUkuranInput.name = "ukuran[]";
+            newUkuranInput.classList.add("ukuranbaju", "form-control", "product-group2");
+            newUkuranInput.placeholder = "Ukuran";
+
+            const newJumlahInput = document.createElement("input");
+            newJumlahInput.type = "number";
+            newJumlahInput.name = "jumlah[]";
+            newJumlahInput.classList.add("jumlahbaju", "form-control", "product-group2");
+            newJumlahInput.placeholder = "Jumlah";
+
+            sizeQuantityWrapper.appendChild(newUkuranInput);
+            sizeQuantityWrapper.appendChild(newJumlahInput);
+
+            newProductGroup.appendChild(namePriceWrapper);
+            newProductGroup.appendChild(sizeQuantityWrapper);
+            document.getElementById("sizeStockContainer").appendChild(newProductGroup);
         });
-
-        namePriceWrapper.appendChild(newNamaInput);
-        namePriceWrapper.appendChild(newHargaInput);
-
-        const sizeQuantityWrapper = document.createElement("div");
-        sizeQuantityWrapper.classList.add("d-flex", "gap-2");
-
-        const newUkuranInput = document.createElement("input");
-        newUkuranInput.type = "text";
-        newUkuranInput.name = "ukuran[]";
-        newUkuranInput.classList.add("ukuranbaju", "form-control", "product-group2");
-        newUkuranInput.placeholder = "Ukuran";
-
-        const newJumlahInput = document.createElement("input");
-        newJumlahInput.type = "number";
-        newJumlahInput.name = "jumlah[]";
-        newJumlahInput.classList.add("jumlahbaju", "form-control", "product-group2");
-        newJumlahInput.placeholder = "Jumlah";
-
-        sizeQuantityWrapper.appendChild(newUkuranInput);
-        sizeQuantityWrapper.appendChild(newJumlahInput);
-
-        newProductGroup.appendChild(namePriceWrapper);
-        newProductGroup.appendChild(sizeQuantityWrapper);
-        document.getElementById("sizeStockContainer").appendChild(newProductGroup);
-    });
         // Fungsi format harga menjadi mata uang Indonesia
         function formatRupiah(angka) {
-                // Menghapus karakter non-digit
-                const num = angka.replace(/[^0-9]/g, '');
+            // Menghapus karakter non-digit
+            const num = angka.replace(/[^0-9]/g, '');
 
-                // Memformat menjadi ribuan dengan titik
-                if (num === "") return ""; // Jika tidak ada angka, kembalikan string kosong
+            // Memformat menjadi ribuan dengan titik
+            if (num === "") return ""; // Jika tidak ada angka, kembalikan string kosong
 
-                const formatted = num.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            const formatted = num.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
-                console.log(formatted); // Debugging: lihat hasil format
-                return formatted;
-            }
-        // Fungsi untuk memformat angka ke format mata uang Indonesia
-    function formatCurrency(input) {
-        // Ambil nilai asli dari input
-        let value = input.value.replace(/[^,\d]/g, '').toString();
-        if (value) {
-            // Format dan tampilkan nilai
-            input.value = parseInt(value, 10).toLocaleString('id-ID');
-            // Simpan nilai asli ke data attribute
-            input.setAttribute('data-value', value); // Simpan nilai yang tidak diformat
-        } else {
-            input.setAttribute('data-value', ''); // Kosongkan data-value jika input kosong
+            console.log(formatted); // Debugging: lihat hasil format
+            return formatted;
         }
-    }
+        // Fungsi untuk memformat angka ke format mata uang Indonesia
+        function formatCurrency(input) {
+            // Ambil nilai asli dari input
+            let value = input.value.replace(/[^,\d]/g, '').toString();
+            if (value) {
+                // Format dan tampilkan nilai
+                input.value = parseInt(value, 10).toLocaleString('id-ID');
+                // Simpan nilai asli ke data attribute
+                input.setAttribute('data-value', value); // Simpan nilai yang tidak diformat
+            } else {
+                input.setAttribute('data-value', ''); // Kosongkan data-value jika input kosong
+            }
+        }
         document.getElementById('harga').addEventListener('input', function () {
             formatCurrency(this);
         });
         // Fungsi untuk menghapus produk terakhir yang ditambahkan
         document.getElementById("deleteAddProduk").addEventListener("click", function () {
-                const container = document.getElementById("sizeStockContainer");
-                const productGroups = container.getElementsByClassName("product-group");
+            const container = document.getElementById("sizeStockContainer");
+            const productGroups = container.getElementsByClassName("product-group");
 
-                if (productGroups.length > 0) {
-                    // Hapus produk terakhir
-                    container.removeChild(productGroups[productGroups.length - 1]);
-                } else {
-                    alert("Tidak ada produk untuk dihapus.");
-                }
-            });
+            if (productGroups.length > 0) {
+                // Hapus produk terakhir
+                container.removeChild(productGroups[productGroups.length - 1]);
+            } else {
+                alert("Tidak ada produk untuk dihapus.");
+            }
+        });
         // Fungsi untuk mereset semua input
         document.getElementById("resetInput").addEventListener("click", function () {
             const inputs = document.querySelectorAll(".product-group2"); // Ambil semua input dengan kelas product-group
@@ -927,8 +949,8 @@
                 input.value = ""; // Kosongkan nilai input
             });
         });
-        
-    document.getElementById("printStruk").addEventListener("click", async function () {
+
+        document.getElementById("printStruk").addEventListener("click", async function () {
             const strukContent = document.getElementById("strukContent");
             strukContent.innerHTML = ""; // Hapus konten sebelumnya
             let tanggalTransaksi = Date.now();
@@ -983,7 +1005,7 @@
     <i class="fa fa-thumbs-up"></i> Okee!
   `,
                     confirmButtonAriaLabel: "Thumbs up, great!",
-                    
+
                 });
                 return; // Hentikan eksekusi jika ada input yang kosong
             }
@@ -1072,6 +1094,184 @@
             }
         });
 
+
+        // scan mobile
+        const scanButton = document.getElementById('scan-button');
+        const videoContainer = document.getElementById('video-container');
+        const video = document.getElementById('video');
+        const resultElement = document.getElementById('resultCekBarang');
+        const codeReader = new ZXing.BrowserQRCodeReader();
+        let isScanned = false;
+
+
+        window.addEventListener('load', function () {
+            let selectedDeviceId;
+            const codeReader = new ZXing.BrowserMultiFormatReader();
+            console.log('ZXing code reader initialized');
+
+            codeReader.listVideoInputDevices()
+                .then((videoInputDevices) => {
+                    const sourceSelect = document.getElementById('sourceSelect');
+                    const setDefaultKamera = document.getElementById('selectKameraDefaultButton');
+                    let demoContentVideo = document.getElementById('demo-content');
+                    const resultElement = document.getElementById('result');
+
+
+                    // Event listener untuk tombol scan-button
+                    document.getElementById('scan-button').addEventListener('click', () => {
+                        // Cek apakah kamera default sudah disimpan di localStorage
+                        const savedDeviceId = localStorage.getItem('selectedDeviceId');
+                        if (savedDeviceId) {
+                            // Jika ada, gunakan deviceId yang disimpan
+                            selectedDeviceId = savedDeviceId;
+                            console.log(`Menggunakan kamera default: ${savedDeviceId}`);
+                            startScanning(selectedDeviceId);
+                        } else {
+                            // Jika tidak ada, tampilkan prompt untuk memilih kamera pertama kali
+                            if (videoInputDevices.length > 0) {
+                                let cameraOptions = videoInputDevices.map((device, index) => `${index + 1}. ${device.label}`).join('\n');
+                                let userChoice = prompt(`Pilih kamera:\n${cameraOptions}`);
+                                if (userChoice !== null && userChoice > 0 && userChoice <= videoInputDevices.length) {
+                                    selectedDeviceId = videoInputDevices[userChoice - 1].deviceId;
+                                    console.log(`Kamera yang dipilih: ${videoInputDevices[userChoice - 1].label}`);
+
+                                    // Simpan deviceId ke localStorage
+                                    localStorage.setItem('selectedDeviceId', selectedDeviceId);
+
+                                    // Mulai pemindaian setelah memilih kamera
+                                    startScanning(selectedDeviceId);
+                                } else {
+                                    alert("Pilihan tidak valid.");
+                                }
+                            } else {
+                                alert("Tidak ada perangkat video yang terdeteksi.");
+                            }
+                        }
+
+                        // Event listener untuk tombol setDefaultKamera
+                        setDefaultKamera.addEventListener('click', () => {
+                            // Cek apakah ada kamera yang sudah disimpan di localStorage
+                            if (videoInputDevices.length > 0) {
+                                let cameraOptions = videoInputDevices.map((device, index) => `${index + 1}. ${device.label}`).join('\n');
+                                let userChoice = prompt(`Pilih kamera untuk diset sebagai default:\n${cameraOptions}`);
+
+                                // Cek apakah pilihan valid
+                                if (userChoice !== null && userChoice > 0 && userChoice <= videoInputDevices.length) {
+                                    selectedDeviceId = videoInputDevices[userChoice - 1].deviceId;
+                                    console.log(`Kamera yang dipilih: ${videoInputDevices[userChoice - 1].label}`);
+
+                                    // Simpan deviceId ke localStorage
+                                    localStorage.setItem('selectedDeviceId', selectedDeviceId);
+
+                                    // Mulai pemindaian setelah memilih kamera
+                                    startScanning(selectedDeviceId);
+                                } else {
+                                    alert("Pilihan tidak valid.");
+                                }
+                            } else {
+                                alert("Tidak ada perangkat video yang terdeteksi.");
+                            }
+                        });
+
+                        if (selectedDeviceId) {
+                            startScanning(selectedDeviceId);
+                        } else {
+                            alert("Pilih kamera terlebih dahulu.");
+                        }
+                    });
+
+                    // Fungsi untuk mulai scanning menggunakan kamera yang dipilih
+                    function startScanning(deviceId) {
+                        demoContentVideo.style.display = 'block';
+                        resultElement.textContent = ""; // Kosongkan hasil sebelumnya
+                        codeReader.decodeFromVideoDevice(deviceId, 'video', (result, err) => {
+                            if (result && !isScanned) {
+                                isScanned = true;
+                                console.log("Barcode detected: ", result.text);
+                                resultElement.textContent = `Barcode terdeteksi: ${result.text}`;
+                                resultElement.style.color = 'green';
+
+                                // Proses data yang dipindai
+                                const trimmedData = result.text.trim();
+                                console.log(`Scanned text: ${trimmedData}`);
+
+                                let scanData = trimmedData.split(',');
+                                if (scanData.length < 3) {
+                                    alert("Data yang dipindai tidak lengkap. Pastikan memasukkan nama, ukuran, dan harga produk.");
+                                    return;
+                                }
+
+                                let namaProduk = scanData[0].trim();
+                                let ukuranProduk = scanData[1].trim();
+                                let hargaProduk = parseFloat(scanData[2]);
+
+                                if (isNaN(hargaProduk) || hargaProduk <= 0) {
+                                    alert("Harga produk tidak valid.");
+                                    return;
+                                }
+
+                                // Cek ketersediaan produk di Firestore dan tampilkan data
+                                checkProductAvailability(namaProduk, ukuranProduk).then(productData => {
+                                    if (productData) {
+                                        const formattedPrice = hargaProduk.toLocaleString('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+                                        // Tambahkan data ke tabel hanya jika belum ada
+                                        if (!isRowAlreadyExists(namaProduk, ukuranProduk, hargaProduk)) {
+                                            addRowToTable(namaProduk, ukuranProduk, hargaProduk);
+                                            isScanned = false; 
+                                        }
+                                        
+                                    } else {
+                                        Swal.fire({
+                                            icon: "error",
+                                            title: "Gagal",
+                                            text: `Produk ${namaProduk} ukuran ${ukuranProduk} tidak tersedia`
+                                        });
+                                    }
+                                });
+                                demoContentVideo.style.display = 'none';
+                            }
+                            if (err && !(err instanceof ZXing.NotFoundException)) {
+                                console.error(err);
+                                resultElement.textContent = err;
+                            }
+                        });
+                        console.log(`Started continuous decode from camera with id ${deviceId}`);
+                    }
+
+                    document.getElementById('resetButton').addEventListener('click', () => {
+                        // Menyembunyikan video stream
+                        demoContentVideo.style.display = 'none'; // Menutup video stream
+
+                        // Menghentikan stream video yang aktif
+                        if (codeReader && codeReader.reset) {
+                            // Jika codeReader masih aktif, reset dan hentikan streamnya
+                            codeReader.reset();
+                        }
+
+                        // Jika stream video aktif, hentikan track video
+                        const stream = demoContentVideo.srcObject;
+                        if (stream) {
+                            const tracks = stream.getTracks();
+                            tracks.forEach(track => {
+                                track.stop(); // Hentikan setiap track video
+                                console.log("Kamera dihentikan.");
+                            });
+                        } else {
+                            console.log("Tidak ada stream yang ditemukan.");
+                        }
+
+                        // Kosongkan hasil pemindaian
+                        resultElement.textContent = '';
+                        isScanned = false; 
+                        console.log('Reset selesai dan kamera dihentikan.');
+                    });
+
+
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
+        });
         
     </script>
 
